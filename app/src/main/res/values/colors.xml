@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accentColor">#FF18191F</color>
+    <color name="primaryColor">#FF08193A</color>
+    <color name="background">#FFFFFFFF</color>
+    <color name="lime">#A4E94E</color>
+</resources>
