@@ -1,6 +1,8 @@
 package good.damn.tvlist.fragments.ui
 
 import android.content.Context
+import android.os.Build
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -8,6 +10,7 @@ import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
@@ -20,6 +23,10 @@ import good.damn.tvlist.views.round.RoundedImageView
 class MainContentFragment
 : StackFragment() {
 
+    companion object {
+        private const val TAG = "MainContentFragment"
+    }
+    
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -107,7 +114,6 @@ class MainContentFragment
         searchView.iconPaddingRight = 0.041353f
 
 
-
         // Drawables
         imageViewProfile.drawable = App.drawable(
             R.drawable.ic
@@ -130,7 +136,7 @@ class MainContentFragment
         layoutTopBar.boundsFrame(
             Gravity.TOP,
             width = -1,
-            height = (measureUnit * 0.1715f).toInt()
+            height = (measureUnit * 0.1715f).toInt() + getTopInset()
         )
         layoutTopBarContent.boundsFrame(
             Gravity.CENTER

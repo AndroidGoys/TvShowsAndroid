@@ -74,6 +74,9 @@ abstract class StackFragment
         )
     }
 
+    fun getTopInset() = mainActivity()
+        .getTopInset()
+
     abstract fun onCreateView(
         context: Context,
         measureUnit: Int

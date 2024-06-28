@@ -1,6 +1,8 @@
 package good.damn.tvlist.activities
 
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
@@ -18,6 +20,10 @@ import good.damn.tvlist.navigators.MainFragmentNavigator
 
 class MainActivity
 : AppCompatActivity() {
+
+    companion object {
+        private const val TAG = "MainActivity"
+    }
 
     @ColorInt
     var navigationBarColor: Int = 0
@@ -102,7 +108,6 @@ class MainActivity
             window.decorView
         ).apply {
 
-
             hide(
                 WindowInsetsCompat.Type.statusBars() or (
                     WindowInsetsCompat.Type.navigationBars()
@@ -117,6 +122,14 @@ class MainActivity
         }
 
     }
+
+    fun getTopInset() = if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+    ) window.decorView
+        .rootWindowInsets
+        .displayCutout
+        ?.safeInsetTop ?: 0
+    else 0
 
     fun pushFragment(
         fragment: StackFragment,

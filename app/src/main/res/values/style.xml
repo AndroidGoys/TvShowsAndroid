@@ -5,6 +5,7 @@
         <item name="colorAccent">@color/accentColor</item>
         <item name="colorPrimary">@color/accentColor</item>
         <item name="colorSecondary">@color/accentColor</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
 
