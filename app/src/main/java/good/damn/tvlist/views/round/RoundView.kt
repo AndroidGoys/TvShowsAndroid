@@ -21,6 +21,7 @@ open class RoundView(
     private val mClipPath = Path()
 
     init {
+        mPaintBack.color = 0
         mPaintBack.style = Paint.Style.FILL
     }
 
@@ -46,6 +47,14 @@ open class RoundView(
 
         canvas.clipPath(
             mClipPath
+        )
+
+        if (mPaintBack.color == 0) {
+            return
+        }
+
+        canvas.drawPaint(
+            mPaintBack
         )
     }
 

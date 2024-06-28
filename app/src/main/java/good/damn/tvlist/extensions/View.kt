@@ -8,6 +8,9 @@ import androidx.annotation.ColorRes
 import good.damn.tvlist.App
 
 
+fun View.widthParams() = layoutParams
+    .width
+
 fun View.heightParams() = layoutParams
     .height
 

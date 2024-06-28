@@ -20,6 +20,7 @@ class SearchView(
     var textSizeExample = 0.1f
     var textSizeWord = 0.1f
     var iconSize = 0.1f
+    var iconPaddingRight = 0.0f
 
     var drawable: Drawable? = null
 
@@ -67,13 +68,23 @@ class SearchView(
         val iconSizei = (iconSize * height).toInt()
         val textBeginX = paddingLeft + iconSizei
 
-        mExampleX = textBeginX.toFloat()
+        mExampleX = textBeginX + iconPaddingRight * width
         mWordX = mExampleX + mPaintExample.measureText(
             textExample
-        )
+        ) + width * 0.018f // margin
 
-        mExampleY = (height - mPaintExample.textSize) * 0.5f
-        mWordY = (height - mPaintWord.textSize) * 0.5f
+
+        mPaintExample.textSize.let {
+            mExampleY = it*0.85f + (
+                height - it
+            ) * 0.5f
+        }
+
+        mPaintWord.textSize.let {
+            mWordY = it*0.85f + (
+                height - it
+            ) * 0.5f
+        }
 
         ((height - iconSizei) * 0.5f).toInt().let {
             drawable?.setBounds(

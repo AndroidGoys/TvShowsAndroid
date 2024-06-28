@@ -30,7 +30,7 @@ class MainFragmentNavigator<FRAGMENT: Fragment>(
             .add(
                 mContainer.id,
                 fragment
-            ).commit()
+            ).commitAllowingStateLoss()
     }
 
     fun removeFragment(

@@ -11,6 +11,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.views.SearchView
@@ -62,14 +63,8 @@ class MainContentFragment
                 R.color.background
             ).withAlpha(0.5f)
         )
-        imageViewLikes.setBackgroundColor(
-            0xffff0000.toInt()
-        )
         searchView.setBackgroundColorId(
             R.color.searchViewBack
-        )
-        imageViewProfile.setBackgroundColor(
-            0xffff0000.toInt()
         )
         bottomNavigationView.setBackgroundColor(
             0xffff0000.toInt()
@@ -79,7 +74,13 @@ class MainContentFragment
             R.color.lime
         )
         imageViewLikes.strokeColor = 0x3318191F
-
+        // Text color
+        App.color(
+            R.color.searchText
+        ).withAlpha(0.39f).let {
+            searchView.textColorWord = it
+            searchView.textColorExample = it
+        }
 
         // Typefaces
         searchView.typefaceExample = App.font(
@@ -102,7 +103,10 @@ class MainContentFragment
         searchView.textSizeExample = 0.29268f
 
         // Icon Size
-        searchView.iconSize = 0.29268f
+        searchView.iconSize = 0.4878f
+        searchView.iconPaddingRight = 0.041353f
+
+
 
         // Drawables
         imageViewProfile.drawable = App.drawable(
@@ -158,7 +162,12 @@ class MainContentFragment
                     left = interval
                 )
             }
-
+            searchView.setPadding(
+                (searchView.widthParams() * 0.04887f).toInt(),
+                0,
+                0,
+                0
+            )
         }
 
         (measureUnit * 0.13285f).toInt().let { bottomHeight ->
