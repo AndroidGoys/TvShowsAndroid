@@ -13,7 +13,8 @@ import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
-import good.damn.tvlist.views.RoundedImageView
+import good.damn.tvlist.views.SearchView
+import good.damn.tvlist.views.round.RoundedImageView
 
 class MainContentFragment
 : StackFragment() {
@@ -42,7 +43,7 @@ class MainContentFragment
         val imageViewProfile = RoundedImageView(
             context
         )
-        val searchView = View(
+        val searchView = SearchView(
             context
         )
         val imageViewLikes = RoundedImageView(
@@ -52,7 +53,6 @@ class MainContentFragment
 
 
         // Background colors
-        //
         layout.setBackgroundColorId(
             R.color.background
         )
@@ -65,8 +65,8 @@ class MainContentFragment
         imageViewLikes.setBackgroundColor(
             0xffff0000.toInt()
         )
-        searchView.setBackgroundColor(
-            0xffff0000.toInt()
+        searchView.setBackgroundColorId(
+            R.color.searchViewBack
         )
         imageViewProfile.setBackgroundColor(
             0xffff0000.toInt()
@@ -81,12 +81,39 @@ class MainContentFragment
         imageViewLikes.strokeColor = 0x3318191F
 
 
+        // Typefaces
+        searchView.typefaceExample = App.font(
+            R.font.open_sans_regular,
+            context
+        )
+        searchView.typefaceWord = App.font(
+            R.font.open_sans_bold,
+            context
+        )
 
+        // Text
+        searchView.textExample = getString(
+            R.string.for_example
+        )
+
+
+        // Text size
+        searchView.textSizeWord = 0.29268f
+        searchView.textSizeExample = 0.29268f
+
+        // Icon Size
+        searchView.iconSize = 0.29268f
 
         // Drawables
         imageViewProfile.drawable = App.drawable(
             R.drawable.ic
         )
+        App.drawable(
+            R.drawable.ic_lens
+        )?.let {
+            it.alpha = (255 * 0.48f).toInt()
+            searchView.drawable = it
+        }
         imageViewLikes.drawable = App.drawable(
             R.drawable.ic_heart
         )
@@ -117,6 +144,7 @@ class MainContentFragment
 
             imageViewProfile.cornerRadius = it * 0.5f
             imageViewLikes.cornerRadius = it * 0.5f
+            searchView.cornerRadius = it * 0.2317f
 
             (measureUnit * 0.04348f).let { interval ->
                 searchView.boundsLinear(
@@ -130,6 +158,7 @@ class MainContentFragment
                     left = interval
                 )
             }
+
         }
 
         (measureUnit * 0.13285f).toInt().let { bottomHeight ->
