@@ -4,4 +4,5 @@
     <color name="primaryColor">#FF08193A</color>
     <color name="background">#FFFFFFFF</color>
     <color name="lime">#A4E94E</color>
+    <color name="baseIcon">#18191F</color>
 </resources>

@@ -1,8 +1,6 @@
 package good.damn.tvlist.fragments.ui
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -15,10 +13,9 @@ import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
-import good.damn.tvlist.fragments.animation.FragmentAnimation
-import good.damn.tvlist.utils.ViewUtils
+import good.damn.tvlist.views.RoundedImageView
 
-class TVListFragment
+class MainContentFragment
 : StackFragment() {
 
     override fun onCreateView(
@@ -42,19 +39,20 @@ class TVListFragment
         val layoutTopBarContent = LinearLayout(
             context
         )
-        val imageViewProfile = View(
+        val imageViewProfile = RoundedImageView(
             context
         )
         val searchView = View(
             context
         )
-        val imageViewLikes = View(
+        val imageViewLikes = RoundedImageView(
             context
         )
 
 
 
-        // Colors
+        // Background colors
+        //
         layout.setBackgroundColorId(
             R.color.background
         )
@@ -76,7 +74,24 @@ class TVListFragment
         bottomNavigationView.setBackgroundColor(
             0xffff0000.toInt()
         )
+        // Stroke colors
+        imageViewProfile.setStrokeColorId(
+            R.color.lime
+        )
+        imageViewLikes.strokeColor = 0x3318191F
 
+
+
+
+        // Drawables
+        imageViewProfile.drawable = App.drawable(
+            R.drawable.ic
+        )
+        imageViewLikes.drawable = App.drawable(
+            R.drawable.ic_heart
+        )
+        imageViewLikes.imageScaleX = 0.5f
+        imageViewLikes.imageScaleY = 0.5f
 
 
 
@@ -94,6 +109,15 @@ class TVListFragment
                 width = it,
                 height = it,
             )
+
+            (it * 0.04878f).let { strokeWidth ->
+                imageViewProfile.strokeWidth = strokeWidth
+                imageViewLikes.strokeWidth = strokeWidth
+            }
+
+            imageViewProfile.cornerRadius = it * 0.5f
+            imageViewLikes.cornerRadius = it * 0.5f
+
             (measureUnit * 0.04348f).let { interval ->
                 searchView.boundsLinear(
                     width = (measureUnit * 0.64251f).toInt(),

@@ -10,6 +10,7 @@ import androidx.annotation.ColorRes
 import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
 import android.os.Handler
+import androidx.annotation.DrawableRes
 
 class App
 : Application() {
@@ -39,6 +40,14 @@ class App
         ) = ResourcesCompat.getFont(
             context,
             id
+        )
+
+        fun drawable(
+            @DrawableRes id: Int
+        ) = ResourcesCompat.getDrawable(
+            RESOURCES,
+            id,
+            null
         )
 
         @ColorInt

@@ -7,6 +7,10 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import good.damn.tvlist.App
 
+
+fun View.heightParams() = layoutParams
+    .height
+
 fun View.bottomMargin() = frameParams()
     .bottomMargin
 

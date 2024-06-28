@@ -1,9 +1,6 @@
 package good.damn.tvlist.activities
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.WindowInsets
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
@@ -11,13 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import good.damn.tvlist.App
-import good.damn.tvlist.R
 import good.damn.tvlist.animators.FragmentAnimator
 import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
-import good.damn.tvlist.fragments.ui.TVListFragment
+import good.damn.tvlist.fragments.ui.MainContentFragment
 import good.damn.tvlist.navigators.MainFragmentNavigator
 
 class MainActivity
@@ -74,7 +70,7 @@ class MainActivity
 
             splash.onAnimationEnd = {
                 replaceFragment(
-                    TVListFragment(),
+                    MainContentFragment(),
                     baseAnimation = FragmentAnimation { f, fragment ->
                         fragment.view?.y = App.HEIGHT * f
                     },
