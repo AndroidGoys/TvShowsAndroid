@@ -10,7 +10,7 @@ import androidx.annotation.ColorInt
 
 class CircleView(
     context: Context
-): AnimatableView(
+): View(
     context
 ) {
 

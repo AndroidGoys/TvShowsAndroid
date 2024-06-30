@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.animators.SimpleAnimator
 import good.damn.tvlist.extensions.bottomMargin
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.setBackgroundColorId
@@ -162,15 +163,19 @@ class SplashFragment
             halfWidth * halfWidth + halfHeight * halfHeight
         )
 
-        circleView.interpolator = AccelerateDecelerateInterpolator()
-        circleView.duration = 1550
+        val animator = SimpleAnimator(
+            circleView
+        )
 
-        circleView.onAnimationFrameUpdate = {
-            circleView.circleRadius = length * it
+        animator.onFrameUpdate = { factor, view ->
+            circleView.circleRadius = length * factor
             circleView.invalidate()
         }
 
-        circleView.onAnimationEnd = {
+        animator.interpolator = AccelerateDecelerateInterpolator()
+        animator.duration = 1550
+
+        animator.onEndAnimation = { view ->
             GroupViewAnimation().apply {
                 addView(textViewCompany)
                 addView(textViewPowered)
@@ -190,7 +195,7 @@ class SplashFragment
         }
 
         textViewAppName.startAnimation()
-        circleView.startAnimation()
+        animator.start()
 
         return layout
     }

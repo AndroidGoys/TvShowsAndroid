@@ -1,21 +1,18 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.animators
 
 import android.animation.Animator
 import android.animation.ValueAnimator
-import android.content.Context
 import android.view.View
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
 
-open class AnimatableView(
-    context: Context
-): View(
-    context
-), ValueAnimator.AnimatorUpdateListener,
+class SimpleAnimator<VIEW: View>(
+    private val mView: VIEW
+): ValueAnimator.AnimatorUpdateListener,
 Animator.AnimatorListener {
 
-    var onAnimationFrameUpdate: ((Float)->Unit)? = null
-    var onAnimationEnd: (()->Unit)? = null
+    var onFrameUpdate: ((Float, VIEW)->Unit)? = null
+    var onEndAnimation: ((VIEW)->Unit)? = null
 
     var interpolator: Interpolator = LinearInterpolator()
         set(v) {
@@ -29,16 +26,17 @@ Animator.AnimatorListener {
             mAnimator.duration = v
         }
 
+    var startDelay: Long = 0
+        set(v) {
+            field = v
+            mAnimator.startDelay = v
+        }
+
     private val mAnimator = ValueAnimator.ofFloat(
         0.0f, 1.0f
     )
 
     init {
-        mAnimator.apply {
-            interpolator = LinearInterpolator()
-            duration = 350
-        }
-
         mAnimator.addUpdateListener(
             this
         )
@@ -48,29 +46,39 @@ Animator.AnimatorListener {
         )
     }
 
-    fun startAnimation() {
+    fun start() {
         mAnimator.start()
     }
 
-    final override fun onAnimationUpdate(
+    override fun onAnimationUpdate(
         animation: ValueAnimator
     ) {
-        onAnimationFrameUpdate?.invoke(
-            animation.animatedValue as Float
+        onFrameUpdate?.invoke(
+            animation.animatedValue as Float,
+            mView
         )
     }
 
-    final override fun onAnimationEnd(
+    override fun onAnimationEnd(
         animation: Animator
     ) {
-        onAnimationEnd?.invoke()
+        onEndAnimation?.invoke(
+            mView
+        )
     }
 
-    final override fun onAnimationCancel(
+    override fun onAnimationCancel(
         animation: Animator
-    ) = onAnimationEnd(animation)
+    ) = onAnimationEnd(
+        animation
+    )
 
+    override fun onAnimationStart(
+        animation: Animator
+    ) = Unit
 
-    final override fun onAnimationStart(animation: Animator) = Unit
-    final override fun onAnimationRepeat(animation: Animator) = Unit
+    override fun onAnimationRepeat(
+        animation: Animator
+    ) = Unit
+
 }

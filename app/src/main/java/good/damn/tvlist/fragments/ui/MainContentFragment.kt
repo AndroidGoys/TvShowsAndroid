@@ -1,10 +1,13 @@
 package good.damn.tvlist.fragments.ui
 
+import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.BlurMaskFilter.Blur
 import android.os.Build
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
@@ -41,7 +44,6 @@ class MainContentFragment
             context
         )
 
-
         val layoutTopBar = FrameLayout(
             context
         )
@@ -57,7 +59,6 @@ class MainContentFragment
         val imageViewLikes = RoundedImageView(
             context
         )
-
 
 
         // Background colors
@@ -103,6 +104,12 @@ class MainContentFragment
         searchView.textExample = getString(
             R.string.for_example
         )
+        searchView.textWords = arrayOf(
+            "стс",
+            "start",
+            "вверх",
+            "чебурашка"
+        )
 
 
         // Text size
@@ -113,6 +120,10 @@ class MainContentFragment
         searchView.iconSize = 0.4878f
         searchView.iconPaddingRight = 0.041353f
 
+        // Search view animation config
+        searchView.animationDuration = 750
+        searchView.animationInterval = 4000
+        searchView.animationInterpolator = LinearInterpolator()
 
         // Drawables
         imageViewProfile.drawable = App.drawable(
@@ -201,6 +212,7 @@ class MainContentFragment
             addView(bottomNavigationView)
         }
 
+        searchView.startAnimation()
 
         return layout
     }
