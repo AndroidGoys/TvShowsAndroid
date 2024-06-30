@@ -2,7 +2,6 @@ package good.damn.tvlist.activities
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
@@ -15,7 +14,7 @@ import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
-import good.damn.tvlist.fragments.ui.MainContentFragment
+import good.damn.tvlist.fragments.ui.main.MainContentFragment
 import good.damn.tvlist.navigators.MainFragmentNavigator
 
 class MainActivity

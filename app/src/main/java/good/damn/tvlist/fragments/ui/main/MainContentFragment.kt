@@ -1,4 +1,4 @@
-package good.damn.tvlist.fragments.ui
+package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.view.Gravity
@@ -7,14 +7,18 @@ import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.adapters.FragmentAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
+import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
 import good.damn.tvlist.views.navigation.NavigationView
 import good.damn.tvlist.views.SearchView
 import good.damn.tvlist.views.animatable.vectors.MediaVector
@@ -28,7 +32,9 @@ class MainContentFragment
     companion object {
         private const val TAG = "MainContentFragment"
     }
-    
+
+    private var mBlurView: BlurShaderView? = null
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -43,8 +49,15 @@ class MainContentFragment
             context
         )
 
+
         val layoutTopBar = FrameLayout(
             context
+        )
+        mBlurView = BlurShaderView(
+            context,
+            viewPager,
+            5,
+            0.2f
         )
         val layoutTopBarContent = LinearLayout(
             context
@@ -59,6 +72,14 @@ class MainContentFragment
             context
         )
 
+        viewPager.adapter = FragmentAdapter(
+            arrayOf(
+                TVProgramFragment(),
+                MediaListFragment()
+            ),
+            childFragmentManager,
+            lifecycle
+        )
 
         // Background colors
         layout.setBackgroundColorId(
@@ -226,9 +247,10 @@ class MainContentFragment
             addView(imageViewLikes)
         }
 
-        layoutTopBar.addView(
-            layoutTopBarContent
-        )
+        layoutTopBar.apply {
+            addView(mBlurView)
+            addView(layoutTopBarContent)
+        }
 
         layout.apply {
             addView(viewPager)
@@ -237,7 +259,24 @@ class MainContentFragment
         }
 
         searchView.startAnimation()
+        mBlurView?.let {
+            it.post {
+                it.startRenderLoop()
+            }
+        }
 
         return layout
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.startRenderLoop()
+        mBlurView?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.stopRenderLoop()
+        mBlurView?.onPause()
     }
 }
