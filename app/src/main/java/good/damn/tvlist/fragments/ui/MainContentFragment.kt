@@ -1,10 +1,6 @@
 package good.damn.tvlist.fragments.ui
 
-import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.BlurMaskFilter.Blur
-import android.os.Build
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.animation.LinearInterpolator
@@ -13,14 +9,17 @@ import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.views.navigation.NavigationView
 import good.damn.tvlist.views.SearchView
+import good.damn.tvlist.views.animatable.vectors.MediaVector
+import good.damn.tvlist.views.animatable.vectors.PlayVector
+import good.damn.tvlist.views.navigation.NavigationItem
 import good.damn.tvlist.views.round.RoundedImageView
 
 class MainContentFragment
@@ -40,7 +39,7 @@ class MainContentFragment
         val viewPager = ViewPager2(
             context
         )
-        val bottomNavigationView = View(
+        val navigationView = NavigationView(
             context
         )
 
@@ -74,8 +73,8 @@ class MainContentFragment
         searchView.setBackgroundColorId(
             R.color.searchViewBack
         )
-        bottomNavigationView.setBackgroundColor(
-            0xffff0000.toInt()
+        navigationView.setBackgroundColorId(
+            R.color.background
         )
         // Stroke colors
         imageViewProfile.setStrokeColorId(
@@ -188,12 +187,37 @@ class MainContentFragment
         }
 
         (measureUnit * 0.13285f).toInt().let { bottomHeight ->
-            bottomNavigationView.boundsFrame(
+            navigationView.boundsFrame(
                 Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL,
                 width = (measureUnit * 0.44202f).toInt(),
                 height = bottomHeight,
                 bottom = (measureUnit * 0.11352f)
             )
+
+            navigationView.radius = bottomHeight * 0.16363f
+            navigationView.cardElevation = bottomHeight * 0.1f
+
+            (bottomHeight * 0.36363f).toInt().let { vectorSize ->
+                navigationView.items = arrayOf(
+                    NavigationItem(
+                        PlayVector(
+                            (navigationView.widthParams() / 2 - vectorSize),
+                            ((bottomHeight - vectorSize) * 0.5f).toInt(),
+                            vectorSize,
+                            vectorSize
+                        )
+                    ),
+                    NavigationItem(
+                        MediaVector(
+                            (navigationView.widthParams() / 2 + vectorSize),
+                            ((bottomHeight - vectorSize) * 0.5f).toInt(),
+                            vectorSize,
+                            vectorSize
+                        )
+                    )
+                )
+            }
+
         }
 
         layoutTopBarContent.apply {
@@ -209,7 +233,7 @@ class MainContentFragment
         layout.apply {
             addView(viewPager)
             addView(layoutTopBar)
-            addView(bottomNavigationView)
+            addView(navigationView)
         }
 
         searchView.startAnimation()

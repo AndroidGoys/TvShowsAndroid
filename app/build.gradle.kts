@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation("com.github.GoodDamn:DynamicBlurView_with_OpenGL_Android:1.5")
     implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.cardview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
