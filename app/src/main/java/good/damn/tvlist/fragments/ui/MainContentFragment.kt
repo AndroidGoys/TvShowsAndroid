@@ -211,7 +211,7 @@ class MainContentFragment
                         MediaVector(
                             (navigationView.widthParams() / 2 + vectorSize),
                             ((bottomHeight - vectorSize) * 0.5f).toInt(),
-                            vectorSize,
+                            (vectorSize * 1.1f).toInt(),
                             vectorSize
                         )
                     )

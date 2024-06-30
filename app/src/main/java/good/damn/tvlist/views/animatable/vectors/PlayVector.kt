@@ -41,7 +41,6 @@ class PlayVector(
             mPaint
         )
 
-
         // Left bottom
         canvas.drawArc(
             mRectVector,
