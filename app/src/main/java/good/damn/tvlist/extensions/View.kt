@@ -2,6 +2,7 @@ package good.damn.tvlist.extensions
 
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
@@ -28,6 +29,16 @@ fun View.setBackgroundColorId(
         App.color(
             id
         )
+    )
+}
+
+fun View.size(
+    width: Int,
+    height: Int
+) {
+    layoutParams = ViewGroup.LayoutParams(
+        width,
+        height
     )
 }
 

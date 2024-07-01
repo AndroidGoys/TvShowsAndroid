@@ -13,6 +13,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.adapters.FragmentAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
+import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
@@ -53,12 +54,12 @@ class MainContentFragment
         val layoutTopBar = FrameLayout(
             context
         )
-        mBlurView = BlurShaderView(
+        /*mBlurView = BlurShaderView(
             context,
             viewPager,
-            5,
-            0.2f
-        )
+            8,
+            1.0f
+        )*/
         val layoutTopBarContent = LinearLayout(
             context
         )
@@ -161,18 +162,30 @@ class MainContentFragment
         imageViewLikes.imageScaleX = 0.5f
         imageViewLikes.imageScaleY = 0.5f
 
-
+        layoutTopBarContent.gravity = Gravity
+            .CENTER_HORIZONTAL
 
         // Bounds
-        layoutTopBar.boundsFrame(
-            Gravity.TOP,
-            width = -1,
-            height = (measureUnit * 0.1715f).toInt() + getTopInset()
-        )
-        layoutTopBarContent.boundsFrame(
-            Gravity.CENTER
-        )
         (measureUnit * 0.09903f).toInt().let {
+            (measureUnit * 0.1715f).toInt().let { nativeHeight ->
+                layoutTopBar.boundsFrame(
+                    Gravity.TOP,
+                    width = -1,
+                    height = nativeHeight + getTopInset()
+                )
+                layoutTopBarContent.boundsFrame(
+                    width = measureUnit,
+                    height = layoutTopBar.heightParams()
+                )
+
+                layoutTopBarContent.setPadding(
+                    0,
+                    ((nativeHeight - it) * 0.5f).toInt(),
+                    0,
+                    0
+                )
+            }
+
             imageViewProfile.boundsLinear(
                 width = it,
                 height = it,
@@ -248,7 +261,7 @@ class MainContentFragment
         }
 
         layoutTopBar.apply {
-            addView(mBlurView)
+            //addView(mBlurView)
             addView(layoutTopBarContent)
         }
 
