@@ -38,7 +38,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation("com.github.GoodDamn:DynamicBlurView_with_OpenGL_Android:1.5")
+    implementation("com.github.GoodDamn:DynamicBlurView_with_OpenGL_Android:1.6")
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.cardview)
     testImplementation(libs.junit)

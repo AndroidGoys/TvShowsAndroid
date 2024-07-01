@@ -54,12 +54,13 @@ class MainContentFragment
         val layoutTopBar = FrameLayout(
             context
         )
-        /*mBlurView = BlurShaderView(
+        mBlurView = BlurShaderView(
             context,
             viewPager,
-            8,
-            1.0f
-        )*/
+            5,
+            0.5f,
+            0.5f
+        )
         val layoutTopBarContent = LinearLayout(
             context
         )
@@ -261,7 +262,7 @@ class MainContentFragment
         }
 
         layoutTopBar.apply {
-            //addView(mBlurView)
+            addView(mBlurView)
             addView(layoutTopBarContent)
         }
 
@@ -272,11 +273,6 @@ class MainContentFragment
         }
 
         searchView.startAnimation()
-        mBlurView?.let {
-            it.post {
-                it.startRenderLoop()
-            }
-        }
 
         return layout
     }
