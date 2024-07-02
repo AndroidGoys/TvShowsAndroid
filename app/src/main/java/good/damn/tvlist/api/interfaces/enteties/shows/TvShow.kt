@@ -10,5 +10,5 @@ interface TvShow : TvEntity {
     val previewUrl: String
 
     fun getDetails(callback: ()->Result<TvShowDetails>)
-    fun getChannels(callback: () -> Result<TvShowChannel>)
+    fun getChannels(callback: () -> Result<TvShowChannels>)
 }
