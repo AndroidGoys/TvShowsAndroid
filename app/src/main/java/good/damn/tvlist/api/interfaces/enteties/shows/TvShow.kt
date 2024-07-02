@@ -8,4 +8,7 @@ interface TvShow : TvEntity {
     val assessment: Float
     val ageLimit: AgeLimit
     val previewUrl: String
+
+    fun getDetails(callback: ()->Result<TvShowDetails>)
+    fun getChannels(callback: () -> Result<TvShowChannel>)
 }
