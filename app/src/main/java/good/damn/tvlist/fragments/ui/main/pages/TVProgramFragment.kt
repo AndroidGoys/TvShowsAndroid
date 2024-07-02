@@ -15,6 +15,8 @@ import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.network.api.models.TVChannel
+import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.models.enums.CensorAge
 
 class TVProgramFragment
 : StackFragment() {
@@ -37,21 +39,147 @@ class TVProgramFragment
             false
         )
 
+        recyclerView.clipToPadding = false
+        (measureUnit * 0.17149f).toInt().let {
+            padding ->
+            recyclerView.setPadding(
+                0,
+                padding,
+                0,
+                padding
+            )
+        }
+
         val channels = arrayListOf(
             TVChannel(
-                "CTC"
+                "CTC",
+                programs = arrayOf(
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    )
+                )
             ),
             TVChannel(
-                "Первый канал"
+                "Первый канал",
+                programs = arrayOf(
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    )
+                )
             ),
             TVChannel(
-                "2х2"
+                "2х2",
+                programs = arrayOf(
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    )
+                )
             ),
             TVChannel(
-                "CTC"
+                "CTC",
+                programs = arrayOf(
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    )
+                )
             ),
             TVChannel(
-                "Первый канал"
+                "Первый канал",
+                programs = arrayOf(
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    ),
+                    TVProgram(
+                        0,
+                        "Кухня",
+                        CensorAge.TEEN_ADULT,
+                        1719909862L,
+                        4.9f
+                    )
+                )
             ),
             TVChannel(
                 "2х2"

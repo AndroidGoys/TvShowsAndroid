@@ -4,22 +4,31 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
+import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
 
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,
-    private val mRecyclerViewPrograms: RecyclerView,
+    private val mRecyclerViewPrograms: TVProgramsRecyclerView,
     layout: LinearLayout
 ): RecyclerView.ViewHolder(
     layout
 ) {
+
+    fun setPrograms(
+        programs: Array<TVProgram>?
+    ) {
+        mRecyclerViewPrograms.programs = programs
+    }
 
     fun setChannelName(
         t: String
@@ -34,16 +43,16 @@ class TVChannelViewHolder(
             width: Int,
             height: Int
         ): TVChannelViewHolder {
+
             val layout = ViewUtils.verticalLinear(
                 context
             )
             val channelView = TVChannelView(
                 context
             )
-            val recyclerView = RecyclerView(
+            val recyclerView = TVProgramsRecyclerView(
                 context
             )
-
 
 
             // Text Colors
@@ -63,15 +72,8 @@ class TVChannelViewHolder(
             )
 
             layout.setBackgroundColor(0)
-
-            /*channelView.setBackgroundColor(
-                0xff00ff00.toInt()
-            )
-
-            recyclerView.setBackgroundColor(
-                0xff0000ff.toInt()
-            )*/
-
+            channelView.setBackgroundColor(0)
+            recyclerView.setBackgroundColor(0)
 
 
             // Bounds
@@ -91,7 +93,8 @@ class TVChannelViewHolder(
                 channelView.boundsLinear(
                     width = width,
                     height = (heightView * 0.12587f)
-                        .toInt()
+                        .toInt(),
+                    top = heightView * 0.087412f
                 )
 
                 channelView.cornerRadiusPreview = channelView
@@ -113,7 +116,8 @@ class TVChannelViewHolder(
                 recyclerView.boundsLinear(
                     width = width,
                     height = (heightView * 0.71811f)
-                        .toInt()
+                        .toInt(),
+                    top = heightView * 0.06993f
                 )
 
                 // Text size
@@ -121,10 +125,20 @@ class TVChannelViewHolder(
                     .heightParams() * 0.5833f
             }
 
+            // RecyclerView setup
+            recyclerView.layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
             layout.apply {
                 addView(channelView)
                 addView(recyclerView)
             }
+
+            recyclerView.adapter = recyclerView
+                .adapterPrograms
 
             return TVChannelViewHolder(
                 channelView,
