@@ -72,8 +72,8 @@ class TVChannelView(
             marginLeft + previewSize
         }
 
-        mTextX = offset
-        mTextY = (height + mPaintText.textSize) * 0.5f
+        mTextX = offset + previewSize * 0.5f
+        mTextY = (height + mPaintText.textSize) * 0.47f
 
         mRectPreview.left = marginLeft
         mRectPreview.top = (height - previewSize) * 0.5f
