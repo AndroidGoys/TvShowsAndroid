@@ -2,11 +2,13 @@ package good.damn.tvlist.adapters.recycler_view
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.view_holders.TVChannelViewHolder
 
 class TVChannelAdapter(
     private val width: Int,
-    private val height: Int
+    private val height: Int,
+    private val data: ArrayList<TVChannel>
 ): RecyclerView.Adapter<TVChannelViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -19,7 +21,7 @@ class TVChannelAdapter(
     )
 
     override fun getItemCount(): Int {
-        return 4
+        return data.size
     }
 
     override fun onBindViewHolder(
@@ -27,7 +29,7 @@ class TVChannelAdapter(
         position: Int
     ) {
         holder.setChannelName(
-            holder.hashCode().toString()
+            data[position].name
         )
     }
 }

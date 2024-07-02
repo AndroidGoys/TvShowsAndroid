@@ -1,6 +1,8 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
@@ -49,27 +51,41 @@ class TVChannelViewHolder(
                 R.color.accentColor
             )
 
-
-            layout.setBackgroundColor(
-                0xffff0000.toInt()
+            //Typeface
+            channelView.typeface = App.font(
+                R.font.open_sans_semi_bold,
+                context
             )
 
-            channelView.setBackgroundColor(
+            // Drawable
+            channelView.imageIcon = App.drawable(
+                R.drawable.ic_info
+            )
+
+            layout.setBackgroundColor(0)
+
+            /*channelView.setBackgroundColor(
                 0xff00ff00.toInt()
             )
 
             recyclerView.setBackgroundColor(
                 0xff0000ff.toInt()
-            )
+            )*/
 
 
 
             // Bounds
-
             (height * 0.31256f).toInt().let { heightView ->
                 layout.size(
                     width,
                     heightView
+                )
+
+                channelView.setPadding(
+                    (width * 0.04347f).toInt(),
+                    0,
+                    0,
+                    0
                 )
 
                 channelView.boundsLinear(
@@ -77,6 +93,22 @@ class TVChannelViewHolder(
                     height = (heightView * 0.12587f)
                         .toInt()
                 )
+
+                channelView.cornerRadiusPreview = channelView
+                    .heightParams() * 0.15f
+
+                BitmapFactory.decodeResource(
+                    context.resources,
+                    R.drawable.ic
+                )?.let {
+                    val previewSize = channelView.heightParams()
+                    channelView.imagePreview = Bitmap.createScaledBitmap(
+                        it,
+                        previewSize,
+                        previewSize,
+                        true
+                    )
+                }
 
                 recyclerView.boundsLinear(
                     width = width,

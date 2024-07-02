@@ -1,12 +1,14 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.view.Gravity
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -46,7 +48,7 @@ class MainContentFragment
         val viewPager = ViewPager2(
             context
         )
-        val navigationView = NavigationView(
+        val navigationView = BottomNavigationView(
             context
         )
 
@@ -59,7 +61,7 @@ class MainContentFragment
             viewPager,
             5,
             0.5f,
-            0.5f
+            0.43f
         )
         val layoutTopBarContent = LinearLayout(
             context
@@ -147,6 +149,16 @@ class MainContentFragment
         searchView.animationInterval = 4000
         searchView.animationInterpolator = LinearInterpolator()
 
+
+        navigationView.itemRippleColor = ColorStateList.valueOf(
+            App.color(
+                R.color.navigationIcon
+            )
+        )
+        navigationView.inflateMenu(
+            R.menu.main_menu
+        )
+
         // Drawables
         imageViewProfile.drawable = App.drawable(
             R.drawable.ic
@@ -229,7 +241,10 @@ class MainContentFragment
                 bottom = (measureUnit * 0.11352f)
             )
 
-            navigationView.radius = bottomHeight * 0.16363f
+
+            navigationView.itemIconSize = (bottomHeight * 0.36363f).toInt()
+
+            /*navigationView.radius = bottomHeight * 0.16363f
             navigationView.cardElevation = bottomHeight * 0.1f
 
             (bottomHeight * 0.36363f).toInt().let { vectorSize ->
@@ -251,7 +266,7 @@ class MainContentFragment
                         )
                     )
                 )
-            }
+            }*/
 
         }
 

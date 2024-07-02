@@ -14,6 +14,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.network.api.models.TVChannel
 
 class TVProgramFragment
 : StackFragment() {
@@ -36,9 +37,40 @@ class TVProgramFragment
             false
         )
 
+        val channels = arrayListOf(
+            TVChannel(
+                "CTC"
+            ),
+            TVChannel(
+                "Первый канал"
+            ),
+            TVChannel(
+                "2х2"
+            ),
+            TVChannel(
+                "CTC"
+            ),
+            TVChannel(
+                "Первый канал"
+            ),
+            TVChannel(
+                "2х2"
+            ),
+            TVChannel(
+                "CTC"
+            ),
+            TVChannel(
+                "Первый канал"
+            ),
+            TVChannel(
+                "2х2"
+            )
+        )
+
         recyclerView.adapter = TVChannelAdapter(
             App.WIDTH,
-            App.HEIGHT
+            App.HEIGHT,
+            channels
         )
 
         return recyclerView
