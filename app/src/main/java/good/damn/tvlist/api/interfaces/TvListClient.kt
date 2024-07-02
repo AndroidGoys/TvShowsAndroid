@@ -10,4 +10,7 @@ interface TvListClient {
     fun getChannelById(id:Int, callback: ()->Result<TvChannelDetails>)
     fun getTvShows(callback: () -> Result<TvShows>)
     fun getShowById(id:Int, callback: ()->Result<TvShowDetails>)
+
+    fun searchChannelsByName(name: String, callback: ()->Result<TvChannels>)
+    fun searchShowsByName(name: String, callback: ()->Result<TvChannels>)
 }
