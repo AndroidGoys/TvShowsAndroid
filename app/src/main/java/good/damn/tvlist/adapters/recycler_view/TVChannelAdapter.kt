@@ -28,12 +28,8 @@ class TVChannelAdapter(
         holder: TVChannelViewHolder,
         position: Int
     ) {
-        val channel = data[position]
-        holder.setPrograms(
-            channel.programs
-        )
-        holder.setChannelName(
-            channel.name
+        holder.setChannel(
+            data[position]
         )
     }
 }

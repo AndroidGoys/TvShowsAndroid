@@ -17,6 +17,10 @@ class TVChannelView(
     context
 ) {
     var text = ""
+        set(v) {
+            field = v
+            calculateIconBounds()
+        }
     var imagePreview: Bitmap? = null
     var imageIcon: Drawable? = null
     var cornerRadiusPreview = 15f
@@ -81,21 +85,7 @@ class TVChannelView(
         mRectPreview.right = mRectPreview.left + previewSize
         mRectPreview.bottom = mRectPreview.top + previewSize
 
-        (height * 0.47222f).toInt().let { iconSize ->
-            val leftIcon = (mTextX + mPaintText.measureText(
-                text
-            ) + iconSize * 0.64705f).toInt()
-
-            val topIcon = (height * 0.20833f).toInt()
-            imageIcon?.setBounds(
-                leftIcon,
-                topIcon,
-                leftIcon + iconSize,
-                topIcon + iconSize
-            )
-        }
-
-
+        calculateIconBounds()
     }
 
     override fun onDraw(
@@ -137,6 +127,22 @@ class TVChannelView(
             mRectPreview.top,
             mPaintText
         )
+    }
+
+    private fun calculateIconBounds() {
+        (height * 0.47222f).toInt().let { iconSize ->
+            val leftIcon = (mTextX + mPaintText.measureText(
+                text
+            ) + iconSize * 0.64705f).toInt()
+
+            val topIcon = (height * 0.20833f).toInt()
+            imageIcon?.setBounds(
+                leftIcon,
+                topIcon,
+                leftIcon + iconSize,
+                topIcon + iconSize
+            )
+        }
     }
 
 }

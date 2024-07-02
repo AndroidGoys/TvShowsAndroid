@@ -61,7 +61,7 @@ class MainContentFragment
             viewPager,
             5,
             0.5f,
-            0.43f
+            0.45f
         )
         val layoutTopBarContent = LinearLayout(
             context
@@ -76,6 +76,8 @@ class MainContentFragment
             context
         )
 
+
+        // Setup viewPager
         viewPager.adapter = FragmentAdapter(
             arrayOf(
                 TVProgramFragment(),
@@ -84,6 +86,10 @@ class MainContentFragment
             childFragmentManager,
             lifecycle
         )
+        viewPager.isUserInputEnabled = false
+
+
+
 
         // Background colors
         layout.setBackgroundColorId(

@@ -11,9 +11,11 @@ import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
+import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
 
 class TVChannelViewHolder(
@@ -23,18 +25,12 @@ class TVChannelViewHolder(
 ): RecyclerView.ViewHolder(
     layout
 ) {
-
-    fun setPrograms(
-        programs: Array<TVProgram>?
+    fun setChannel(
+        t: TVChannel
     ) {
-        mRecyclerViewPrograms.programs = programs
-    }
-
-    fun setChannelName(
-        t: String
-    ) {
-        mTvChannelView.text = t
+        mTvChannelView.text = t.name
         mTvChannelView.invalidate()
+        mRecyclerViewPrograms.programs = t.programs
     }
 
     companion object {
@@ -75,7 +71,6 @@ class TVChannelViewHolder(
             channelView.setBackgroundColor(0)
             recyclerView.setBackgroundColor(0)
 
-
             // Bounds
             (height * 0.31256f).toInt().let { heightView ->
                 layout.size(
@@ -98,7 +93,7 @@ class TVChannelViewHolder(
                 )
 
                 channelView.cornerRadiusPreview = channelView
-                    .heightParams() * 0.15f
+                    .heightParams() * 0.25f
 
                 BitmapFactory.decodeResource(
                     context.resources,
@@ -137,8 +132,23 @@ class TVChannelViewHolder(
                 addView(recyclerView)
             }
 
+            recyclerView.clipToPadding = false
+
+            recyclerView.setPadding(
+                0,
+                0,
+                channelView.paddingLeft,
+                0
+            )
+
             recyclerView.adapter = recyclerView
                 .adapterPrograms
+
+            recyclerView.addItemDecoration(
+                MarginItemDecoration(
+                    left = channelView.paddingLeft
+                )
+            )
 
             return TVChannelViewHolder(
                 channelView,
