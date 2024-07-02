@@ -7,6 +7,6 @@ interface TvChannel : TvEntity {
     val name: String
     val imageUrl: String
 
-    fun getShows(callback: () -> Result<TvChannelShows>)
-    fun getDetails(callback: () -> Result<TvChannelDetails>)
+    fun getShows(callback: (result: Result<TvChannelShows>) -> Unit)
+    fun getDetails(callback: (result: Result<TvChannelDetails>) -> Unit)
 }

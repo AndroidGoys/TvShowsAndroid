@@ -8,11 +8,11 @@ import good.damn.tvlist.api.interfaces.enteties.shows.TvShows
 import good.damn.tvlist.api.interfaces.enteties.shows.TvShowPreview
 
 interface TvListClient {
-    fun getChannels(callback: ()->Result<TvChannels<TvChannelPreview>>)
-    fun getChannelById(id:Int, callback: ()->Result<TvChannelDetails>)
-    fun getTvShows(callback: () -> Result<TvShows<TvShowPreview>>)
-    fun getShowById(id:Int, callback: ()->Result<TvShowDetails>)
+    fun getChannels(callback: (result: Result<TvChannels<TvChannelPreview>>)->Unit)
+    fun getChannelById(id:Int, callback: (result: Result<TvChannelDetails>)->Unit)
+    fun getTvShows(callback: (result: Result<TvShows<TvShowPreview>>)->Unit)
+    fun getShowById(id:Int, callback: (result: Result<TvShowDetails>)->Unit)
 
-    fun searchChannelsByName(name: String, callback: ()->Result<TvChannels<TvChannelPreview>>)
-    fun searchShowsByName(name: String, callback: ()->Result<TvShows<TvShowPreview>>)
+    fun searchChannelsByName(name: String, callback: (result: Result<TvChannels<TvChannelPreview>>)->Unit)
+    fun searchShowsByName(name: String, callback: (result: Result<TvShows<TvShowPreview>>)->Unit)
 }
