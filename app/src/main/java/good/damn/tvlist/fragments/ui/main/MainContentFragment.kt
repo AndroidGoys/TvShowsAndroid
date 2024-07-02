@@ -1,14 +1,12 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.view.Gravity
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -27,16 +25,19 @@ import good.damn.tvlist.views.SearchView
 import good.damn.tvlist.views.animatable.vectors.MediaVector
 import good.damn.tvlist.views.animatable.vectors.PlayVector
 import good.damn.tvlist.views.navigation.NavigationItem
+import good.damn.tvlist.views.navigation.interfaces.OnItemClickNavigationListener
 import good.damn.tvlist.views.round.RoundedImageView
 
 class MainContentFragment
-: StackFragment() {
+: StackFragment(),
+OnItemClickNavigationListener {
 
     companion object {
         private const val TAG = "MainContentFragment"
     }
 
     private var mBlurView: BlurShaderView? = null
+    private lateinit var mViewPager: ViewPager2
 
     override fun onCreateView(
         context: Context,
@@ -45,10 +46,10 @@ class MainContentFragment
         val layout = FrameLayout(
             context
         )
-        val viewPager = ViewPager2(
+        mViewPager = ViewPager2(
             context
         )
-        val navigationView = BottomNavigationView(
+        val navigationView = NavigationView(
             context
         )
 
@@ -58,10 +59,10 @@ class MainContentFragment
         )
         mBlurView = BlurShaderView(
             context,
-            viewPager,
+            mViewPager,
             5,
             0.5f,
-            0.45f
+            0.5f
         )
         val layoutTopBarContent = LinearLayout(
             context
@@ -78,7 +79,7 @@ class MainContentFragment
 
 
         // Setup viewPager
-        viewPager.adapter = FragmentAdapter(
+        mViewPager.adapter = FragmentAdapter(
             arrayOf(
                 TVProgramFragment(),
                 MediaListFragment()
@@ -86,7 +87,7 @@ class MainContentFragment
             childFragmentManager,
             lifecycle
         )
-        viewPager.isUserInputEnabled = false
+        mViewPager.isUserInputEnabled = false
 
 
 
@@ -119,6 +120,15 @@ class MainContentFragment
             searchView.textColorWord = it
             searchView.textColorExample = it
         }
+
+        // Navigation colors
+        navigationView.selectedItemColor = App.color(
+            R.color.navigationIcon
+        )
+        navigationView.itemColor = App.color(
+            R.color.navigationIconBackground
+        )
+
 
         // Typefaces
         searchView.typefaceExample = App.font(
@@ -156,15 +166,6 @@ class MainContentFragment
         searchView.animationInterpolator = LinearInterpolator()
 
 
-        navigationView.itemRippleColor = ColorStateList.valueOf(
-            App.color(
-                R.color.navigationIcon
-            )
-        )
-        navigationView.inflateMenu(
-            R.menu.main_menu
-        )
-
         // Drawables
         imageViewProfile.drawable = App.drawable(
             R.drawable.ic
@@ -199,7 +200,7 @@ class MainContentFragment
 
                 layoutTopBarContent.setPadding(
                     0,
-                    ((nativeHeight - it) * 0.5f).toInt(),
+                    getTopInset() + ((nativeHeight - it) * 0.5f).toInt(),
                     0,
                     0
                 )
@@ -248,20 +249,24 @@ class MainContentFragment
             )
 
 
-            navigationView.itemIconSize = (bottomHeight * 0.36363f).toInt()
-
-            /*navigationView.radius = bottomHeight * 0.16363f
+            navigationView.radius = bottomHeight * 0.16363f
             navigationView.cardElevation = bottomHeight * 0.1f
 
             (bottomHeight * 0.36363f).toInt().let { vectorSize ->
+
+                val playVector = PlayVector(
+                    y = ((bottomHeight - vectorSize) * 0.5f).toInt(),
+                    width = vectorSize,
+                    height = vectorSize
+                )
+
+                playVector.color = App.color(
+                    R.color.navigationIcon
+                )
+
                 navigationView.items = arrayOf(
                     NavigationItem(
-                        PlayVector(
-                            (navigationView.widthParams() / 2 - vectorSize),
-                            ((bottomHeight - vectorSize) * 0.5f).toInt(),
-                            vectorSize,
-                            vectorSize
-                        )
+                        playVector
                     ),
                     NavigationItem(
                         MediaVector(
@@ -272,7 +277,7 @@ class MainContentFragment
                         )
                     )
                 )
-            }*/
+            }
 
         }
 
@@ -288,13 +293,16 @@ class MainContentFragment
         }
 
         layout.apply {
-            addView(viewPager)
+            addView(mViewPager)
             addView(layoutTopBar)
             addView(navigationView)
         }
 
         searchView.startAnimation()
 
+        // Setup listeners
+        navigationView.onItemClickListener = this
+        navigationView.currentItem = 0
         return layout
     }
 
@@ -308,5 +316,13 @@ class MainContentFragment
         super.onPause()
         mBlurView?.stopRenderLoop()
         mBlurView?.onPause()
+    }
+
+    override fun onClickNavigationItem(
+        index: Int,
+        navigationView: NavigationView
+    ) {
+        navigationView.currentItem = index
+        mViewPager.currentItem = index
     }
 }

@@ -19,7 +19,6 @@ class MediaVector(
     height
 ) {
 
-    private val mPaint = Paint()
     private val mPaintAccent = Paint()
     private var mRadius = 1f
 

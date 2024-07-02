@@ -41,6 +41,8 @@ class MainActivity
     private lateinit var mNavigator: MainFragmentNavigator<StackFragment>
     private lateinit var mContainer: FrameLayout
 
+    private var mWindowController: WindowInsetsControllerCompat? = null
+
     private val mAnimator = FragmentAnimator()
 
     override fun onCreate(
@@ -102,10 +104,12 @@ class MainActivity
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
 
-        WindowInsetsControllerCompat(
+        mWindowController = WindowInsetsControllerCompat(
             window,
             window.decorView
-        ).apply {
+        )
+
+        mWindowController?.apply {
 
             hide(
                 WindowInsetsCompat.Type.statusBars() or (
@@ -190,6 +194,18 @@ class MainActivity
             topFragment,
             onAnimation,
             on
+        )
+    }
+
+    fun showStatusBar() {
+        mWindowController?.show(
+            WindowInsetsCompat.Type.statusBars()
+        )
+    }
+
+    fun hideStatusBar() {
+        mWindowController?.show(
+            WindowInsetsCompat.Type.statusBars()
         )
     }
 

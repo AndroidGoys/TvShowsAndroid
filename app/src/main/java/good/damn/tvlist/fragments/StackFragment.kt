@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import good.damn.tvlist.App
 import good.damn.tvlist.activities.MainActivity
@@ -76,6 +77,12 @@ abstract class StackFragment
 
     fun getTopInset() = mainActivity()
         .getTopInset()
+
+    fun showStatusBar() = mainActivity()
+        .showStatusBar()
+
+    fun hideStatusBar() = mainActivity()
+        .hideStatusBar()
 
     abstract fun onCreateView(
         context: Context,

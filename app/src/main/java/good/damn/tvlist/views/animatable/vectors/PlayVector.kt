@@ -10,8 +10,8 @@ import good.damn.tvlist.views.animatable.AnimatableVector
 import good.damn.tvlist.views.animatable.BoundVector
 
 class PlayVector(
-    x: Int,
-    y: Int,
+    x: Int = 0,
+    y: Int = 0,
     width: Int,
     height: Int
 ): BoundVector(
@@ -21,15 +21,13 @@ class PlayVector(
     height
 ) {
 
-    @ColorInt
-    var color: Int = 0
-        set(v) {
-            field = v
-            mPaint.color = v
-            mPaintFillPlay.color = v
+    override var color: Int
+        get() = super.color
+        set(value) {
+            mPaintFillPlay.color = value
+            super.color = value
         }
 
-    private val mPaint = Paint()
     private val mPaintFillPlay = Paint()
 
     private val mPath = Path()
