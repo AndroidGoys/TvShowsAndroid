@@ -1,6 +1,7 @@
 package good.damn.tvlist.network.api.models
 
 import android.util.Log
+import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.log
 
@@ -37,10 +38,34 @@ data class TVChannel(
                 name.substring(0,21) + "…"
             else null
 
+            val current = try {
+                json.getJSONArray(
+                    "current"
+                )
+            } catch (e: Exception) {
+                Log.d(TAG, "createFromJSON: ERROR_CURRENT: ${e.message}")
+                null
+            }
+
+            if (current == null) {
+                return TVChannel(
+                    name,
+                    shortName,
+                    imageUrl
+                )
+            }
+
+            val tvProgram = Array(current.length()) {
+                TVProgram.createFromJSON(
+                    current.getJSONObject(it)
+                )
+            }
+
             return TVChannel(
                 name,
                 shortName,
-                imageUrl
+                imageUrl,
+                tvProgram
             )
         }
     }
