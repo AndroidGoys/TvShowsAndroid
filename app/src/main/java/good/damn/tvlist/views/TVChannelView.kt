@@ -16,10 +16,10 @@ class TVChannelView(
 ): View(
     context
 ) {
-    var text = ""
+    var text: String? = null
         set(v) {
             field = v
-            calculateIconBounds()
+            calculateIconBounds(v)
         }
     var imagePreview: Bitmap? = null
     var imageIcon: Drawable? = null
@@ -67,25 +67,8 @@ class TVChannelView(
             bottom
         )
 
-        val marginLeft = paddingLeft.toFloat()
-        val previewSize = imagePreview?.height ?: 0
-
-        val offset = if (imagePreview == null) {
-            marginLeft
-        } else {
-            marginLeft + previewSize
-        }
-
-        mTextX = offset + previewSize * 0.5f
-        mTextY = (height + mPaintText.textSize) * 0.47f
-
-        mRectPreview.left = marginLeft
-        mRectPreview.top = (height - previewSize) * 0.5f
-
-        mRectPreview.right = mRectPreview.left + previewSize
-        mRectPreview.bottom = mRectPreview.top + previewSize
-
-        calculateIconBounds()
+        calculateImageBounds()
+        calculateIconBounds(text)
     }
 
     override fun onDraw(
@@ -93,18 +76,26 @@ class TVChannelView(
     ) {
         super.onDraw(canvas)
 
-        canvas.drawText(
-            text,
-            mTextX,
-            mTextY,
-            mPaintText
-        )
+        if (text != null) {
+            canvas.drawText(
+                text!!,
+                mTextX,
+                mTextY,
+                mPaintText
+            )
+        }
 
         imageIcon?.draw(
             canvas
         )
 
         if (imagePreview == null) {
+            canvas.drawRoundRect(
+                mRectPreview,
+                cornerRadiusPreview,
+                cornerRadiusPreview,
+                mPaintText
+            )
             return
         }
 
@@ -129,7 +120,29 @@ class TVChannelView(
         )
     }
 
-    private fun calculateIconBounds() {
+
+    private fun calculateImageBounds() {
+        val marginLeft = paddingLeft.toFloat()
+        val previewSize = height
+
+        val offset = marginLeft + previewSize
+
+        mTextX = offset + previewSize * 0.5f
+        mTextY = (height + mPaintText.textSize) * 0.47f
+
+        mRectPreview.left = marginLeft
+        mRectPreview.top = (height - previewSize) * 0.5f
+
+        mRectPreview.right = mRectPreview.left + previewSize
+        mRectPreview.bottom = mRectPreview.top + previewSize
+    }
+
+    private fun calculateIconBounds(
+        text: String?
+    ) {
+        if (text == null) {
+            return
+        }
         (height * 0.47222f).toInt().let { iconSize ->
             val leftIcon = (mTextX + mPaintText.measureText(
                 text

@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.cache.BitmapCache
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
@@ -21,6 +23,7 @@ import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.net.URL
 
 class TVChannelViewHolder(
@@ -30,60 +33,39 @@ class TVChannelViewHolder(
 ): RecyclerView.ViewHolder(
     layout
 ) {
+
+    private val mCacheDir = itemView.context
+        .cacheDir
+
     fun setChannel(
         t: TVChannel
     ) {
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
 
         mTvChannelView.text = t.name
-
-        t.imageUrl?.let {
-            mTvChannelView.imagePreview = App.iconMap[
-                it
-            ]
-        }
         mTvChannelView.invalidate()
         mRecyclerViewPrograms.programs = t.programs
 
-        if (mTvChannelView.imagePreview != null) {
-            return
-        }
-
-        if (t.imageUrl == null) {
-            return
-        }
-
-        CoroutineScope(
-            Dispatchers.IO
-        ).launch {
-            val inp = try {
-                URL(
-                    t.imageUrl
-                ).openStream()
-            } catch (e: Exception) {
-                Log.d(TAG, "setChannel: ERROR_IMAGE_URL: ${e.message}")
-                return@launch
+        t.imageUrl?.let { url ->
+            if (App.iconMap.containsKey(url)) {
+                Log.d(TAG, "setChannel: CONTAINS IN MAP $url")
+                mTvChannelView.imagePreview = App
+                    .iconMap[url]
+                mTvChannelView.invalidate()
+                return@let
             }
 
-            val b = BitmapFactory.decodeStream(
-                inp
-            )
-
-            val resolution = mTvChannelView
-                .heightParams()
-
-            val scaled = Bitmap.createScaledBitmap(
-                b,
-                resolution,
-                resolution,
-                false
-            )
-
-            App.iconMap[t.imageUrl] = scaled
-
-            mTvChannelView.imagePreview = scaled
-            App.ui {
-                mTvChannelView.requestLayout()
+            val bounds = mTvChannelView.heightParams()
+            
+            NetworkBitmap.loadFromNetwork(
+                url = url,
+                mCacheDir,
+                bounds,
+                bounds
+            ) {
+                App.iconMap[url] = it
+                mTvChannelView.imagePreview = it
+                mTvChannelView.invalidate()
             }
         }
     }

@@ -12,6 +12,8 @@ import androidx.annotation.FontRes
 import androidx.core.content.res.ResourcesCompat
 import android.os.Handler
 import androidx.annotation.DrawableRes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class App
 : Application() {
@@ -20,6 +22,10 @@ class App
 
         lateinit var RESOURCES: Resources
         const val URL = "http://176.109.108.35"
+
+        val IO = CoroutineScope(
+            Dispatchers.IO
+        )
 
         val iconMap = HashMap<String,Bitmap>()
 
