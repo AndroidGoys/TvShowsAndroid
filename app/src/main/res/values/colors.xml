@@ -9,4 +9,5 @@
     <color name="searchText">#18191F</color>
     <color name="navigationIcon">#629E16</color>
     <color name="navigationIconBackground">#aaA5A5A5</color>
+    <color name="mediaIcon">#8818191f</color>
 </resources>

@@ -28,27 +28,27 @@ class MediaListFragment
 
         val categories = arrayOf(
             Category(
-                R.drawable.ic_lens,
+                R.drawable.ic_films,
                 R.string.films
             ),
             Category(
-                R.drawable.ic,
+                R.drawable.ic_series,
                 R.string.series
             ),
             Category(
-                R.drawable.ic_lens,
+                R.drawable.ic_cartoons,
                 R.string.cartoons
             ),
             Category(
-                R.drawable.ic_info,
+                R.drawable.ic_sport,
                 R.string.sport
             ),
             Category(
-                R.drawable.ic_info,
+                R.drawable.ic_audiobooks,
                 R.string.audiobooks
             ),
             Category(
-                R.drawable.ic_lens,
+                R.drawable.ic_trailers,
                 R.string.trailers
             )
         )
