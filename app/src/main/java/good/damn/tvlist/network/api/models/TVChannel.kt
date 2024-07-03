@@ -6,6 +6,7 @@ import kotlin.math.log
 
 data class TVChannel(
     val name: String,
+    val shortName: String? = null,
     val imageUrl: String? = null,
     val programs: Array<TVProgram>? = null
 ) {
@@ -32,10 +33,13 @@ data class TVChannel(
                 null
             }
 
-
+            val shortName = if (name.length >= 21)
+                name.substring(0,21) + "…"
+            else null
 
             return TVChannel(
                 name,
+                shortName,
                 imageUrl
             )
         }

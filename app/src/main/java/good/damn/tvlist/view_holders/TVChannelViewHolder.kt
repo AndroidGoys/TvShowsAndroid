@@ -42,7 +42,7 @@ class TVChannelViewHolder(
     ) {
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
 
-        mTvChannelView.text = t.name
+        mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
         mRecyclerViewPrograms.programs = t.programs
 

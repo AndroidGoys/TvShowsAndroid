@@ -91,7 +91,6 @@ OnItemClickNavigationListener {
 
 
 
-
         // Background colors
         layout.setBackgroundColorId(
             R.color.background
