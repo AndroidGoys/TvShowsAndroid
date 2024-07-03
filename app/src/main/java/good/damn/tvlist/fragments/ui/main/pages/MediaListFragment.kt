@@ -8,10 +8,7 @@ import androidx.annotation.StringRes
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
-import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.IOSNavigationFragment
-import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.BigButtonView
 
@@ -63,6 +60,15 @@ class MediaListFragment
         )
 
         val interval = measureUnit * 0.04106f
+        val drawableArrow = App.drawable(
+            R.drawable.ic_arrow_forward
+        )
+
+        val buttonWidth = (measureUnit * 0.9227f).toInt()
+        val buttonHeight = (measureUnit * 0.18357f).toInt()
+
+        val cornerRadius = buttonHeight * 0.18421f
+        val elevation = buttonHeight * 0.04f
 
         for (i in categories.indices) {
             val it = categories[i]
@@ -73,7 +79,8 @@ class MediaListFragment
             button.textColor = textColor
             button.typeface = semibold
 
-            button.imageSizeFactor = 0.38486f
+            button.imageStartSizeFactor = 0.38486f
+            button.imageEndSizeFactor = 0.27684f
             button.textSizeFactor = 0.22368f
 
             button.imageStart = App.drawable(
@@ -84,25 +91,20 @@ class MediaListFragment
                 it.stringId
             )
 
-            button.imageEnd = App.drawable(
-                R.drawable.ic_person
-            )
+            button.imageEnd = drawableArrow
 
 
             button.boundsLinear(
                 Gravity.CENTER_HORIZONTAL,
-                width = (measureUnit * 0.9227f).toInt(),
-                height = (measureUnit * 0.18357f).toInt(),
+                width = buttonWidth,
+                height = buttonHeight,
                 top = interval,
                 bottom = if (i == categories.size-1)
                     interval else 0f
             )
 
-            button.radius = button
-                .heightParams() * 0.18421f
-
-            button.cardElevation = button
-                .heightParams() * 0.04f
+            button.radius = cornerRadius
+            button.cardElevation = elevation
 
             layout.addView(
                 button
@@ -112,6 +114,7 @@ class MediaListFragment
         layout.boundsLinear(
             width = -1,
             height = -1,
+            top = measureUnit * 0.05797f
         )
 
         return layout

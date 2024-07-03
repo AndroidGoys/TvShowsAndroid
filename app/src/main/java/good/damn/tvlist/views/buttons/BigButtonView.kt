@@ -24,7 +24,8 @@ class BigButtonView(
             mPaint.typeface = v
         }
 
-    var imageSizeFactor = 0.5f
+    var imageStartSizeFactor = 0.5f
+    var imageEndSizeFactor = 0.2f
 
     var textSizeFactor: Float = 0.0f
         set(v) {
@@ -71,14 +72,14 @@ class BigButtonView(
         mTextX = width * 0.20418f
         mTextY = (height + mPaint.textSize) * 0.5f
 
-        val imageSize = (
-            height * imageSizeFactor
-        ).toInt()
-
-        val topMargin = ((height - imageSize) * 0.5f)
-            .toInt()
-
         (width * 0.0616f).toInt().let { leftMargin ->
+            val imageSize = (
+                height * imageStartSizeFactor
+                ).toInt()
+
+            val topMargin = ((height - imageSize) * 0.5f)
+                .toInt()
+
             imageStart?.setBounds(
                 leftMargin,
                 topMargin,
@@ -88,6 +89,14 @@ class BigButtonView(
         }
 
         (width * 0.8613f).toInt().let { leftMargin ->
+
+            val imageSize = (
+                height * imageEndSizeFactor
+            ).toInt()
+
+            val topMargin = ((height - imageSize) * 0.5f)
+                .toInt()
+
             imageEnd?.setBounds(
                 leftMargin,
                 topMargin,
