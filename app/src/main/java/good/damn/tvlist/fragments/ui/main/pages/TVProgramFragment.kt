@@ -44,7 +44,7 @@ class TVProgramFragment
             padding ->
             recyclerView.setPadding(
                 0,
-                padding,
+                padding + getTopInset(),
                 0,
                 padding
             )

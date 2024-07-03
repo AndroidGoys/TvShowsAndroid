@@ -4,4 +4,10 @@
     <string name="limeX">limeX</string>
     <string name="for_example">К примеру,</string>
     <string name="media">Медиа</string>
+    <string name="films">Фильмы</string>
+    <string name="series">Сериалы</string>
+    <string name="cartoons">Мультфильмы</string>
+    <string name="sport">Спорт</string>
+    <string name="audiobooks">Аудиокниги</string>
+    <string name="trailers">Трейлеры</string>
 </resources>
