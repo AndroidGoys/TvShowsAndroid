@@ -4,7 +4,7 @@ import android.util.TypedValue
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import good.damn.tvlist.App
-
+import java.io.InputStream
 
 fun TextView.setTextColorId(
     @ColorRes id: Int

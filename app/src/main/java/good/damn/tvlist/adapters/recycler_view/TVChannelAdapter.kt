@@ -8,7 +8,7 @@ import good.damn.tvlist.view_holders.TVChannelViewHolder
 class TVChannelAdapter(
     private val width: Int,
     private val height: Int,
-    private val data: ArrayList<TVChannel>
+    private val data: ArrayList<TVChannel?>
 ): RecyclerView.Adapter<TVChannelViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -28,8 +28,11 @@ class TVChannelAdapter(
         holder: TVChannelViewHolder,
         position: Int
     ) {
+        val channel = data[position]
+            ?: return
+
         holder.setChannel(
-            data[position]
+            channel
         )
     }
 }

@@ -38,6 +38,7 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.github.GoodDamn:DynamicBlurView_with_OpenGL_Android:1.6")
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.cardview)
