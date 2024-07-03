@@ -34,10 +34,6 @@ class TVProgramFragment
         measureUnit: Int
     ): View {
 
-        mChannelService.loadChannels(
-            context
-        )
-
         val recyclerView = RecyclerView(
             context
         )
@@ -63,16 +59,20 @@ class TVProgramFragment
             )
         }
 
-        mChannelService.getChannels(
-            from = 1,
-            limit = 10
+        mChannelService.loadChannels(
+            context
         ) {
-            Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
-            recyclerView.adapter = TVChannelAdapter(
-                App.WIDTH,
-                App.HEIGHT,
-                it
-            )
+            mChannelService.getChannels(
+                from = 1,
+                limit = 50
+            ) {
+                Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
+                recyclerView.adapter = TVChannelAdapter(
+                    App.WIDTH,
+                    App.HEIGHT,
+                    it
+                )
+            }
         }
 
         return recyclerView

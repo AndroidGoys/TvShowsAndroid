@@ -22,24 +22,32 @@ class TVChannelsService {
         private const val URL = "https://limehd.tv/api/v4/playlist"
     }
 
-    private val mClient = OkHttpClient()
-
     private var mJsonChannels: JSONArray? = null
 
     fun loadChannels(
-        context: Context
+        context: Context,
+        completion: () -> Unit
     ) {
-        context.resources.openRawResource(
+        val inp = context.resources.openRawResource(
             R.raw.playlist
-        ).readBytes(
-            8192
-        ).let {
-            val json = String(
-                it,
-                Charset.forName("UTF-8")
-            )
+        )
 
-            mJsonChannels = processJsonChannels(json)
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
+            inp.readBytes(
+                8192
+            ).let {
+                val json = String(
+                    it,
+                    Charset.forName("UTF-8")
+                )
+
+                mJsonChannels = processJsonChannels(json)
+                App.ui {
+                    completion()
+                }
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package good.damn.tvlist
 import android.app.Application
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.os.Looper
 import androidx.annotation.ColorInt
@@ -19,6 +20,8 @@ class App
 
         lateinit var RESOURCES: Resources
         const val URL = "http://176.109.108.35"
+
+        val iconMap = HashMap<String,Bitmap>()
 
         var WIDTH = 1
         var HEIGHT = 1

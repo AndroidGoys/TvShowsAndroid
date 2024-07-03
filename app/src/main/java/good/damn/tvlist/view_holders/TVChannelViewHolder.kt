@@ -3,6 +3,7 @@ package good.damn.tvlist.view_holders
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,10 @@ import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.net.URL
 
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,
@@ -28,12 +33,63 @@ class TVChannelViewHolder(
     fun setChannel(
         t: TVChannel
     ) {
+        Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
+
         mTvChannelView.text = t.name
+
+        t.imageUrl?.let {
+            mTvChannelView.imagePreview = App.iconMap[
+                it
+            ]
+        }
         mTvChannelView.invalidate()
         mRecyclerViewPrograms.programs = t.programs
+
+        if (mTvChannelView.imagePreview != null) {
+            return
+        }
+
+        if (t.imageUrl == null) {
+            return
+        }
+
+        CoroutineScope(
+            Dispatchers.IO
+        ).launch {
+            val inp = try {
+                URL(
+                    t.imageUrl
+                ).openStream()
+            } catch (e: Exception) {
+                Log.d(TAG, "setChannel: ERROR_IMAGE_URL: ${e.message}")
+                return@launch
+            }
+
+            val b = BitmapFactory.decodeStream(
+                inp
+            )
+
+            val resolution = mTvChannelView
+                .heightParams()
+
+            val scaled = Bitmap.createScaledBitmap(
+                b,
+                resolution,
+                resolution,
+                false
+            )
+
+            App.iconMap[t.imageUrl] = scaled
+
+            mTvChannelView.imagePreview = scaled
+            App.ui {
+                mTvChannelView.requestLayout()
+            }
+        }
     }
 
     companion object {
+        private const val TAG = "TVChannelViewHolder"
         fun create(
             context: Context,
             width: Int,
@@ -94,19 +150,6 @@ class TVChannelViewHolder(
 
                 channelView.cornerRadiusPreview = channelView
                     .heightParams() * 0.25f
-
-                BitmapFactory.decodeResource(
-                    context.resources,
-                    R.drawable.ic
-                )?.let {
-                    val previewSize = channelView.heightParams()
-                    channelView.imagePreview = Bitmap.createScaledBitmap(
-                        it,
-                        previewSize,
-                        previewSize,
-                        true
-                    )
-                }
 
                 recyclerView.boundsLinear(
                     width = width,
