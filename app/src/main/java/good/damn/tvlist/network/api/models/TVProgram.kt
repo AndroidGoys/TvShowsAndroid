@@ -9,8 +9,9 @@ data class TVProgram(
     val channelId: Int = -1,
     val name: String = "",
     val censorAge: CensorAge = CensorAge.ADULT,
-    val startTime: Long = -1,
-    val rating: Float = 0.0f
+    val startTime: Int = -1,
+    val rating: Float = 0.0f,
+    val shortName: String? = null
 ) {
 
     companion object {
@@ -32,7 +33,7 @@ data class TVProgram(
             val startTime = try {
                 json.get(
                     "timestart"
-                ) as Long
+                ) as Int
             } catch (e: Exception) {
                 Log.d(TAG, "createFromJSON: NO START TIME: ${e.message}")
                 return TVProgram()
@@ -43,7 +44,10 @@ data class TVProgram(
                 name,
                 CensorAge.ADULT,
                 startTime,
-                Random.nextFloat() * 5f
+                Random.nextFloat() * 5f,
+                if (name.length > 15)
+                    name.substring(0,15) + "…"
+                else null
             )
 
         }

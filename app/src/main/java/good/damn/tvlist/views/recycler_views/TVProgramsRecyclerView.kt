@@ -17,7 +17,7 @@ class TVProgramsRecyclerView(
     var programs: Array<TVProgram>? = null
         set(v) {
             field = v
-            adapterPrograms.programs = programs
+            adapterPrograms.programs = v
             adapterPrograms.notifyDataSetChanged()
         }
 

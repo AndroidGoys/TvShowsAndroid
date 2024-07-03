@@ -10,9 +10,6 @@ class TVProgramsAdapter
 : RecyclerView.Adapter<TVProgramViewHolder>() {
 
     var programs: Array<TVProgram>? = null
-        set(v) {
-            field = v
-        }
 
     var recyclerViewHeight: Int = 0
     var recyclerViewWidth: Int = 0
@@ -34,6 +31,10 @@ class TVProgramsAdapter
         holder: TVProgramViewHolder,
         position: Int
     ) {
-
+        programs?.let {
+            holder.setProgram(
+                it[position]
+            )
+        }
     }
 }
