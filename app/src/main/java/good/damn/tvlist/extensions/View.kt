@@ -87,6 +87,17 @@ fun View.boundsFrame(
     }
 }
 
+fun View.checkBounds(
+    touchX: Float,
+    touchY: Float
+): Boolean {
+    return !(touchX < 0
+        || touchX > width
+        || touchY < 0
+        || touchY > height
+        )
+}
+
 private fun View.frameParams() = (
     layoutParams as FrameLayout.LayoutParams
 )

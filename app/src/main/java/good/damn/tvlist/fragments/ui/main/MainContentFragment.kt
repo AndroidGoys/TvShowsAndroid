@@ -62,7 +62,7 @@ OnItemClickNavigationListener {
             mViewPager,
             5,
             0.5f,
-            0.45f
+            0.5f
         )
         val layoutTopBarContent = LinearLayout(
             context
