@@ -20,6 +20,7 @@ class TVProgramViewHolder(
     ) {
         mProgramView.title = p.shortName ?: p.name
         mProgramView.time = p.startTimeString
+        mProgramView.rating = p.rating
         mProgramView.invalidate()
     }
 

@@ -15,6 +15,7 @@ data class TVProgram(
     val rating: Float = 0.0f,
     val shortName: String? = null,
     val startTimeString: String = "",
+    val imageUrl: String? = null
 ) {
 
     companion object {
@@ -55,8 +56,6 @@ data class TVProgram(
 
             val hourString = "${hour / 10}${hour % 10}"
             val minutesString = "${mins/10}${mins % 10}"
-
-            Log.d(TAG, "createFromJSON: TIME: $hour:$mins")
             
             return TVProgram(
                 0,
@@ -67,7 +66,8 @@ data class TVProgram(
                 if (name.length > 15)
                     name.substring(0,15) + "…"
                 else null,
-                "$hourString:$minutesString"
+                "$hourString:$minutesString",
+                ""
             )
 
         }

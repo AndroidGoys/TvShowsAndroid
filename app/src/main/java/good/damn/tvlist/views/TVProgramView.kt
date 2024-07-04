@@ -44,6 +44,12 @@ class TVProgramView(
             mRating.textColor = v
         }
 
+    var rating = 0f
+        set(v) {
+            field = v
+            mRating.rating = v
+        }
+
     var sizeTitleFactor: Float = 0.01f
     var sizeAgeFactor: Float = 0.06f
     var sizeTimeFactor: Float = 0.04f
@@ -93,7 +99,6 @@ class TVProgramView(
         mPaintGradientGray.shader = linearGradient
 
         val ratingHeight = params.height * 0.07804f
-        mRating.rating = 3.7f
         mRating.textSize = ratingHeight * 0.6875f
         mRating.layout(
             x = params.width * 0.05031f,

@@ -60,9 +60,10 @@ OnItemClickNavigationListener {
         mBlurView = BlurShaderView(
             context,
             mViewPager,
-            5,
+            7,
             0.5f,
-            0.5f
+            yMarginTop = 0.1f,
+            yMarginBottom = 0.29f
         )
         val layoutTopBarContent = LinearLayout(
             context

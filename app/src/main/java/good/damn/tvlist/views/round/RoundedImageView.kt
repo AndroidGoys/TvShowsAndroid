@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.drawable.Drawable
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
@@ -37,6 +38,14 @@ class RoundedImageView(
     init {
         mPaint.style = Paint.Style.STROKE
         mPaint.isAntiAlias = true
+
+        mTouchInteraction.setDuration(
+            150
+        )
+
+        mTouchInteraction.setInterpolator(
+            AccelerateDecelerateInterpolator()
+        )
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -68,6 +77,13 @@ class RoundedImageView(
             mPaint
         )
 
+    }
+
+    override fun onUpdateAnimation(
+        animatedValue: Float
+    ) {
+        scaleX = animatedValue
+        scaleY = animatedValue
     }
 
     fun setStrokeColorId(

@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.nio.charset.Charset
@@ -51,6 +52,8 @@ class TVChannelsService {
         }
     }
 
+    private val mClient = OkHttpClient()
+
     fun getChannels(
         from: Int,
         limit: Int,
@@ -62,11 +65,11 @@ class TVChannelsService {
         CoroutineScope(
             Dispatchers.IO
         ).launch {
-            /*val response = try {
+            val response = try {
                 mClient
                     .newCall(
                         Request.Builder()
-                            .url("$URL?page=1&limit=2")
+                            .url("https://yandex.ru/images/search?text=sky")
                             .get().build()
                     ).execute()
             } catch (e: Exception) {
@@ -83,7 +86,7 @@ class TVChannelsService {
             if (response.code != 200) {
                 Log.d(TAG, "getChannels: WRONG_CODE")
                 return@launch
-            }*/
+            }
 
             val tvChannels = ArrayList<TVChannel?>(
                 limit

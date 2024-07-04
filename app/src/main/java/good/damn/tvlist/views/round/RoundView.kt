@@ -6,13 +6,19 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AccelerateInterpolator
+import good.damn.kamchatka.views.interactions.AnimatedTouchInteraction
+import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
+import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
 
 open class RoundView(
     context: Context
 ): View(
     context
-) {
+),OnActionListener,
+OnUpdateAnimationListener {
 
     var cornerRadius = 2f
     protected val mRectViewRound = RectF()
@@ -20,9 +26,34 @@ open class RoundView(
     private val mPaintBack = Paint()
     private val mClipPath = Path()
 
+    private var mOnClickListener: OnClickListener? = null
+
+    protected val mTouchInteraction = AnimatedTouchInteraction()
+
     init {
         mPaintBack.color = 0
         mPaintBack.style = Paint.Style.FILL
+
+        super.setOnTouchListener(
+            mTouchInteraction
+        )
+
+        mTouchInteraction.setDuration(
+            150
+        )
+
+        mTouchInteraction.setInterpolator(
+            AccelerateInterpolator()
+        )
+
+        mTouchInteraction.setOnActionListener(
+            this
+        )
+
+        mTouchInteraction.setOnUpdateAnimationListener(
+            this
+        )
+
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
@@ -58,6 +89,44 @@ open class RoundView(
         )
     }
 
+    override fun onUp(
+        v: View,
+        event: MotionEvent
+    ) {
+        mOnClickListener?.onClick(
+            v
+        )
+    }
+    override fun onUpdateAnimation(
+        animatedValue: Float
+    ) {
+        alpha = animatedValue
+    }
+
+    override fun onDown(
+        v: View,
+        event: MotionEvent
+    ) = Unit
+
+    final override fun setOnClickListener(
+        l: OnClickListener?
+    ) {
+        mOnClickListener = l
+        super.setOnClickListener(
+            null
+        )
+    }
+
+    final override fun setOnTouchListener(
+        l: OnTouchListener?
+    ) {
+        super.setOnTouchListener(
+            mTouchInteraction
+        )
+    }
+
+
+
     final override fun setBackgroundColor(
         color: Int
     ) {
@@ -70,6 +139,5 @@ open class RoundView(
     ) {
         super.setBackground(null)
     }
-
 
 }
