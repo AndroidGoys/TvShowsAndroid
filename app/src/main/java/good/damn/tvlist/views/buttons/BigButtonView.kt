@@ -5,14 +5,20 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
+import android.view.View
 import androidx.annotation.ColorInt
 import androidx.cardview.widget.CardView
+import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
+import good.damn.kamchatka.views.interactions.AnimatedTouchInteraction
+import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
+import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
 
 class BigButtonView(
     context: Context
 ): CardView(
     context
-) {
+), OnActionListener, OnUpdateAnimationListener {
 
     var text = ""
     var imageStart: Drawable? = null
@@ -44,11 +50,53 @@ class BigButtonView(
     private var mTextY = 0f
     private val mPaint = Paint()
 
+    private var mTouchInteraction = AnimatedTouchInteraction()
+
+    private var mOnClickListener: OnClickListener? = null
+
+    init {
+        mTouchInteraction.setDuration(
+            150
+        )
+
+        mTouchInteraction.setInterpolator(
+            LinearOutSlowInInterpolator()
+        )
+
+        mTouchInteraction.setOnActionListener(
+            this
+        )
+
+        mTouchInteraction.setOnUpdateAnimationListener(
+            this
+        )
+
+        super.setOnTouchListener(
+            mTouchInteraction
+        )
+
+    }
+
     override fun setBackgroundColor(
         color: Int
     ) {
         setCardBackgroundColor(color)
         super.setBackgroundColor(color)
+    }
+
+    override fun setOnClickListener(
+        l: OnClickListener?
+    ) {
+        mOnClickListener = l
+        super.setOnClickListener(l)
+    }
+
+    final override fun setOnTouchListener(
+        l: OnTouchListener?
+    ) {
+        super.setOnTouchListener(
+            mTouchInteraction
+        )
     }
 
     override fun onLayout(
@@ -127,4 +175,23 @@ class BigButtonView(
         )
     }
 
+    override fun onUp(
+        v: View,
+        event: MotionEvent
+    ) {
+        mOnClickListener?.onClick(
+            v
+        )
+    }
+
+    override fun onUpdateAnimation(
+        animatedValue: Float
+    ) {
+        alpha = animatedValue
+    }
+
+    override fun onDown(
+        v: View,
+        event: MotionEvent
+    ) = Unit
 }
