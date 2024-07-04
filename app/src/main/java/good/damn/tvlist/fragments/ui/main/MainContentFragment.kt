@@ -3,9 +3,11 @@ package good.damn.tvlist.fragments.ui.main
 import android.content.Context
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.core.view.updateLayoutParams
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
@@ -18,6 +20,7 @@ import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
 import good.damn.tvlist.views.navigation.NavigationView
@@ -303,6 +306,16 @@ OnItemClickNavigationListener {
         // Setup listeners
         navigationView.onItemClickListener = this
         navigationView.currentItem = 0
+
+
+        imageViewProfile.setOnClickListener(
+            this::onClickImageViewProfile
+        )
+
+        imageViewLikes.setOnClickListener(
+            this::onClickImageViewLikes
+        )
+
         return layout
     }
 
@@ -325,4 +338,44 @@ OnItemClickNavigationListener {
         navigationView.currentItem = index
         mViewPager.currentItem = index
     }
+}
+
+private fun MainContentFragment.onClickImageViewLikes(
+    v: View
+) {
+
+}
+
+private fun MainContentFragment.onClickImageViewProfile(
+    v: View
+) {
+    val location = IntArray(2)
+    v.getLocationOnScreen(location)
+    val right = location[0] + v.width
+    val bottom = location[1] + v.height
+
+    val dx = App.WIDTH - right
+    val dy = App.HEIGHT - bottom
+
+    pushFragment(
+        ProfileFragment(),
+        FragmentAnimation(
+            duration = 350
+        ) { f, fragment ->
+            fragment.view?.apply {
+                alpha = f
+            }
+            /*(fragment
+                .view
+                ?.layoutParams as? ViewGroup.MarginLayoutParams
+                )?.apply {
+                    val i = 1.0f - f
+                    topMargin = (location[1] * f).toInt()
+                    leftMargin = (location[0] * f).toInt()
+                    rightMargin = (right + dx * i).toInt()
+                    bottomMargin = (bottom + dy * i).toInt()
+                    fragment.view?.layoutParams = this
+                }*/
+        }
+    )
 }

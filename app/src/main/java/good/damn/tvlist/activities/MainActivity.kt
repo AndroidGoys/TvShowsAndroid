@@ -146,6 +146,10 @@ class MainActivity
             return
         }
 
+        mAnimator.setDuration(
+            withAnimation.duration.toLong()
+        )
+
         mAnimator.startTransition(
             inAnimation = withAnimation,
             inFragment = fragment
