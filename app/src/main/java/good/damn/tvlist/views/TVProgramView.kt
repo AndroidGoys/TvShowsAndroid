@@ -31,6 +31,7 @@ class TVProgramView(
             mPaintTitle.typeface = v
             mPaintAge.typeface = v
             mPaintTime.typeface = v
+            mRating.typeface = v
         }
 
     @ColorInt
@@ -40,6 +41,7 @@ class TVProgramView(
             mPaintTitle.color = v
             mPaintAge.color = v
             mPaintTime.color = v
+            mRating.textColor = v
         }
 
     var sizeTitleFactor: Float = 0.01f
@@ -91,6 +93,8 @@ class TVProgramView(
         mPaintGradientGray.shader = linearGradient
 
         val ratingHeight = params.height * 0.07804f
+        mRating.rating = 3.7f
+        mRating.textSize = ratingHeight * 0.6875f
         mRating.layout(
             x = params.width * 0.05031f,
             y = params.height * 0.03902f,
