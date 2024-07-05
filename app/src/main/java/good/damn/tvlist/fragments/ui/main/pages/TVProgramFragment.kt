@@ -60,12 +60,9 @@ class TVProgramFragment
             )
         }
 
-        val userAgent = WebView(context).settings.userAgentString
-        Log.d(TAG, "onCreateView: $userAgent")
         mChannelService.getChannels(
             from = 1,
-            limit = 50,
-            userAgent
+            limit = 50
         ) {
             Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
             recyclerView.adapter = TVChannelAdapter(

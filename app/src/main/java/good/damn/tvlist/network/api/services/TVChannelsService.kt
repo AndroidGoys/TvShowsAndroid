@@ -6,6 +6,7 @@ import android.webkit.WebView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.readBytes
+import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.TVChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,8 @@ import org.json.JSONObject
 import java.nio.charset.Charset
 import kotlin.math.log
 
-class TVChannelsService {
+class TVChannelsService
+: NetworkJSONService() {
 
     companion object {
         private const val TAG = "TVChannelsService"
@@ -53,44 +55,22 @@ class TVChannelsService {
         }
     }*/
 
-    private val mClient = OkHttpClient()
-
     fun getChannels(
         from: Int,
         limit: Int,
-        userAgent: String,
         completion: (ArrayList<TVChannel?>) -> Unit
     ) {
-        CoroutineScope(
-            Dispatchers.IO
-        ).launch {
-            val response = try {
-                mClient
-                    .newCall(
-                        Request.Builder()
-                            .url("$URL?page=$from&limit=$limit&epg=1&epgcnt=15")
-                            .header("User-Agent", userAgent)
-                            .get().build()
-                    ).execute()
-            } catch (e: Exception) {
-                Log.d(TAG, "getChannels: ERROR_EXECUTE: ${e.message}")
-                return@launch
+        getJSON(
+            "$URL?page=$from&limit=$limit&epg=1&epgcnt=15"
+        ) {
+            if (it == null) {
+                Log.d(TAG, "getChannels: INVALID JSON")
+                return@getJSON
             }
-
-            val json = response
-                .body?.string()
-                ?: return@launch
-
-            Log.d(TAG, "getChannels: RESPONSE: $response $json")
             
-            if (response.code != 200) {
-                Log.d(TAG, "getChannels: WRONG_CODE")
-                return@launch
-            }
-
             val jsonArray = processJsonChannels(
-                json
-            ) ?: return@launch
+                it
+            ) ?: return@getJSON
 
             val tvChannels = ArrayList<TVChannel?>(
                 limit
@@ -113,16 +93,8 @@ class TVChannelsService {
     }
 
     private fun processJsonChannels(
-        json: String
+        obj: JSONObject
     ): JSONArray? {
-
-        val obj = try {
-            JSONObject(json)
-        } catch (e: Exception) {
-            Log.d(TAG, "processJsonChannels: NO_JSON_OBJECT: ${e.message}")
-            return null
-        }
-
         val channels = try {
             obj.getJSONArray(
                 "channels"
