@@ -33,7 +33,7 @@ class TVProgramFragment
     }
 
     private lateinit var mChannelService: TVChannelsService
-    private lateinit var mRecyclerView: TVChannelsRecyclerView
+    private var mRecyclerView: TVChannelsRecyclerView? = null
 
     override fun onCreateView(
         context: Context,
@@ -63,44 +63,50 @@ class TVProgramFragment
         stream.deltaPositionStream = 4
         stream.updateCount = UPDATE_COUNT
 
-        mRecyclerView.setBackgroundColorId(
-            R.color.background
-        )
-
-        mRecyclerView.layoutManager = layoutManager
-        mRecyclerView.isEnabledStreaming = true
-
-        mRecyclerView.clipToPadding = false
-        (measureUnit * 0.17149f).toInt().let {
-            padding ->
-            mRecyclerView.setPadding(
-                0,
-                padding + getTopInset(),
-                0,
-                padding
+        mRecyclerView?.apply {
+            setBackgroundColorId(
+                R.color.background
             )
+
+            this.layoutManager = layoutManager
+            isEnabledStreaming = true
+
+            clipToPadding = false
+            (measureUnit * 0.17149f).toInt().let {
+                    padding ->
+                setPadding(
+                    0,
+                    padding + getTopInset(),
+                    0,
+                    padding
+                )
+            }
         }
 
         initChannels()
 
-        return mRecyclerView
+        return mRecyclerView!!
     }
 
     override fun onNetworkConnected() {
-        if (mRecyclerView.adapterChannels == null) {
+        if (mRecyclerView?.adapterChannels == null) {
             initChannels()
         }
     }
 
 
     private fun initChannels() {
+        if (mRecyclerView == null) {
+            return
+        }
+
         mChannelService.getChannels(
             from = 1,
             limit = UPDATE_COUNT
         ) {
             Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
             App.ui {
-                mRecyclerView.adapterChannels = TVChannelAdapter(
+                mRecyclerView?.adapterChannels = TVChannelAdapter(
                     App.WIDTH,
                     App.HEIGHT,
                     it
