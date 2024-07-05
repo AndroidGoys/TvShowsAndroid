@@ -2,6 +2,7 @@ package good.damn.tvlist.network.api.services
 
 import android.content.Context
 import android.util.Log
+import android.webkit.WebView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.readBytes
@@ -23,7 +24,7 @@ class TVChannelsService {
         private const val URL = "https://limehd.tv/api/v4/playlist"
     }
 
-    private var mJsonChannels: JSONArray? = null
+    /*private var mJsonChannels: JSONArray? = null
 
     fun loadChannels(
         context: Context,
@@ -50,18 +51,16 @@ class TVChannelsService {
                 }
             }
         }
-    }
+    }*/
 
     private val mClient = OkHttpClient()
 
     fun getChannels(
         from: Int,
         limit: Int,
+        userAgent: String,
         completion: (ArrayList<TVChannel?>) -> Unit
     ) {
-        if (mJsonChannels == null) {
-            return
-        }
         CoroutineScope(
             Dispatchers.IO
         ).launch {
@@ -69,7 +68,8 @@ class TVChannelsService {
                 mClient
                     .newCall(
                         Request.Builder()
-                            .url("https://yandex.ru/images/search?text=sky")
+                            .url("$URL?page=$from&limit=$limit&epg=1&epgcnt=15")
+                            .header("User-Agent", userAgent)
                             .get().build()
                     ).execute()
             } catch (e: Exception) {
@@ -88,6 +88,10 @@ class TVChannelsService {
                 return@launch
             }
 
+            val jsonArray = processJsonChannels(
+                json
+            ) ?: return@launch
+
             val tvChannels = ArrayList<TVChannel?>(
                 limit
             )
@@ -95,9 +99,7 @@ class TVChannelsService {
             for (i in 0..<limit) {
                 tvChannels.add(
                     TVChannel.createFromJSON(
-                        mJsonChannels!!.getJSONObject(
-                            from - 1 + i
-                        )
+                        jsonArray.getJSONObject(i)
                     )
                 )
             }

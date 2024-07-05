@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,20 +60,19 @@ class TVProgramFragment
             )
         }
 
-        mChannelService.loadChannels(
-            context
+        val userAgent = WebView(context).settings.userAgentString
+        Log.d(TAG, "onCreateView: $userAgent")
+        mChannelService.getChannels(
+            from = 1,
+            limit = 50,
+            userAgent
         ) {
-            mChannelService.getChannels(
-                from = 1,
-                limit = 50
-            ) {
-                Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
-                recyclerView.adapter = TVChannelAdapter(
-                    App.WIDTH,
-                    App.HEIGHT,
-                    it
-                )
-            }
+            Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
+            recyclerView.adapter = TVChannelAdapter(
+                App.WIDTH,
+                App.HEIGHT,
+                it
+            )
         }
 
         return recyclerView
