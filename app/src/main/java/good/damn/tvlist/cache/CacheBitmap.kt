@@ -1,6 +1,5 @@
 package good.damn.tvlist.cache
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -8,9 +7,9 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 
-class BitmapCache {
+class CacheBitmap {
     companion object {
-        private const val TAG = "BitmapCache"
+        private const val TAG = "CacheBitmap"
         fun loadFromCache(
             name: String,
             cacheDirApp: File
@@ -39,15 +38,17 @@ class BitmapCache {
         fun cache(
             bitmap: Bitmap,
             name: String,
-            cacheDir: File
+            cacheDirApp: File
         ) {
             val cacheFile = cacheBitmapFile(
                 name,
-                cacheDir
+                cacheDirApp
             )
 
+            Log.d(TAG, "cache: CACHE_FILE: $cacheFile")
+            
             if (!cacheFile.exists() && cacheFile.createNewFile()) {
-                Log.d(TAG, "loadFromCache: cache file created")
+                Log.d(TAG, "cache: cache file created")
             }
 
             val fos = FileOutputStream(
@@ -65,22 +66,10 @@ class BitmapCache {
         private fun cacheBitmapFile(
             name: String,
             cacheDirApp: File
-        ) = File(
-            "${cacheBitmapDir(cacheDirApp)}/${name.hashCode()}"
+        ) = CacheFile.cacheFile(
+            cacheDirApp,
+            "bitmaps",
+            name.hashCode().toString()
         )
-
-        private fun cacheBitmapDir(
-            cacheDirApp: File
-        ): File {
-            val cacheDir = File(
-                "${cacheDirApp}/bitmaps"
-            )
-
-            if (!cacheDir.exists() && cacheDir.mkdir()) {
-                Log.d(TAG, "loadFromCache: bitmap cache dir is created")
-            }
-
-            return cacheDir
-        }
     }
 }

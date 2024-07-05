@@ -30,12 +30,16 @@ class TVProgramFragment
         private const val TAG = "TVProgramFragment"
     }
 
-    private val mChannelService = TVChannelsService()
+    private lateinit var mChannelService: TVChannelsService
 
     override fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View {
+
+        mChannelService = TVChannelsService(
+            context.cacheDir
+        )
 
         val layoutManager = LinearLayoutManager(
             context,

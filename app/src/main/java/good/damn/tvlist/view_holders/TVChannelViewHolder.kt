@@ -1,30 +1,21 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.cache.BitmapCache
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.network.api.models.TVChannel
-import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.io.File
-import java.net.URL
 
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,

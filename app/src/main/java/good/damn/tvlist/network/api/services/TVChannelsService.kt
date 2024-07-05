@@ -15,45 +15,20 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
+import java.io.File
 import java.nio.charset.Charset
 import kotlin.math.log
 
-class TVChannelsService
-: NetworkJSONService() {
+class TVChannelsService(
+    cacheDirApp: File
+): NetworkJSONService(
+    cacheDirApp
+) {
 
     companion object {
         private const val TAG = "TVChannelsService"
         private const val URL = "https://limehd.tv/api/v4/playlist"
     }
-
-    /*private var mJsonChannels: JSONArray? = null
-
-    fun loadChannels(
-        context: Context,
-        completion: () -> Unit
-    ) {
-        val inp = context.resources.openRawResource(
-            R.raw.playlist
-        )
-
-        CoroutineScope(
-            Dispatchers.IO
-        ).launch {
-            inp.readBytes(
-                8192
-            ).let {
-                val json = String(
-                    it,
-                    Charset.forName("UTF-8")
-                )
-
-                mJsonChannels = processJsonChannels(json)
-                App.ui {
-                    completion()
-                }
-            }
-        }
-    }*/
 
     fun getChannels(
         from: Int,

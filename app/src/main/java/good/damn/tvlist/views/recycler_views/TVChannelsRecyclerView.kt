@@ -22,7 +22,9 @@ class TVChannelsRecyclerView(
     streamScrollListener
 ) {
 
-    private val mChannelService = TVChannelsService()
+    private val mChannelService = TVChannelsService(
+        context.cacheDir
+    )
 
     var adapterChannels: TVChannelAdapter? = null
         set(v) {

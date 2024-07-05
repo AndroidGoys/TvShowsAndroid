@@ -4,10 +4,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import good.damn.tvlist.App
-import good.damn.tvlist.cache.BitmapCache
+import good.damn.tvlist.cache.CacheBitmap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.io.File
 import java.net.URL
@@ -25,10 +24,13 @@ class NetworkBitmap {
         ) = CoroutineScope(
             Dispatchers.IO
         ).launch {
-            val cachedBitmap = BitmapCache.loadFromCache(
+            val cachedBitmap = CacheBitmap.loadFromCache(
                 url,
                 cacheDirApp
             )
+
+
+            Log.d(TAG, "loadFromNetwork: $cachedBitmap")
 
             if (cachedBitmap != null) {
                 App.ui {
@@ -36,9 +38,8 @@ class NetworkBitmap {
                         cachedBitmap
                     )
                 }
+                return@launch
             }
-
-            Log.d(TAG, "loadFromNetwork: $cachedBitmap")
             
             // Check expiration period?
 
@@ -74,7 +75,7 @@ class NetworkBitmap {
                     false
                 )
 
-                BitmapCache.cache(
+                CacheBitmap.cache(
                     scaledBitmap,
                     url,
                     cacheDirApp
