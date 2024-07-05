@@ -8,7 +8,8 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
-import good.damn.tvlist.views.TVProgramView
+import good.damn.tvlist.views.program.OnClickProgramListener
+import good.damn.tvlist.views.program.TVProgramView
 
 class TVProgramViewHolder(
     private val mProgramView: TVProgramView
@@ -18,6 +19,7 @@ class TVProgramViewHolder(
     fun setProgram(
         p: TVProgram
     ) {
+        mProgramView.cacheProgram = p
         mProgramView.title = p.shortName ?: p.name
         mProgramView.time = p.startTimeString
         mProgramView.rating = p.rating
@@ -44,6 +46,24 @@ class TVProgramViewHolder(
                 R.font.open_sans_semi_bold,
                 context
             )
+
+            programView.onClickProgramListener = object : OnClickProgramListener {
+                override fun onClickProgram(
+                    program: TVProgram?
+                ) {
+                    if (program == null) {
+                        return
+                    }
+
+                    App.FAVOURITE_TV_SHOWS.apply {
+                        if (containsKey(program.id)) {
+                            remove(program.id)
+                            return@apply
+                        }
+                        put(program.id, program)
+                    }
+                }
+            }
 
             programView.setBackgroundColor(
                 0xffaaaaaa.toInt()

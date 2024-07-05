@@ -1,18 +1,17 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.views.program
 
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
-import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
-import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.widthParams
-import good.damn.tvlist.network.api.models.enums.CensorAge
+import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.views.RatingCanvas
 import good.damn.tvlist.views.round.RoundView
 
 class TVProgramView(
@@ -49,6 +48,10 @@ class TVProgramView(
             field = v
             mRating.rating = v
         }
+
+    var cacheProgram: TVProgram? = null
+
+    var onClickProgramListener: OnClickProgramListener? = null
 
     var sizeTitleFactor: Float = 0.01f
     var sizeAgeFactor: Float = 0.06f
@@ -164,6 +167,15 @@ class TVProgramView(
 
         mRating.draw(
             canvas
+        )
+    }
+
+    override fun onUp(
+        v: View,
+        event: MotionEvent
+    ) {
+        onClickProgramListener?.onClickProgram(
+            cacheProgram
         )
     }
 

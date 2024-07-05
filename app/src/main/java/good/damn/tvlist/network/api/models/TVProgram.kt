@@ -8,7 +8,7 @@ import java.util.Date
 import kotlin.random.Random
 
 data class TVProgram(
-    val channelId: Int = -1,
+    val id: Long = -1,
     val name: String = "",
     val censorAge: CensorAge = CensorAge.ADULT,
     val startTime: Long = -1,
@@ -24,6 +24,15 @@ data class TVProgram(
         fun createFromJSON(
             json: JSONObject
         ): TVProgram {
+
+            val id = try {
+                json.get(
+                    "id"
+                ) as Long
+            } catch (e: Exception) {
+                Log.d(TAG, "createFromJSON: NO ID TV PROGRAM: ${e.message}")
+                return TVProgram()
+            }
 
             val name = try {
                 json.get(
@@ -58,7 +67,7 @@ data class TVProgram(
             val minutesString = "${mins/10}${mins % 10}"
             
             return TVProgram(
-                0,
+                id,
                 name,
                 CensorAge.ADULT,
                 startTime,

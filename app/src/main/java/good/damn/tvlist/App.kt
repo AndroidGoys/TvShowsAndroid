@@ -14,6 +14,7 @@ import android.os.Handler
 import android.util.Log
 import android.webkit.WebView
 import androidx.annotation.DrawableRes
+import good.damn.tvlist.network.api.models.TVProgram
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
@@ -34,6 +35,7 @@ class App
             Dispatchers.IO
         )
 
+        val FAVOURITE_TV_SHOWS = HashMap<Long, TVProgram>()
         val iconMap = HashMap<String,Bitmap>()
 
         var WIDTH = 1
