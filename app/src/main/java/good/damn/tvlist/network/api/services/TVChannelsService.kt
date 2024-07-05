@@ -58,7 +58,7 @@ class TVChannelsService
     fun getChannels(
         from: Int,
         limit: Int,
-        completion: (ArrayList<TVChannel?>) -> Unit
+        completionBackground: (ArrayList<TVChannel?>) -> Unit
     ) {
         getJSON(
             "$URL?page=$from&limit=$limit&epg=1&epgcnt=15"
@@ -76,7 +76,7 @@ class TVChannelsService
                 limit
             )
 
-            for (i in 0..<limit) {
+            for (i in 0..<jsonArray.length()) {
                 tvChannels.add(
                     TVChannel.createFromJSON(
                         jsonArray.getJSONObject(i)
@@ -84,11 +84,9 @@ class TVChannelsService
                 )
             }
 
-            App.ui {
-                completion.invoke(
-                    tvChannels
-                )
-            }
+            completionBackground(
+                tvChannels
+            )
         }
     }
 

@@ -1,6 +1,7 @@
 package good.damn.tvlist.adapters.recycler_view
 
 import android.view.ViewGroup
+import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.view_holders.TVChannelViewHolder
@@ -34,5 +35,12 @@ class TVChannelAdapter(
         holder.setChannel(
             channel
         )
+    }
+
+    @WorkerThread
+    fun addChannels(
+        t: ArrayList<TVChannel?>
+    ) {
+        data.addAll(t)
     }
 }

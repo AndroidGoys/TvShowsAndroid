@@ -20,6 +20,8 @@ import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.models.enums.CensorAge
 import good.damn.tvlist.network.api.services.TVChannelsService
+import good.damn.tvlist.views.recycler_views.TVChannelsRecyclerView
+import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
 
 class TVProgramFragment
 : StackFragment() {
@@ -35,19 +37,31 @@ class TVProgramFragment
         measureUnit: Int
     ): View {
 
-        val recyclerView = RecyclerView(
-            context
+        val layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.VERTICAL,
+            false
         )
+
+        val stream = StreamScrollListener(
+            layoutManager,
+            (App.HEIGHT * 0.31256f).toInt()
+        )
+
+        val recyclerView = TVChannelsRecyclerView(
+            context,
+            stream
+        )
+
+        stream.deltaPositionStream = 4
+        stream.updateCount = 8
 
         recyclerView.setBackgroundColorId(
             R.color.background
         )
 
-        recyclerView.layoutManager = LinearLayoutManager(
-            context,
-            LinearLayoutManager.VERTICAL,
-            false
-        )
+        recyclerView.layoutManager = layoutManager
+        recyclerView.isEnabledStreaming = true
 
         recyclerView.clipToPadding = false
         (measureUnit * 0.17149f).toInt().let {
@@ -62,14 +76,16 @@ class TVProgramFragment
 
         mChannelService.getChannels(
             from = 1,
-            limit = 50
+            limit = stream.updateCount
         ) {
             Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
-            recyclerView.adapter = TVChannelAdapter(
-                App.WIDTH,
-                App.HEIGHT,
-                it
-            )
+            App.ui {
+                recyclerView.adapterChannels = TVChannelAdapter(
+                    App.WIDTH,
+                    App.HEIGHT,
+                    it
+                )
+            }
         }
 
         return recyclerView
