@@ -56,6 +56,6 @@ class MainFragmentNavigator<FRAGMENT: Fragment>(
             .beginTransaction()
             .remove(
                 fragment
-            ).commit()
+            ).commitAllowingStateLoss()
     }
 }

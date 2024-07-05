@@ -54,8 +54,6 @@ class StreamScrollListener(
             return
         }
 
-        Log.d(TAG, "onScrolled: FIRST_VISIBLE: $mFirstVisibleItem TOTAL_COUNT: $mTotalItemCount VISIBLE_ITEM_COUNT: $mVisibleItemCount")
-
         if ((mTotalItemCount - mFirstVisibleItem) <= deltaPositionStream) {
             mLoading = true
             mPreviousTotal = mTotalItemCount

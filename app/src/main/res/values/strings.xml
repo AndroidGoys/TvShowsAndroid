@@ -10,4 +10,5 @@
     <string name="sport">Спорт</string>
     <string name="audiobooks">Аудиокниги</string>
     <string name="trailers">Трейлеры</string>
+    <string name="no_internet_connection">Нет подключения к интернету</string>
 </resources>

@@ -39,6 +39,7 @@ class App
         var WIDTH = 1
         var HEIGHT = 1
 
+        var NETWORK_AVAILABLE = false
 
         fun ui(
             runnable: Runnable

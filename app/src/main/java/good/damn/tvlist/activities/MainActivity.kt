@@ -1,15 +1,21 @@
 package good.damn.tvlist.activities
 
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import good.damn.tvlist.App
+import good.damn.tvlist.R
 import good.damn.tvlist.animators.FragmentAnimator
+import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver
+import good.damn.tvlist.broadcast_receivers.network.listeners.NetworkListener
 import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
@@ -18,7 +24,8 @@ import good.damn.tvlist.fragments.ui.main.MainContentFragment
 import good.damn.tvlist.navigators.MainFragmentNavigator
 
 class MainActivity
-: AppCompatActivity() {
+: AppCompatActivity(),
+NetworkListener {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -45,18 +52,30 @@ class MainActivity
 
     private val mAnimator = FragmentAnimator()
 
+    private val mNetworkReceiver = NetworkReceiver()
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
+
+        mNetworkReceiver.networkListener = this
+
         val context = this
+
+        registerReceiver(
+            mNetworkReceiver,
+            IntentFilter(
+                ConnectivityManager
+                    .CONNECTIVITY_ACTION
+            )
+        )
 
         mAnimator.duration = 350
         mAnimator.interpolator = AccelerateDecelerateInterpolator()
         mAnimator.setFloatValues(
             0.0f,1.0f
         )
-
 
         mContainer = FrameLayout(
             context
@@ -211,6 +230,19 @@ class MainActivity
         mWindowController?.show(
             WindowInsetsCompat.Type.statusBars()
         )
+    }
+
+    override fun onNetworkConnected() {
+        App.NETWORK_AVAILABLE = true
+    }
+
+    override fun onNetworkDisconnected() {
+        App.NETWORK_AVAILABLE = false
+        Toast.makeText(
+            this,
+            R.string.no_internet_connection,
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 }
