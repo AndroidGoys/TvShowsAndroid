@@ -354,7 +354,14 @@ OnItemClickNavigationListener {
 private fun MainContentFragment.onClickImageViewLikes(
     v: View
 ) {
-
+    pushFragment(
+        FavouritesFragment(),
+        FragmentAnimation { f, fragment ->
+            fragment.view?.apply {
+                x = App.WIDTH * (1.0f-f)
+            }
+        }
+    )
 }
 
 private fun MainContentFragment.onClickImageViewProfile(

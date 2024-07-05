@@ -14,6 +14,11 @@ class TVProgramsRecyclerView(
 
     val adapterPrograms = TVProgramsAdapter()
 
+    var heightHolder: Int = 1
+        set(v) {
+            field = v
+            adapterPrograms.recyclerViewHeight = v
+        }
     var programs: Array<TVProgram>? = null
         set(v) {
             field = v
@@ -28,7 +33,6 @@ class TVProgramsRecyclerView(
             return
         }
         adapterPrograms.recyclerViewWidth = params.width
-        adapterPrograms.recyclerViewHeight = params.height
         super.setLayoutParams(params)
     }
 

@@ -131,6 +131,8 @@ class TVChannelViewHolder(
                     top = heightView * 0.06993f
                 )
 
+                recyclerView.heightHolder = recyclerView.heightParams()
+
                 // Text size
                 channelView.textSize = channelView
                     .heightParams() * 0.5833f
