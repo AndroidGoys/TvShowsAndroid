@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Recycler
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
@@ -28,9 +29,11 @@ class TVProgramFragment
 
     companion object {
         private const val TAG = "TVProgramFragment"
+        private const val UPDATE_COUNT = 8
     }
 
     private lateinit var mChannelService: TVChannelsService
+    private lateinit var mRecyclerView: TVChannelsRecyclerView
 
     override fun onCreateView(
         context: Context,
@@ -52,25 +55,25 @@ class TVProgramFragment
             (App.HEIGHT * 0.31256f).toInt()
         )
 
-        val recyclerView = TVChannelsRecyclerView(
+        mRecyclerView = TVChannelsRecyclerView(
             context,
             stream
         )
 
         stream.deltaPositionStream = 4
-        stream.updateCount = 8
+        stream.updateCount = UPDATE_COUNT
 
-        recyclerView.setBackgroundColorId(
+        mRecyclerView.setBackgroundColorId(
             R.color.background
         )
 
-        recyclerView.layoutManager = layoutManager
-        recyclerView.isEnabledStreaming = true
+        mRecyclerView.layoutManager = layoutManager
+        mRecyclerView.isEnabledStreaming = true
 
-        recyclerView.clipToPadding = false
+        mRecyclerView.clipToPadding = false
         (measureUnit * 0.17149f).toInt().let {
             padding ->
-            recyclerView.setPadding(
+            mRecyclerView.setPadding(
                 0,
                 padding + getTopInset(),
                 0,
@@ -78,21 +81,31 @@ class TVProgramFragment
             )
         }
 
+        initChannels()
+
+        return mRecyclerView
+    }
+
+    override fun onNetworkConnected() {
+        if (mRecyclerView.adapterChannels == null) {
+            initChannels()
+        }
+    }
+
+
+    private fun initChannels() {
         mChannelService.getChannels(
             from = 1,
-            limit = stream.updateCount
+            limit = UPDATE_COUNT
         ) {
             Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
             App.ui {
-                recyclerView.adapterChannels = TVChannelAdapter(
+                mRecyclerView.adapterChannels = TVChannelAdapter(
                     App.WIDTH,
                     App.HEIGHT,
                     it
                 )
             }
         }
-
-        return recyclerView
     }
-
 }

@@ -49,6 +49,10 @@ class MainFragmentNavigator<FRAGMENT: Fragment>(
         )
     }
 
+    fun getFragments(): LinkedList<FRAGMENT> {
+        return mFragments
+    }
+
     private fun removeFrag(
         fragment: FRAGMENT
     ) {

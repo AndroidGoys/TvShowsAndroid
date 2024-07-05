@@ -63,14 +63,6 @@ NetworkListener {
 
         val context = this
 
-        registerReceiver(
-            mNetworkReceiver,
-            IntentFilter(
-                ConnectivityManager
-                    .CONNECTIVITY_ACTION
-            )
-        )
-
         mAnimator.duration = 350
         mAnimator.interpolator = AccelerateDecelerateInterpolator()
         mAnimator.setFloatValues(
@@ -103,6 +95,14 @@ NetworkListener {
                     onAnimation = FragmentAnimation { f, fragment ->
                         fragment.view?.y = App.HEIGHT * (f-1.0f)
                     }
+                )
+
+                registerReceiver(
+                    mNetworkReceiver,
+                    IntentFilter(
+                        ConnectivityManager
+                            .CONNECTIVITY_ACTION
+                    )
                 )
             }
 
@@ -234,6 +234,9 @@ NetworkListener {
 
     override fun onNetworkConnected() {
         App.NETWORK_AVAILABLE = true
+        mNavigator.getFragments().forEach {
+            it.onNetworkConnected()
+        }
     }
 
     override fun onNetworkDisconnected() {

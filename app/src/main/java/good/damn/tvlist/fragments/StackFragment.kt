@@ -84,6 +84,12 @@ abstract class StackFragment
     fun hideStatusBar() = mainActivity()
         .hideStatusBar()
 
+
+    open fun onNetworkConnected() {}
+
+    open fun onNetworkDisconnected() {}
+
+
     abstract fun onCreateView(
         context: Context,
         measureUnit: Int

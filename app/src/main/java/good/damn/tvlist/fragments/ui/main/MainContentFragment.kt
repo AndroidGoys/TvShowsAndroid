@@ -8,6 +8,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
@@ -41,6 +42,11 @@ OnItemClickNavigationListener {
 
     private var mBlurView: BlurShaderView? = null
     private lateinit var mViewPager: ViewPager2
+
+    private val mFragments: Array<StackFragment> = arrayOf(
+        TVProgramFragment(),
+        MediaListFragment()
+    )
 
     override fun onCreateView(
         context: Context,
@@ -84,10 +90,7 @@ OnItemClickNavigationListener {
 
         // Setup viewPager
         mViewPager.adapter = FragmentAdapter(
-            arrayOf(
-                TVProgramFragment(),
-                MediaListFragment()
-            ),
+            mFragments,
             childFragmentManager,
             lifecycle
         )
@@ -337,6 +340,14 @@ OnItemClickNavigationListener {
     ) {
         navigationView.currentItem = index
         mViewPager.currentItem = index
+    }
+
+    override fun onNetworkConnected() {
+        mFragments[0].onNetworkConnected()
+    }
+
+    override fun onNetworkDisconnected() {
+        mFragments[0].onNetworkDisconnected()
     }
 }
 
