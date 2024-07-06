@@ -11,11 +11,17 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
 import androidx.annotation.ColorInt
+import androidx.fragment.app.Fragment
 import good.damn.kamchatka.views.interactions.AnimatedTouchInteraction
 import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
 import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
+import good.damn.tvlist.App
+import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
+import good.damn.tvlist.extensions.mainActivity
+import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.views.round.RoundView
 
 class ButtonBack(
@@ -107,5 +113,63 @@ class ButtonBack(
         v: View,
         event: MotionEvent
     ) = Unit
+
+
+    companion object {
+
+        fun createFrame(
+            context: Context,
+            measureUnit: Int
+        ): ButtonBack {
+            val b = createDefault(
+                context
+            )
+
+            (measureUnit * 0.08695f).toInt().let { size ->
+                b.boundsFrame(
+                    width = size,
+                    height = size,
+                    left = 0.03864f * measureUnit,
+                    top = 0.06038f * measureUnit
+                )
+            }
+
+            return b
+        }
+
+        fun createLinear(
+            context: Context,
+            measureUnit: Int
+        ): ButtonBack {
+            val b = createDefault(
+                context
+            )
+
+            (measureUnit * 0.08695f).toInt().let { size ->
+                b.boundsLinear(
+                    width = size,
+                    height = size,
+                    left = 0.03864f * measureUnit,
+                    top = 0.06038f * measureUnit
+                )
+            }
+
+            return b
+        }
+
+        fun createDefault(
+            context: Context
+        ): ButtonBack {
+            val btnBack = ButtonBack(
+                context
+            )
+
+            btnBack.strokeColor = App.color(
+                R.color.bigButtonIcon
+            )
+
+            return btnBack
+        }
+    }
 
 }

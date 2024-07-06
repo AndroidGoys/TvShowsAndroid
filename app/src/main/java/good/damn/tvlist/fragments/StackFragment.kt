@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import good.damn.tvlist.App
 import good.damn.tvlist.activities.MainActivity
+import good.damn.tvlist.extensions.mainActivity
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 
 abstract class StackFragment
@@ -91,8 +92,4 @@ abstract class StackFragment
         context: Context,
         measureUnit: Int
     ): View
-}
-
-private fun StackFragment.mainActivity(): MainActivity {
-    return activity as MainActivity
 }

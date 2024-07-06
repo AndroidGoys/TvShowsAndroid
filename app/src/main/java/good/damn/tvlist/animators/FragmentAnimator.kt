@@ -39,7 +39,6 @@ Animator.AnimatorListener {
         outFragment: StackFragment? = null
     ) {
 
-        onAnimationEnd = null
         mInFragment = inFragment
         mOutFragment = outFragment
 
@@ -83,5 +82,6 @@ Animator.AnimatorListener {
         animation: Animator
     ) {
         onAnimationEnd?.invoke()
+        onAnimationEnd = null
     }
 }
