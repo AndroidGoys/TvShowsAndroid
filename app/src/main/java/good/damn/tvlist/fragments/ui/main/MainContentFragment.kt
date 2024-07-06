@@ -128,48 +128,55 @@ OnItemClickNavigationListener {
         }
 
         // Navigation colors
-        navigationView.selectedItemColor = App.color(
-            R.color.navigationIcon
-        )
-        navigationView.itemColor = App.color(
-            R.color.navigationIconBackground
-        )
+
+        navigationView.apply {
+            selectedItemColor = App.color(
+                R.color.navigationIcon
+            )
+            itemColor = App.color(
+                R.color.navigationIconBackground
+            )
+        }
 
 
-        // Typefaces
-        searchView.typefaceExample = App.font(
-            R.font.open_sans_regular,
-            context
-        )
-        searchView.typefaceWord = App.font(
-            R.font.open_sans_bold,
-            context
-        )
+        searchView.apply {
+            // Typefaces
 
-        // Text
-        searchView.textExample = getString(
-            R.string.for_example
-        )
-        searchView.textWords = arrayOf(
-            "стс",
-            "start",
-            "вверх",
-            "чебурашка"
-        )
+            typefaceExample = App.font(
+                R.font.open_sans_regular,
+                context
+            )
 
+            typefaceWord = App.font(
+                R.font.open_sans_bold,
+                context
+            )
 
-        // Text size
-        searchView.textSizeWord = 0.29268f
-        searchView.textSizeExample = 0.29268f
+            // Text
+            textExample = getString(
+                R.string.for_example
+            )
 
-        // Icon Size
-        searchView.iconSize = 0.4878f
-        searchView.iconPaddingRight = 0.041353f
+            textWords = arrayOf(
+                "стс",
+                "start",
+                "вверх",
+                "чебурашка"
+            )
 
-        // Search view animation config
-        searchView.animationDuration = 750
-        searchView.animationInterval = 4000
-        searchView.animationInterpolator = LinearInterpolator()
+            // Text size
+            textSizeWord = 0.29268f
+            textSizeExample = 0.29268f
+
+            // Icon Size
+            iconSize = 0.4878f
+            iconPaddingRight = 0.041353f
+
+            // Search view animation config
+            animationDuration = 750
+            animationInterval = 4000
+            animationInterpolator = LinearInterpolator()
+        }
 
 
         // Drawables
@@ -182,11 +189,13 @@ OnItemClickNavigationListener {
             it.alpha = (255 * 0.48f).toInt()
             searchView.drawable = it
         }
-        imageViewLikes.drawable = App.drawable(
-            R.drawable.ic_heart
-        )
-        imageViewLikes.imageScaleX = 0.5f
-        imageViewLikes.imageScaleY = 0.5f
+        imageViewLikes.apply {
+            drawable = App.drawable(
+                R.drawable.ic_heart
+            )
+            imageScaleX = 0.5f
+            imageScaleY = 0.5f
+        }
 
         layoutTopBarContent.gravity = Gravity
             .CENTER_HORIZONTAL

@@ -16,6 +16,7 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.fragments.NetworkFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVProgram

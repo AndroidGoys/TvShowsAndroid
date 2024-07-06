@@ -3,6 +3,7 @@ package good.damn.tvlist.views.round
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
@@ -35,23 +36,33 @@ class RoundedImageView(
 
     private val mPaint = Paint()
 
+    private var mRectStroke = RectF()
+
     init {
         mPaint.style = Paint.Style.STROKE
         mPaint.isAntiAlias = true
 
-        mTouchInteraction.setDuration(
-            150
-        )
-
-        mTouchInteraction.setInterpolator(
-            AccelerateDecelerateInterpolator()
-        )
+        mTouchInteraction.apply {
+            minValue = 1.2f
+            maxValue = 1.0f
+            setDuration(150)
+            setInterpolator(
+                AccelerateDecelerateInterpolator()
+            )
+        }
     }
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
         super.onLayout(changed, left, top, right, bottom)
         val dx = ((1.0f-imageScaleX) * width * 0.5f).toInt()
         val dy = ((1.0f-imageScaleY) * height * 0.5f).toInt()
+
+        (mPaint.strokeWidth * 0.5f).let { strokeWidth ->
+            mRectStroke.left = mRectViewRound.left + strokeWidth
+            mRectStroke.top = mRectViewRound.top + strokeWidth
+            mRectStroke.right = mRectViewRound.right - strokeWidth
+            mRectStroke.bottom = mRectViewRound.bottom - strokeWidth
+        }
 
         drawable?.setBounds(
             dx,
@@ -71,7 +82,7 @@ class RoundedImageView(
         )
 
         canvas.drawRoundRect(
-            mRectViewRound,
+            mRectStroke,
             cornerRadius,
             cornerRadius,
             mPaint

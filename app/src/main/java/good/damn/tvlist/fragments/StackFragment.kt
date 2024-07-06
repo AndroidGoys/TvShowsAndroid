@@ -13,7 +13,7 @@ import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 
 abstract class StackFragment
-: Fragment() {
+: NetworkFragment() {
 
     @ColorInt
     var navigationBarColor: Int = 0
@@ -83,11 +83,6 @@ abstract class StackFragment
 
     fun hideStatusBar() = mainActivity()
         .hideStatusBar()
-
-
-    open fun onNetworkConnected() {}
-
-    open fun onNetworkDisconnected() {}
 
 
     abstract fun onCreateView(
