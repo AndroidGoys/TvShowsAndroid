@@ -18,6 +18,9 @@ fun View.heightParams() = layoutParams
 fun View.bottomMargin() = frameParams()
     .bottomMargin
 
+fun View.topParams() = frameParams()
+    .topMargin
+
 fun View.generateId() {
     id = View.generateViewId()
 }

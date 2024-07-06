@@ -1,5 +1,6 @@
 package good.damn.tvlist.navigators
 
+import android.util.Log
 import android.widget.FrameLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,6 +12,9 @@ class MainFragmentNavigator<FRAGMENT: Fragment>(
     private val mContainer: FrameLayout
 ) {
 
+    companion object {
+        private const val TAG = "MainFragmentNavigator"
+    }
     var size: Int = 0
         get() = mFragments.size
 
@@ -25,6 +29,7 @@ class MainFragmentNavigator<FRAGMENT: Fragment>(
         mFragments.add(
             fragment
         )
+
         mFragmentManager
             .beginTransaction()
             .add(

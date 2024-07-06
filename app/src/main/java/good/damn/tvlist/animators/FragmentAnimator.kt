@@ -39,6 +39,7 @@ Animator.AnimatorListener {
         outFragment: StackFragment? = null
     ) {
 
+        onAnimationEnd = null
         mInFragment = inFragment
         mOutFragment = outFragment
 

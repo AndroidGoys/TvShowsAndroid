@@ -10,4 +10,5 @@
     <color name="navigationIcon">#629E16</color>
     <color name="navigationIconBackground">#aaA5A5A5</color>
     <color name="mediaIcon">#8818191f</color>
+    <color name="bigButtonIcon">#858588</color>
 </resources>

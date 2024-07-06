@@ -2,13 +2,15 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.view.View
+import good.damn.tvlist.fragments.CloseableFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.utils.ViewUtils
+import java.io.Closeable
 
 class ProfileFragment
-: StackFragment() {
+: CloseableFragment() {
 
-    override fun onCreateView(
+    override fun onCreateContentView(
         context: Context,
         measureUnit: Int
     ): View {

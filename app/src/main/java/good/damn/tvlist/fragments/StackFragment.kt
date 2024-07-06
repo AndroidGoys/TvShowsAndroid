@@ -42,6 +42,8 @@ abstract class StackFragment
             App.WIDTH
         )
 
+        v.isClickable = true
+
         return v
     }
 
@@ -85,7 +87,7 @@ abstract class StackFragment
         .hideStatusBar()
 
 
-    abstract fun onCreateView(
+    protected abstract fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View

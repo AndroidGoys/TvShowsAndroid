@@ -9,15 +9,17 @@ import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVProgramsAdapter
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.fragments.CloseableFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
 import kotlinx.coroutines.launch
+import java.io.Closeable
 
 class FavouritesFragment
-: StackFragment() {
+: CloseableFragment() {
 
-    override fun onCreateView(
+    override fun onCreateContentView(
         context: Context,
         measureUnit: Int
     ): View {
