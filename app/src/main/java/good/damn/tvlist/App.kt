@@ -17,6 +17,7 @@ import androidx.annotation.DrawableRes
 import good.damn.tvlist.network.api.models.TVProgram
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import java.io.File
 
 class App
 : Application() {
@@ -29,14 +30,16 @@ class App
 
         lateinit var USER_AGENT: String
         lateinit var RESOURCES: Resources
-        const val URL = "http://176.109.108.35"
+        lateinit var CACHE_DIR: File
+        const val URL = "http://176.109.106.211:8080"
 
         val IO = CoroutineScope(
             Dispatchers.IO
         )
 
         val FAVOURITE_TV_SHOWS = HashMap<Long, TVProgram>()
-        val iconMap = HashMap<String,Bitmap>()
+        val iconMap = HashMap<String, Bitmap>()
+        val mediumBitmaps = HashMap<String, Bitmap>()
 
         var WIDTH = 1
         var HEIGHT = 1
@@ -84,6 +87,9 @@ class App
         USER_AGENT = WebView(applicationContext)
             .settings
             .userAgentString
+
+        CACHE_DIR = applicationContext
+            .cacheDir
 
         Log.d(TAG, "onCreate: USER_AGENT: $USER_AGENT")
     }

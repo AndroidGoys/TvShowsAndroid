@@ -9,6 +9,7 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.program.OnClickProgramListener
 import good.damn.tvlist.views.program.TVProgramView
 import java.util.Calendar
@@ -19,10 +20,12 @@ class TVProgramViewHolder(
     mProgramView
 ) {
     private val mCalendar = Calendar.getInstance()
+
     fun onBindViewHolder(
         p: TVProgram,
         next: TVProgram?
     ) {
+
         mProgramView.cacheProgram = p
         mProgramView.title = p.shortName ?: p.name
         mProgramView.timeString = p.startTimeString
@@ -34,6 +37,22 @@ class TVProgramViewHolder(
             mProgramView.progress = dt / dt2.toFloat()
         }
         mProgramView.invalidate()
+
+        if (p.imageUrl == null) {
+            return
+        }
+
+        NetworkBitmap.loadFromNetwork(
+            p.imageUrl,
+            App.CACHE_DIR,
+            mProgramView.widthParams(),
+            mProgramView.heightParams()
+        ) {
+            App.mediumBitmaps[p.imageUrl] = it
+            mProgramView.previewImage = it
+            mProgramView.invalidate()
+        }
+
     }
 
     companion object {

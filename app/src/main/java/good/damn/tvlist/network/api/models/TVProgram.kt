@@ -76,7 +76,7 @@ data class TVProgram(
                     name.substring(0,15) + "…"
                 else null,
                 "$hourString:$minutesString",
-                ""
+                "https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375"
             )
 
         }

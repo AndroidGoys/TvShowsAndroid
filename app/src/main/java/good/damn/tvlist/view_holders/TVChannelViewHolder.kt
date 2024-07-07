@@ -25,9 +25,6 @@ class TVChannelViewHolder(
     mLayout
 ) {
 
-    private val mCacheDir = itemView.context
-        .cacheDir
-
     fun onBindViewHolder(
         t: TVChannel?
     ) {
@@ -58,7 +55,7 @@ class TVChannelViewHolder(
             
             NetworkBitmap.loadFromNetwork(
                 url = url,
-                mCacheDir,
+                App.CACHE_DIR,
                 bounds,
                 bounds
             ) {

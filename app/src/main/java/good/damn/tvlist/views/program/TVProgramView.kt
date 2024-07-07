@@ -1,6 +1,7 @@
 package good.damn.tvlist.views.program
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
@@ -33,6 +34,8 @@ class TVProgramView(
     var title = "Кухня"
     var timeString: String = "12:30"
     var age: String = "18+"
+
+    var previewImage: Bitmap? = null
 
     var typeface = Typeface.DEFAULT
         set(v) {
@@ -188,6 +191,15 @@ class TVProgramView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
+        if (previewImage != null) {
+            canvas.drawBitmap(
+                previewImage!!,
+                0f,
+                0f,
+                mPaintProgress
+            )
+        }
 
         if (mPaintGradientGray.shader != null) {
             canvas.drawPaint(
