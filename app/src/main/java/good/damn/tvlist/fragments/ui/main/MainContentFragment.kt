@@ -87,7 +87,6 @@ OnItemClickNavigationListener {
             context
         )
 
-
         // Setup viewPager
         mViewPager.adapter = FragmentAdapter(
             mFragments,

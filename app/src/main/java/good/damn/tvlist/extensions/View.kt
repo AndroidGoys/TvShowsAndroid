@@ -67,7 +67,6 @@ fun View.boundsLinear(
     }
 }
 
-
 fun View.boundsFrame(
     gravity: Int = Gravity.START,
     width: Int = -2,
