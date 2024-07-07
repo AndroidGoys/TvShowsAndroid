@@ -14,4 +14,8 @@
     <string name="favourites">Избранное</string>
     <string name="profile">Профиль</string>
     <string name="settings">Настройки</string>
+    <string name="about_app">О приложении</string>
+    <string name="logout">Выйти из аккаунта</string>
+    <string name="rate_app">Оценить приложение</string>
+    <string name="write_assessment">Написать разработчику</string>
 </resources>
