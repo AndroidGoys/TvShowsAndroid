@@ -1,6 +1,7 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -332,16 +333,28 @@ OnItemClickNavigationListener {
 
     override fun onResume() {
         super.onResume()
-        mBlurView?.startRenderLoop()
-        mBlurView?.onResume()
+        Log.d(TAG, "onResume: ")
+        mBlurView?.apply { 
+            startRenderLoop()
+            onResume()
+        }
     }
 
     override fun onPause() {
+        Log.d(TAG, "onPause: ")
         super.onPause()
-        mBlurView?.stopRenderLoop()
-        mBlurView?.onPause()
+        mBlurView?.apply { 
+            stopRenderLoop()
+            onPause()
+        }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy: ")
+        mBlurView?.clean()
+    }
+    
     override fun onClickNavigationItem(
         index: Int,
         navigationView: NavigationView

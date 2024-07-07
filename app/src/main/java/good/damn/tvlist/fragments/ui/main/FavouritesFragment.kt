@@ -1,6 +1,7 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -31,6 +32,10 @@ import java.io.Closeable
 class FavouritesFragment
 : StackFragment() {
 
+    companion object {
+        private const val TAG = "FavouritesFragment"
+    }
+    
     private var mBlurView: BlurShaderView? = null
 
     override fun onCreateView(
@@ -194,10 +199,12 @@ class FavouritesFragment
     override fun onDestroy() {
         super.onDestroy()
         mBlurView?.clean()
+        Log.d(TAG, "onDestroy: ")
     }
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume: ")
         mBlurView?.apply {
             startRenderLoop()
             onResume()
@@ -206,6 +213,7 @@ class FavouritesFragment
 
     override fun onPause() {
         super.onPause()
+        Log.d(TAG, "onPause: ")
         mBlurView?.apply {
             stopRenderLoop()
             onPause()
