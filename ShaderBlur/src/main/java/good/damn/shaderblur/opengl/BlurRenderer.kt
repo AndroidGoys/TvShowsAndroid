@@ -13,6 +13,7 @@ class BlurRenderer(
     scaleFactor: Float,
     yMarginTop: Float,
     yMarginBottom: Float,
+    shadeColor: FloatArray? = null
 ): GLSurfaceView.Renderer {
 
     companion object {
@@ -20,13 +21,13 @@ class BlurRenderer(
     }
 
     var isFrameDrawn = true
-        private set
 
     private var mBlurEffect = GaussianBlur(
         blurRadius,
         scaleFactor,
         yMarginTop,
-        yMarginBottom
+        yMarginBottom,
+        shadeColor
     )
 
     override fun onSurfaceCreated(

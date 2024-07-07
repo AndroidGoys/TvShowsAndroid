@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVProgramsAdapter
@@ -29,6 +30,8 @@ import java.io.Closeable
 class FavouritesFragment
 : StackFragment() {
 
+    private var mBlurView: BlurShaderView? = null
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -37,6 +40,9 @@ class FavouritesFragment
             context
         )
 
+        val recyclerView = TVProgramsRecyclerView(
+            context
+        )
 
         val layoutTopBar = FrameLayout(
             context
@@ -48,22 +54,28 @@ class FavouritesFragment
             context
         )
 
-
-        val recyclerView = TVProgramsRecyclerView(
-            context
+        mBlurView = BlurShaderView(
+            context,
+            recyclerView,
+            5,
+            0.5f,
+            0.1f,
+            0.18f,
+            shadeColor = floatArrayOf(
+                1.0f,
+                1.0f,
+                1.0f,
+                0.5f
+            )
         )
+
 
         layout.setBackgroundColorId(
             R.color.background
         )
 
         layoutTopBar.apply {
-            setBackgroundColor(
-                App.color(
-                    R.color.background
-                ).withAlpha(0.5f)
-            )
-
+            setBackgroundColor(0)
             boundsFrame(
                 width = measureUnit,
                 height = (measureUnit * 0.19324f).toInt()
@@ -109,7 +121,9 @@ class FavouritesFragment
         }
 
         recyclerView.apply {
-            setBackgroundColor(0)
+            setBackgroundColorId(
+                R.color.background
+            )
             layoutManager = GridLayoutManager(
                 context,
                 2,
@@ -135,6 +149,18 @@ class FavouritesFragment
                 0,
                 pad
             )
+        }
+
+        mBlurView?.apply {
+            boundsFrame(
+                width = layoutTopBar.widthParams(),
+                height = layoutTopBar.heightParams()
+            )
+            layoutTopBar.addView(
+                this
+            )
+
+            startRenderLoop()
         }
 
         layoutTopBar.apply {
@@ -163,6 +189,27 @@ class FavouritesFragment
         )
 
         return layout
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBlurView?.clean()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.apply {
+            startRenderLoop()
+            onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.apply {
+            stopRenderLoop()
+            onPause()
+        }
     }
 
 }
