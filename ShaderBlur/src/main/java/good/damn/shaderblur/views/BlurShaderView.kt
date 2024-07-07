@@ -90,6 +90,9 @@ ViewTreeObserver.OnDrawListener {
     }
 
     fun startRenderLoop() {
+        mSourceView.viewTreeObserver.removeOnDrawListener(
+            this
+        )
         mSourceView.viewTreeObserver.addOnDrawListener(
             this
         )

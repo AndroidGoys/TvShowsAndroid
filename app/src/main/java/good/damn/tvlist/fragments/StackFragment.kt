@@ -48,6 +48,10 @@ abstract class StackFragment
         return v
     }
 
+    open fun onFocusChanged(
+        isFragmentFocused: Boolean
+    ) {}
+
     fun pushFragment(
         fragment: StackFragment,
         withAnimation: FragmentAnimation? = null
@@ -87,6 +91,10 @@ abstract class StackFragment
     fun hideStatusBar() = mainActivity()
         .hideStatusBar()
 
+    fun isFragmentFocused() = mainActivity()
+        .isFragmentFocused(
+            this
+        )
 
     protected abstract fun onCreateView(
         context: Context,

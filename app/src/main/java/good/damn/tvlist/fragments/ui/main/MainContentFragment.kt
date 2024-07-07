@@ -331,18 +331,40 @@ OnItemClickNavigationListener {
         return layout
     }
 
+    override fun onFocusChanged(
+        isFragmentFocused: Boolean
+    ) {
+        Log.d(TAG, "onFocusChanged: $isFragmentFocused")
+        mBlurView?.apply {
+            if (isFragmentFocused) {
+                startRenderLoop()
+                onResume()
+                return@apply
+            }
+
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
-        Log.d(TAG, "onResume: ")
-        mBlurView?.apply { 
+        Log.d(TAG, "onResume: ${isFragmentFocused()}")
+        if (!isFragmentFocused()) {
+            return
+        }
+        mBlurView?.apply {
             startRenderLoop()
             onResume()
         }
     }
 
     override fun onPause() {
-        Log.d(TAG, "onPause: ")
+        Log.d(TAG, "onPause: ${isFragmentFocused()}")
         super.onPause()
+        if (!isFragmentFocused()) {
+            return
+        }
         mBlurView?.apply { 
             stopRenderLoop()
             onPause()
