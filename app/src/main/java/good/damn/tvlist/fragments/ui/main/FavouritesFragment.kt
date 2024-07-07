@@ -14,6 +14,7 @@ import good.damn.tvlist.adapters.recycler_view.TVProgramsAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
@@ -61,12 +62,11 @@ class FavouritesFragment
             0.5f,
             0.1f,
             0.18f,
-            shadeColor = floatArrayOf(
-                1.0f,
-                1.0f,
-                1.0f,
+            shadeColor = App.color(
+                R.color.background
+            ).withAlpha(
                 0.5f
-            )
+            ).rgba()
         )
 
 
