@@ -4,15 +4,21 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
+import android.graphics.Rect
+import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.views.RatingCanvas
 import good.damn.tvlist.views.round.RoundView
+import java.util.Calendar
 
 class TVProgramView(
     context: Context
@@ -20,8 +26,12 @@ class TVProgramView(
     context
 ) {
 
+    companion object {
+        private const val TAG = "TVProgramView"
+    }
+    
     var title = "Кухня"
-    var time: String = "12:30"
+    var timeString: String = "12:30"
     var age: String = "18+"
 
     var typeface = Typeface.DEFAULT
@@ -43,6 +53,31 @@ class TVProgramView(
             mRating.textColor = v
         }
 
+    var progressWidth: Int = 2
+        set(v) {
+            field = v
+            if (height == 0) {
+                return
+            }
+            mRectProgress.top = height.toFloat() - progressWidth
+        }
+
+    @ColorInt
+    var progressColor: Int = 0
+        set(v) {
+            field = v
+            mPaintProgress.color = v
+        }
+
+    var progress: Float = 0.8f
+        set(v) {
+            field = v
+            if (width == 0) {
+                return
+            }
+            mRectProgress.right = width * progress
+        }
+
     var rating = 0f
         set(v) {
             field = v
@@ -61,8 +96,13 @@ class TVProgramView(
     private val mPaintAge = Paint()
     private val mPaintTime = Paint()
     private val mPaintGradientGray = Paint()
+    private val mPaintProgress = Paint()
+
+    private val mRectProgress = RectF()
 
     private val mRating = RatingCanvas()
+
+    private var mProgressRadius = 0f
 
     private var mTitleY = 0f
     private var mTitleX = 0f
@@ -83,10 +123,18 @@ class TVProgramView(
         if (params == null) {
             return
         }
-        val halfWidth = params.width * 0.5f
+
+        val width = params.width.toFloat()
+        val height = params.height.toFloat()
+
+        mRectProgress.left = 0f
+        mRectProgress.bottom = height
+        mProgressRadius = height * 0.5f
+
+        val halfWidth = width * 0.5f
         val linearGradient = LinearGradient(
             halfWidth,
-            params.height.toFloat(),
+            height,
             halfWidth,
             0f,
             intArrayOf(
@@ -101,12 +149,12 @@ class TVProgramView(
         )
         mPaintGradientGray.shader = linearGradient
 
-        val ratingHeight = params.height * 0.07804f
+        val ratingHeight = height * 0.07804f
         mRating.textSize = ratingHeight * 0.6875f
         mRating.layout(
-            x = params.width * 0.05031f,
-            y = params.height * 0.03902f,
-            params.width * 0.15094f,
+            x = width * 0.05031f,
+            y = height * 0.03902f,
+            width * 0.15094f,
             ratingHeight
         )
 
@@ -122,6 +170,9 @@ class TVProgramView(
         mPaintAge.textSize = height * sizeAgeFactor
         mPaintTime.textSize = height * sizeTimeFactor
 
+        mRectProgress.right = width * progress
+        mRectProgress.top = height.toFloat() - progressWidth
+
         paddingBottom.toFloat().let { bottomPadding ->
             mTimeY = height - bottomPadding
             mAgeY = mTimeY
@@ -131,7 +182,7 @@ class TVProgramView(
         paddingStart.toFloat().let { startPadding ->
             mTitleX = startPadding
             mTimeX = startPadding
-            mAgeX = startPadding + width * 0.04031f + mPaintTime.measureText(time)
+            mAgeX = startPadding + width * 0.04031f + mPaintTime.measureText(timeString)
         }
     }
 
@@ -152,7 +203,7 @@ class TVProgramView(
         )
 
         canvas.drawText(
-            time,
+            timeString,
             mTimeX,
             mTimeY,
             mPaintTime
@@ -164,6 +215,15 @@ class TVProgramView(
             mAgeY,
             mPaintAge
         )
+
+        if (progress > 0.0f) {
+            canvas.drawRoundRect(
+                mRectProgress,
+                mProgressRadius,
+                mProgressRadius,
+                mPaintProgress
+            )
+        }
 
         mRating.draw(
             canvas
@@ -178,5 +238,6 @@ class TVProgramView(
             cacheProgram
         )
     }
+
 
 }

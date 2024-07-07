@@ -1,6 +1,5 @@
 package good.damn.tvlist.adapters.recycler_view
 
-import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.network.api.models.TVProgram
@@ -31,10 +30,14 @@ class TVProgramsAdapter
         holder: TVProgramViewHolder,
         position: Int
     ) {
-        programs?.let {
-            holder.setProgram(
-                it[position]
-            )
+        if (programs == null) {
+            return
         }
+
+        holder.onBindViewHolder(
+            programs!![position],
+            if (position + 1 >= itemCount)
+                null else programs!![position+1]
+        )
     }
 }

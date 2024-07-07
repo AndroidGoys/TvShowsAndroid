@@ -21,21 +21,14 @@ class TVChannelAdapter(
         height
     )
 
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount() = data.size
 
     override fun onBindViewHolder(
         holder: TVChannelViewHolder,
         position: Int
-    ) {
-        val channel = data[position]
-            ?: return
-
-        holder.setChannel(
-            channel
-        )
-    }
+    ) = holder.onBindViewHolder(
+       data[position]
+    )
 
     @WorkerThread
     fun addChannels(

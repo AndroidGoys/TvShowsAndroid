@@ -63,6 +63,9 @@ ViewTreeObserver.OnDrawListener {
     }
 
     override fun run() {
+        if (!mBlurRenderer.isFrameDrawn) {
+            return
+        }
         mCanvas.setBitmap(
             mInputBitmap
         )
@@ -80,7 +83,7 @@ ViewTreeObserver.OnDrawListener {
     }
 
     override fun onDraw() {
-        post(this)
+        run()
     }
 
     fun startRenderLoop() {

@@ -20,18 +20,26 @@ import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,
     private val mRecyclerViewPrograms: TVProgramsRecyclerView,
-    layout: LinearLayout
+    private val mLayout: LinearLayout
 ): RecyclerView.ViewHolder(
-    layout
+    mLayout
 ) {
 
     private val mCacheDir = itemView.context
         .cacheDir
 
-    fun setChannel(
-        t: TVChannel
+    fun onBindViewHolder(
+        t: TVChannel?
     ) {
+        mLayout.alpha = 0f
+        if (t == null) {
+            return
+        }
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
+
+        mLayout.animate()
+            .alpha(1.0f)
+            .start()
 
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
@@ -78,7 +86,6 @@ class TVChannelViewHolder(
             val recyclerView = TVProgramsRecyclerView(
                 context
             )
-
 
             // Text Colors
             channelView.textColor = App.color(

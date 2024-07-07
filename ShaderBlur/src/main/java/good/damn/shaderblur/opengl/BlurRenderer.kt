@@ -19,6 +19,9 @@ class BlurRenderer(
         private const val TAG = "BlurRenderer"
     }
 
+    var isFrameDrawn = true
+        private set
+
     private var mBlurEffect = GaussianBlur(
         blurRadius,
         scaleFactor,
@@ -64,6 +67,7 @@ class BlurRenderer(
     override fun onDrawFrame(
         gl: GL10?
     ) {
+        isFrameDrawn = false
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
         glClearColor(
             1.0f,
@@ -74,6 +78,7 @@ class BlurRenderer(
         mBlurEffect.onDrawFrame(
             gl
         )
+        isFrameDrawn = true
     }
 
     fun requestRender(

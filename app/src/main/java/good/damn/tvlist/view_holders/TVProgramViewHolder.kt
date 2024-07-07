@@ -1,6 +1,7 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -10,23 +11,33 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.views.program.OnClickProgramListener
 import good.damn.tvlist.views.program.TVProgramView
+import java.util.Calendar
 
 class TVProgramViewHolder(
     private val mProgramView: TVProgramView
 ): RecyclerView.ViewHolder(
     mProgramView
 ) {
-    fun setProgram(
-        p: TVProgram
+    private val mCalendar = Calendar.getInstance()
+    fun onBindViewHolder(
+        p: TVProgram,
+        next: TVProgram?
     ) {
         mProgramView.cacheProgram = p
         mProgramView.title = p.shortName ?: p.name
-        mProgramView.time = p.startTimeString
+        mProgramView.timeString = p.startTimeString
         mProgramView.rating = p.rating
+        if (next != null) {
+            val t = mCalendar.timeInMillis / 1000
+            val dt = t - p.startTime
+            val dt2 = next.startTime - p.startTime
+            mProgramView.progress = dt / dt2.toFloat()
+        }
         mProgramView.invalidate()
     }
 
     companion object {
+        private const val TAG = "TVProgramViewHolder"
         fun create(
             context: Context,
             widthRecyclerView: Int,
@@ -41,6 +52,10 @@ class TVProgramViewHolder(
             programView.sizeAgeFactor = 0.05365f
             programView.sizeTimeFactor = 0.05365f
             programView.sizeTitleFactor = 0.07317f
+
+            programView.progressColor = App.color(
+                R.color.lime
+            )
 
             programView.typeface = App.font(
                 R.font.open_sans_semi_bold,
@@ -73,6 +88,10 @@ class TVProgramViewHolder(
                 (widthRecyclerView * 0.384057f).toInt(),
                 heightRecyclerView
             )
+
+            programView.progressWidth = (
+                heightRecyclerView * 0.02951f
+            ).toInt()
 
             (programView.widthParams() * 0.05031f)
             .toInt().let { leftPadding ->
