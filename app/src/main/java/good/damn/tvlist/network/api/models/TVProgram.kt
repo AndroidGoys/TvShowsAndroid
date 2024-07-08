@@ -1,6 +1,7 @@
 package good.damn.tvlist.network.api.models
 
 import android.util.Log
+import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.network.api.models.enums.CensorAge
 import org.json.JSONObject
 import java.util.Calendar
@@ -10,6 +11,7 @@ import kotlin.random.Random
 data class TVProgram(
     val id: Long = -1,
     val name: String = "",
+    val description: String? = null,
     val censorAge: CensorAge = CensorAge.ADULT,
     val startTime: Long = -1,
     val rating: Float = 0.0f,
@@ -43,15 +45,19 @@ data class TVProgram(
                 return TVProgram()
             }
 
-            val startTime = try {
-                (json.get(
-                    "timestart"
-                ) as Int).toLong()
-            } catch (e: Exception) {
-                Log.d(TAG, "createFromJSON: NO START TIME: ${e.message}")
+            val desc = json.extract(
+                "description"
+            ) as? String
+
+            val startTime = (json.extract(
+                "timestart"
+            ) as? Int)?.toLong()
+
+            if (startTime == null) {
+                Log.d(TAG, "createFromJSON: NO_START_TIME")
                 return TVProgram()
             }
-
+            
             val c = Calendar.getInstance()
             c.time = Date(startTime * 1000L)
 
@@ -69,6 +75,7 @@ data class TVProgram(
             return TVProgram(
                 id,
                 name,
+                desc,
                 CensorAge.ADULT,
                 startTime,
                 Random.nextFloat() * 5f,
