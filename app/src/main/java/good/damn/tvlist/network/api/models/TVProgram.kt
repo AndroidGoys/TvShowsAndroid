@@ -46,7 +46,7 @@ data class TVProgram(
             }
 
             val desc = json.extract(
-                "description"
+                "desc"
             ) as? String
 
             val startTime = (json.extract(

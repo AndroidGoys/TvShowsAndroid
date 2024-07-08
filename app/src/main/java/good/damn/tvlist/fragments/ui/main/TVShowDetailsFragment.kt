@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
@@ -20,6 +21,7 @@ import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
@@ -242,6 +244,7 @@ class TVShowDetailsFragment
             )
         }
 
+        // CHAPTER: Rate tv show
         contentLayout.addView(
             chapterTextView(
                 context,
@@ -250,6 +253,7 @@ class TVShowDetailsFragment
             )
         )
 
+
         contentLayout.addView(
             chapterTextView(
                 context,
@@ -257,6 +261,42 @@ class TVShowDetailsFragment
                 R.string.description
             )
         )
+
+        AppCompatTextView(
+            context
+        ).apply {
+
+            typeface = App.font(
+                R.font.open_sans_regular,
+                context
+            )
+
+            setTextColor(
+                App.color(
+                    R.color.text
+                ).withAlpha(
+                    0.63f
+                )
+            )
+
+            setTextSizePx(
+                measureUnit * 0.036231f
+            )
+
+            text = program?.description
+
+            boundsLinear(
+                gravity = Gravity.START or Gravity.TOP,
+                top = measureUnit * 0.043478f,
+                width = -1,
+                left = marginHorizontal,
+                right = marginHorizontal
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
 
         contentLayout.addView(
             chapterTextView(
