@@ -1,6 +1,7 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
@@ -92,7 +93,7 @@ class TVProgramViewHolder(
                     if (program == null) {
                         return
                     }
-
+                    
                     App.FAVOURITE_TV_SHOWS.apply {
                         if (containsKey(program.id)) {
                             remove(program.id)

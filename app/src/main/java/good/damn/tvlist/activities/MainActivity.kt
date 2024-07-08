@@ -160,11 +160,13 @@ NetworkListener {
         fragment: StackFragment,
         withAnimation: FragmentAnimation? = null
     ) {
+        mNavigator.topFragment?.onFocusChanged(
+            false
+        )
+
         mNavigator.pushFragment(
             fragment
         )
-
-        updateFragmentFocus()
 
         if (withAnimation == null) {
             return
@@ -183,14 +185,17 @@ NetworkListener {
     fun popFragment(
         withAnimation: FragmentAnimation? = null
     ) {
+        mNavigator
+            .previousTopFragment
+            ?.onFocusChanged(
+                true
+            )
         if (withAnimation == null) {
             mNavigator.popFragment()
-            updateFragmentFocus()
             return
         }
         mAnimator.onAnimationEnd = {
             mNavigator.popFragment()
-            updateFragmentFocus()
         }
         mAnimator.startTransition(
             outAnimation = withAnimation,
@@ -262,19 +267,6 @@ NetworkListener {
             R.string.no_internet_connection,
             Toast.LENGTH_SHORT
         ).show()
-    }
-
-    private fun updateFragmentFocus() {
-        val frags = mNavigator.getFragments()
-        for (i in 0..frags.size-2) {
-            frags[i].onFocusChanged(
-                false
-            )
-        }
-
-        mNavigator
-            .topFragment
-            ?.onFocusChanged(true)
     }
 
 }
