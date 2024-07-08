@@ -18,4 +18,8 @@
     <string name="logout">Выйти из аккаунта</string>
     <string name="rate_app">Оценить приложение</string>
     <string name="write_assessment">Написать разработчику</string>
+    <string name="description">Описание</string>
+    <string name="rate_tv_show">Оценить</string>
+    <string name="ratings_and_reviews">Оценки и отзывы</string>
+    <string name="channels">Каналы</string>
 </resources>

@@ -1,12 +1,14 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import good.damn.tvlist.App
@@ -240,8 +242,45 @@ class TVShowDetailsFragment
             )
         }
 
+        contentLayout.addView(
+            chapterTextView(
+                context,
+                measureUnit,
+                R.string.rate_tv_show
+            )
+        )
 
+        contentLayout.addView(
+            chapterTextView(
+                context,
+                measureUnit,
+                R.string.description
+            )
+        )
 
+        contentLayout.addView(
+            chapterTextView(
+                context,
+                measureUnit,
+                R.string.trailers
+            )
+        )
+
+        contentLayout.addView(
+            chapterTextView(
+                context,
+                measureUnit,
+                R.string.ratings_and_reviews
+            )
+        )
+
+        contentLayout.addView(
+            chapterTextView(
+                context,
+                measureUnit,
+                R.string.channels
+            )
+        )
 
 
 
@@ -276,6 +315,36 @@ class TVShowDetailsFragment
         }
     }
 
+}
+
+private fun TVShowDetailsFragment.chapterTextView(
+    context: Context,
+    measureUnit: Int,
+    @StringRes textId: Int
+) = TextView(
+    context
+).apply {
+    setText(
+        textId
+    )
+
+    typeface = App.font(
+        R.font.open_sans_bold,
+        context
+    )
+
+    setTextSizePx(
+        measureUnit * 0.05314f
+    )
+
+    setTextColorId(
+        R.color.text
+    )
+
+    boundsLinear(
+        left = measureUnit * 0.07004f,
+        top = measureUnit * 0.08816f
+    )
 }
 
 private fun TVShowDetailsFragment.onClickBtnBack(
