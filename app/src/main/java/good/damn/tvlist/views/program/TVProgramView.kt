@@ -247,6 +247,7 @@ class TVProgramView(
         event: MotionEvent
     ) {
         onClickProgramListener?.onClickProgram(
+            v,
             cacheProgram
         )
     }

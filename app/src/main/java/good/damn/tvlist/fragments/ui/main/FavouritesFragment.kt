@@ -23,6 +23,7 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
@@ -80,48 +81,26 @@ class FavouritesFragment
         )
 
         layoutTopBar.apply {
-            setBackgroundColor(0)
-            boundsFrame(
-                width = measureUnit,
-                height = (measureUnit * 0.19324f).toInt()
+            ViewUtils.topBarStyleMain(
+                this,
+                measureUnit
             )
         }
 
         btnBack.apply {
-            val size = (
-                layoutTopBar.heightParams() * 0.45f
-            ).toInt()
-
-            boundsFrame(
-                gravity = Gravity.CENTER_VERTICAL or Gravity.START,
-                left = layoutTopBar.widthParams() * 0.03864f,
-                width = size,
-                height = size
+            ViewUtils.topBarStyleBtnBack(
+                layoutTopBar,
+                this
             )
         }
 
         textViewTitle.apply {
-            setTextSizePx(
-                layoutTopBar.heightParams() * 0.325f
+            ViewUtils.topBarStyleTitle(
+                layoutTopBar,
+                this
             )
-
             setText(
                 R.string.favourites
-            )
-
-            typeface = App.font(
-                R.font.open_sans_bold,
-                context
-            )
-
-            setTextColorId(
-                R.color.text
-            )
-
-            boundsFrame(
-                gravity = Gravity.CENTER_VERTICAL or(
-                    Gravity.CENTER_HORIZONTAL
-                )
             )
         }
 
