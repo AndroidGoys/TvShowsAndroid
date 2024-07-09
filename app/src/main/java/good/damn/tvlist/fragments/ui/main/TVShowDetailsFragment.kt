@@ -27,6 +27,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
+import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.round.RoundedImageView
 
@@ -315,6 +316,23 @@ class TVShowDetailsFragment
                 R.string.rate_tv_show
             )
         )
+
+        RateView(
+            context
+        ).apply {
+
+            boundsLinear(
+                left = marginHorizontal,
+                right = marginHorizontal,
+                width = -1,
+                top = measureUnit * 23.normalWidth(),
+                height = (measureUnit * 38.normalWidth()).toInt()
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
 
         AppCompatTextView(
             context
