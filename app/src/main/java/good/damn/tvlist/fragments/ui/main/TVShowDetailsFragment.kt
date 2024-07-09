@@ -28,6 +28,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
+import good.damn.tvlist.views.StatisticView
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.round.RoundedImageView
 
@@ -316,7 +317,6 @@ class TVShowDetailsFragment
                 R.string.rate_tv_show
             )
         )
-
         RateView(
             context
         ).apply {
@@ -365,6 +365,7 @@ class TVShowDetailsFragment
             )
         }
 
+        // CHAPTER: description
         contentLayout.addView(
             chapterTextView(
                 context,
@@ -409,11 +410,12 @@ class TVShowDetailsFragment
             )
         }
 
+        // CHAPTER: Screenshots
         contentLayout.addView(
             chapterTextView(
                 context,
                 measureUnit,
-                R.string.trailers
+                R.string.tv_show_shots
             )
         )
 
@@ -424,6 +426,31 @@ class TVShowDetailsFragment
                 R.string.ratings_and_reviews
             )
         )
+
+        StatisticView(
+            context
+        ).apply {
+
+            typeface = App.font(
+                R.font.open_sans_semi_bold,
+                context
+            )
+
+            textSizeRatingFactor = 0.40404f
+            textSizeCountFactor = 0.11f
+
+            rating = program?.rating ?: 0.0f
+
+            boundsLinear(
+                gravity = Gravity.CENTER_HORIZONTAL,
+                width = (measureUnit * 348.normalWidth()).toInt(),
+                height = (measureUnit * 99.normalWidth()).toInt()
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
 
         contentLayout.addView(
             chapterTextView(

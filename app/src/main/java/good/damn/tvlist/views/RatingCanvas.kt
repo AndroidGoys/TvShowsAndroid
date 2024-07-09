@@ -121,7 +121,7 @@ class RatingCanvas {
 
     companion object {
         @ColorInt
-        private fun detectColor(
+        fun detectColor(
             rate: Int,
             times: Int = 1
         ) = when(rate) {
