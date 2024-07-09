@@ -162,9 +162,10 @@ class TVShowDetailsFragment
 
                     val downScaleFactor = when(it.length) {
                         in 0..<9 -> 1.0f
-                        in 9..<18 -> 0.75f
-                        in 18..<36 -> 0.5f
-                        else -> 0.25f
+                        in 9..<18 -> 0.85f
+                        in 18..<36 -> 0.6f
+                        in 36..<72 -> 0.5f
+                        else -> 0.35f
                     }
 
 
@@ -173,12 +174,10 @@ class TVShowDetailsFragment
                     )
                 }
 
-                val dSize = originalTextSize - textSize
-
                 boundsLinear(
                     gravity = Gravity.START or Gravity.TOP,
                     width = (measureUnit * 0.5942f).toInt(),
-                    top = measureUnit * 0.115942f - dSize * 1.5f
+                    top = measureUnit * 0.07971f
                 )
 
                 horizontalLayout.addView(
