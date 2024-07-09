@@ -2,6 +2,9 @@ package good.damn.tvlist.extensions
 
 import androidx.annotation.ColorInt
 
+fun Int.normalWidth() = this / 414f
+fun Int.normalHeight() = this / 915f
+
 fun Int.rgba(): FloatArray {
     val a = this shr 24 and 0xff
     val r = this shr 16 and 0xff

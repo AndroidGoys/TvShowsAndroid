@@ -17,6 +17,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
@@ -243,6 +244,69 @@ class TVShowDetailsFragment
             )
         }
 
+        // The cinema studio
+        // who develops this show
+        AppCompatTextView(
+            context
+        ).apply {
+            setTextSizePx(
+                measureUnit * 15.normalWidth()
+            )
+
+            typeface = App.font(
+                R.font.open_sans_semi_bold,
+                context
+            )
+
+            setTextColor(
+                App.color(
+                    R.color.text
+                ).withAlpha(0.49f)
+            )
+
+            text = "Yellow Studio Inc."
+
+            boundsLinear(
+                width = (measureUnit * 247.normalWidth()).toInt(),
+                top = measureUnit * 5.normalWidth(),
+                left = marginHorizontal
+            )
+            contentLayout.addView(
+                this
+            )
+        }
+
+        // Censor age
+        AppCompatTextView(
+            context
+        ).apply {
+            setTextColor(
+                App.color(
+                    R.color.text
+                ).withAlpha(0.49f)
+            )
+
+            typeface = App.font(
+                R.font.open_sans_bold,
+                context
+            )
+
+            text = "${program?.censorAge?.age}+"
+
+            setTextSizePx(
+                measureUnit * 11.normalWidth()
+            )
+
+            boundsLinear(
+                top = measureUnit * 7.normalWidth(),
+                left = marginHorizontal
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
+
         // CHAPTER: Rate tv show
         contentLayout.addView(
             chapterTextView(
@@ -252,6 +316,36 @@ class TVShowDetailsFragment
             )
         )
 
+        AppCompatTextView(
+            context
+        ).apply {
+
+            setTextColorId(
+                R.color.navigationIcon
+            )
+
+            typeface = App.font(
+                R.font.open_sans_bold,
+                context
+            )
+
+            setText(
+                R.string.write_review
+            )
+
+            setTextSizePx(
+                measureUnit * 11.normalWidth()
+            )
+
+            boundsLinear(
+                left = marginHorizontal,
+                top = measureUnit * 30.normalWidth()
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
 
         contentLayout.addView(
             chapterTextView(
