@@ -32,8 +32,9 @@ class VerticalBlur(
         "float gt;" +
         "vec2 offset = vec2(gl_FragCoord.x, gl_FragCoord.y - rad);" +
         "for (float i = -rad; i <= rad;i++) {" +
+            "if (offset.y >= gl_FragCoord.y) continue;" +
             "offset.y++;" +
-            "if (offset.y >= gl_FragCoord.y || offset.y < 0.0) continue;" +
+            "if (offset.y < 0.0) continue;" +
             "gt = gauss(i,aa,stDevSQ);" +
             "normDistSum += gt;" +
             "sum += texture2D(u_tex, offset/u_res) * gt;" +
