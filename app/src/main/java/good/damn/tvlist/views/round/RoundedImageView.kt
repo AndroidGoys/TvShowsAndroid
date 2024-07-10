@@ -1,6 +1,7 @@
 package good.damn.tvlist.views.round
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
@@ -29,6 +30,7 @@ class RoundedImageView(
             mPaint.strokeWidth = v
         }
 
+    var bitmap: Bitmap? = null
     var drawable: Drawable? = null
 
     var imageScaleX = 1f
@@ -41,7 +43,7 @@ class RoundedImageView(
     init {
         mPaint.style = Paint.Style.STROKE
         mPaint.isAntiAlias = true
-        mPaint.color = 0
+        mPaint.color = 0xff000000.toInt()
 
         mTouchInteraction.apply {
             minValue = 1.2f
@@ -78,11 +80,20 @@ class RoundedImageView(
     ) {
         super.onDraw(canvas)
 
+        if (bitmap != null) {
+            canvas.drawBitmap(
+                bitmap!!,
+                0f,
+                0f,
+                mPaint
+            )
+        }
+
         drawable?.draw(
             canvas
         )
 
-        if (mPaint.color == 0) {
+        if (mPaint.color == 0xff000000.toInt()) {
             return
         }
 

@@ -1,9 +1,14 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.tvlist.App
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.widthParams
+import good.damn.tvlist.network.api.models.show.TVShowImage
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.round.RoundedImageView
 
 class TVShowImageViewHolder(
@@ -12,7 +17,30 @@ class TVShowImageViewHolder(
     mImage
 ) {
 
+    fun onBindViewHolder(
+        t: TVShowImage
+    ) {
+        mImage.bitmap = null
+        mImage.invalidate()
+        if (t.imageUrl == null) {
+            return
+        }
+
+        NetworkBitmap.loadFromNetwork(
+            t.imageUrl,
+            App.CACHE_DIR,
+            "showImages",
+            mImage.widthParams(),
+            mImage.heightParams()
+        ) {
+            Log.d(TAG, "onBindViewHolder: $it")
+            mImage.bitmap = it
+            mImage.invalidate()
+        }
+    }
+
     companion object {
+        private const val TAG = "TVShowImageViewHolder"
         fun create(
             context: Context,
             width: Int,

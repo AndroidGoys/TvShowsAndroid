@@ -32,8 +32,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
-import good.damn.tvlist.network.api.models.show.TVShowChannelDate
-import good.damn.tvlist.network.api.services.TVShowChannelsService
+import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
@@ -53,6 +52,10 @@ class TVShowDetailsFragment
         context: Context,
         measureUnit: Int
     ): View {
+
+        val showService = TVShowService(
+            context.cacheDir
+        )
 
         val marginHorizontal = measureUnit * 0.07004f
 
@@ -491,11 +494,13 @@ class TVShowDetailsFragment
                 )
             )
 
-
-            adapter = TVShowImagesAdapter(
-                (widthParams() * 0.782608f).toInt(),
-                heightParams()
-            )
+            showService.getImages {
+                adapter = TVShowImagesAdapter(
+                    it,
+                    (heightParams() * 1.77777f).toInt(),
+                    heightParams()
+                )
+            }
 
             contentLayout.addView(
                 this
@@ -617,9 +622,7 @@ class TVShowDetailsFragment
                 )
             )
 
-            TVShowChannelsService(
-                context.cacheDir
-            ).getChannelPointers {
+            showService.getChannelPointers {
                 adapter = TVShowChannelsAdapter(
                     it,
                     heightParams(),

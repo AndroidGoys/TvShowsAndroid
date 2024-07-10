@@ -65,7 +65,6 @@ ViewTreeObserver.OnDrawListener {
         if (!mBlurRenderer.isFrameDrawn) {
             return
         }
-        Log.d(TAG, "run: ${mSourceView.scrollX.toFloat()} ${mSourceView.scrollY.toFloat()}")
         mCanvas.setBitmap(
             mInputBitmap
         )

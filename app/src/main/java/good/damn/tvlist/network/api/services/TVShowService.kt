@@ -3,10 +3,11 @@ package good.damn.tvlist.network.api.services
 import good.damn.tvlist.App
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
+import good.damn.tvlist.network.api.models.show.TVShowImage
 import kotlinx.coroutines.launch
 import java.io.File
 
-class TVShowChannelsService(
+class TVShowService(
     cacheDirApp: File
 ): NetworkJSONService(
     cacheDirApp
@@ -15,6 +16,31 @@ class TVShowChannelsService(
     companion object {
         private const val TAG = "TVShowChannelsService"
         private const val URL = ""
+    }
+
+    fun getImages(
+        completion: (Array<TVShowImage>) -> Unit
+    ) {
+        App.IO.launch {
+            val data = arrayOf(
+                TVShowImage(
+                    "https://i.ytimg.com/vi/3AdWkAR6VwE/hq720.jpg"
+                ),
+                TVShowImage(
+                    "https://i.ytimg.com/vi/yb1XRLlcDrY/hq720.jpg"
+                ),
+                TVShowImage(
+                    "https://i.ytimg.com/vi/TOfJEgcEkXo/hq720.jpg"
+                ),
+                TVShowImage(
+                    "https://i.ytimg.com/vi/rZKSI9BOZZY/hq720.jpg"
+                )
+            )
+
+            App.ui {
+                completion(data)
+            }
+        }
     }
 
     fun getChannelPointers(
