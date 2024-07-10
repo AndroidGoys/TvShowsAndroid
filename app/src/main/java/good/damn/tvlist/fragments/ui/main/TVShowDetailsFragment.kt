@@ -11,10 +11,12 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.adapters.recycler_view.TVShowImagesAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
@@ -31,8 +33,9 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
-import good.damn.tvlist.views.statistic.StatisticView
+import good.damn.tvlist.views.statistic.StatisticsView
 import good.damn.tvlist.views.buttons.ButtonBack
+import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
 
@@ -448,6 +451,53 @@ class TVShowDetailsFragment
             )
         )
 
+        RecyclerView(
+            context
+        ).apply {
+
+            boundsLinear(
+                width = measureUnit,
+                height = (measureUnit * 156.normalWidth()).toInt(),
+                top = measureUnit * 19.normalWidth()
+            )
+
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
+            clipToPadding = false
+
+            val margin = (measureUnit * 15.normalWidth()).toInt()
+            val pad = marginHorizontal - margin
+
+            setPadding(
+                marginHorizontal.toInt(),
+                0,
+                pad.toInt(),
+                0
+            )
+
+            addItemDecoration(
+                MarginItemDecoration(
+                    0,
+                    0,
+                    margin,
+                    0
+                )
+            )
+
+            adapter = TVShowImagesAdapter(
+                widthParams(),
+                heightParams()
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
+
         contentLayout.addView(
             chapterTextView(
                 context,
@@ -456,7 +506,7 @@ class TVShowDetailsFragment
             )
         )
 
-        StatisticView(
+        StatisticsView(
             context
         ).apply {
 
@@ -525,7 +575,6 @@ class TVShowDetailsFragment
                 R.string.channels
             )
         )
-
 
 
         scrollView.apply {

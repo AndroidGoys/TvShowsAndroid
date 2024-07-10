@@ -23,7 +23,7 @@ class RoundedImageView(
             mPaint.color = v
         }
 
-    var strokeWidth = 2f
+    var strokeWidth = 0f
         set(v) {
             field = v
             mPaint.strokeWidth = v
@@ -41,6 +41,7 @@ class RoundedImageView(
     init {
         mPaint.style = Paint.Style.STROKE
         mPaint.isAntiAlias = true
+        mPaint.color = 0
 
         mTouchInteraction.apply {
             minValue = 1.2f
@@ -81,13 +82,16 @@ class RoundedImageView(
             canvas
         )
 
+        if (mPaint.color == 0) {
+            return
+        }
+
         canvas.drawRoundRect(
             mRectStroke,
             cornerRadius,
             cornerRadius,
             mPaint
         )
-
     }
 
     override fun onUpdateAnimation(

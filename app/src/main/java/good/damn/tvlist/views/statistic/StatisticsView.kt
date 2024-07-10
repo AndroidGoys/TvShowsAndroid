@@ -13,7 +13,7 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.views.RatingCanvas
 
-class StatisticView(
+class StatisticsView(
     context: Context
 ): View(
     context
