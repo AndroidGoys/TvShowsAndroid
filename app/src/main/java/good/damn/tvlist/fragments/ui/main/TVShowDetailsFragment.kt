@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
 import good.damn.tvlist.adapters.recycler_view.TVShowImagesAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
@@ -488,8 +489,9 @@ class TVShowDetailsFragment
                 )
             )
 
+
             adapter = TVShowImagesAdapter(
-                widthParams(),
+                (widthParams() * 0.782608f).toInt(),
                 heightParams()
             )
 
@@ -576,6 +578,51 @@ class TVShowDetailsFragment
             )
         )
 
+        RecyclerView(
+            context
+        ).apply {
+
+            boundsLinear(
+                width = measureUnit,
+                height = (measureUnit * 110.normalWidth()).toInt()
+            )
+
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
+            clipToPadding = false
+
+            val margin = (measureUnit * 20.normalWidth()).toInt()
+            val pad = marginHorizontal - margin
+
+            setPadding(
+                marginHorizontal.toInt(),
+                0,
+                pad.toInt(),
+                0
+            )
+
+            addItemDecoration(
+                MarginItemDecoration(
+                    0,
+                    0,
+                    margin,
+                    0
+                )
+            )
+
+            adapter = TVShowChannelsAdapter(
+                heightParams(),
+                heightParams()
+            )
+
+            contentLayout.addView(
+                this
+            )
+        }
 
         scrollView.apply {
             val pad = layoutTopBar.heightParams()
