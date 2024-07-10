@@ -71,9 +71,7 @@ OnItemClickNavigationListener {
             context,
             mViewPager,
             7,
-            0.5f,
-            yMarginTop = 0.1f,
-            yMarginBottom = 0.29f
+            0.35f,
         )
         val layoutTopBarContent = LinearLayout(
             context

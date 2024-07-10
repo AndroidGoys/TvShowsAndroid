@@ -11,15 +11,20 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.widget.NestedScrollView
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
@@ -35,6 +40,8 @@ class TVShowDetailsFragment
 : StackFragment() {
 
     var program: TVProgram? = null
+
+    private var mBlurView: BlurShaderView? = null
 
     override fun onCreateView(
         context: Context,
@@ -60,10 +67,33 @@ class TVShowDetailsFragment
             context
         )
 
+        scrollView.setBackgroundColorId(
+            R.color.background
+        )
+
         ViewUtils.topBarStyleMain(
             layoutTopBar,
             measureUnit
         )
+
+        mBlurView = BlurShaderView(
+            context,
+            scrollView,
+            blurRadius = 5,
+            scaleFactor = 0.35f,
+            shadeColor = App.color(
+                R.color.background
+            ).withAlpha(
+                0.5f
+            ).rgba()
+        ).apply {
+            boundsFrame(
+                width = layoutTopBar.widthParams(),
+                height = layoutTopBar.heightParams()
+            )
+            layoutTopBar.addView(this)
+            startRenderLoop()
+        }
 
         ButtonBack.createFrame(
             context,
@@ -500,6 +530,7 @@ class TVShowDetailsFragment
 
         scrollView.apply {
             val pad = layoutTopBar.heightParams()
+            clipToPadding = false
             setPadding(
                 0,
                 pad,
@@ -519,6 +550,27 @@ class TVShowDetailsFragment
         }
 
         return layout
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.apply {
+            startRenderLoop()
+            onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.apply {
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBlurView?.clean()
     }
 
     companion object {

@@ -65,9 +65,7 @@ class FavouritesFragment
             context,
             recyclerView,
             5,
-            0.5f,
-            0.1f,
-            0.18f,
+            0.35f,
             shadeColor = App.color(
                 R.color.background
             ).withAlpha(

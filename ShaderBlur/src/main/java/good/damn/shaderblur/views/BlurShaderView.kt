@@ -9,6 +9,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.ViewTreeObserver
+import android.widget.ScrollView
 import good.damn.shaderblur.opengl.BlurRenderer
 import kotlinx.coroutines.Runnable
 
@@ -17,8 +18,6 @@ class BlurShaderView(
     private val mSourceView: View,
     blurRadius: Int,
     scaleFactor: Float,
-    yMarginTop: Float,
-    yMarginBottom: Float,
     shadeColor: FloatArray? = null
 ): GLSurfaceView(
     context
@@ -32,8 +31,6 @@ ViewTreeObserver.OnDrawListener {
     private val mBlurRenderer = BlurRenderer(
         blurRadius,
         scaleFactor,
-        yMarginTop,
-        yMarginBottom,
         shadeColor
     )
 
@@ -68,6 +65,7 @@ ViewTreeObserver.OnDrawListener {
         if (!mBlurRenderer.isFrameDrawn) {
             return
         }
+        Log.d(TAG, "run: ${mSourceView.scrollX.toFloat()} ${mSourceView.scrollY.toFloat()}")
         mCanvas.setBitmap(
             mInputBitmap
         )
