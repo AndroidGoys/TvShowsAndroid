@@ -18,6 +18,7 @@ class NetworkBitmap {
         fun loadFromNetwork(
             url: String,
             cacheDirApp: File,
+            dirName: String,
             widthBitmap: Int,
             heightBitmap: Int,
             completion: (Bitmap) -> Unit
@@ -26,6 +27,7 @@ class NetworkBitmap {
         ).launch {
             val cachedBitmap = CacheBitmap.loadFromCache(
                 url,
+                dirName,
                 cacheDirApp
             )
 
@@ -78,6 +80,7 @@ class NetworkBitmap {
                 CacheBitmap.cache(
                     scaledBitmap,
                     url,
+                    dirName,
                     cacheDirApp
                 )
 

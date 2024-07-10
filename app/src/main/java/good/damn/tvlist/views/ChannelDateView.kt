@@ -78,7 +78,7 @@ class ChannelDateView(
                 "00.00"
             )) * 0.5f
 
-            mDateY = mTimeY - mPaintTime.textSize - height * 0.03636f
+            mDateY = mTimeY - mPaintTime.textSize - height * 0.00236f
         }
 
         mPaintGradient.shader = LinearGradient(

@@ -32,6 +32,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.models.show.TVShowChannelDate
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
@@ -583,6 +584,7 @@ class TVShowDetailsFragment
         ).apply {
 
             boundsLinear(
+                top = measureUnit * 20.normalWidth(),
                 width = measureUnit,
                 height = (measureUnit * 110.normalWidth()).toInt()
             )
@@ -615,6 +617,28 @@ class TVShowDetailsFragment
             )
 
             adapter = TVShowChannelsAdapter(
+                arrayOf(
+                    TVShowChannelDate(
+                        "13:10",
+                        "26.07",
+                        imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/126/logo_256_1655445109.png"
+                    ),
+                    TVShowChannelDate(
+                        "18:10",
+                        "28.07",
+                        imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/67/logo_256_1692687479.png"
+                    ),
+                    TVShowChannelDate(
+                        "22:10",
+                        "29.07",
+                        imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/109/logo_256_1655448739.png"
+                    ),
+                    TVShowChannelDate(
+                        "23:40",
+                        "01.08",
+                        imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/105/logo_256_1655386697.png"
+                    )
+                ),
                 heightParams(),
                 heightParams()
             )

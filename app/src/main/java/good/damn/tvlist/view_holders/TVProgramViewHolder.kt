@@ -49,6 +49,7 @@ class TVProgramViewHolder(
         NetworkBitmap.loadFromNetwork(
             p.imageUrl,
             App.CACHE_DIR,
+            "bitmapProgram",
             mProgramView.widthParams(),
             mProgramView.heightParams()
         ) {

@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.widthParams
+import good.damn.tvlist.network.api.models.show.TVShowChannelDate
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.ChannelDateView
 
 class TVShowChannelsViewHolder(
@@ -12,6 +16,32 @@ class TVShowChannelsViewHolder(
 ): RecyclerView.ViewHolder(
     mChannelDate
 ) {
+
+    fun onBindViewHolder(
+        channel: TVShowChannelDate
+    ) {
+
+        mChannelDate.dateString = channel.date
+        mChannelDate.timeString = channel.time
+        mChannelDate.invalidate()
+
+        if (channel.imageUrl == null) {
+            return
+        }
+
+        NetworkBitmap.loadFromNetwork(
+            channel.imageUrl,
+            App.CACHE_DIR,
+            dirName = "bitmapShowChannels",
+            mChannelDate.widthParams(),
+            mChannelDate.heightParams()
+        ) {
+            mChannelDate.channelPreview = it
+            mChannelDate.invalidate()
+        }
+
+    }
+
     companion object {
         fun create(
             context: Context,

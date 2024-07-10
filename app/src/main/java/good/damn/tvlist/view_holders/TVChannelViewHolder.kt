@@ -56,6 +56,7 @@ class TVChannelViewHolder(
             NetworkBitmap.loadFromNetwork(
                 url = url,
                 App.CACHE_DIR,
+                dirName = "bitmapChannels",
                 bounds,
                 bounds
             ) {

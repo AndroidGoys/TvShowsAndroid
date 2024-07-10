@@ -12,10 +12,12 @@ class CacheBitmap {
         private const val TAG = "CacheBitmap"
         fun loadFromCache(
             name: String,
+            dirName: String,
             cacheDirApp: File
         ): Bitmap? {
             val cacheFile = cacheBitmapFile(
                 name,
+                dirName,
                 cacheDirApp
             )
 
@@ -38,10 +40,12 @@ class CacheBitmap {
         fun cache(
             bitmap: Bitmap,
             name: String,
+            dirName: String,
             cacheDirApp: File
         ) {
             val cacheFile = cacheBitmapFile(
                 name,
+                dirName,
                 cacheDirApp
             )
 
@@ -65,10 +69,11 @@ class CacheBitmap {
 
         private fun cacheBitmapFile(
             name: String,
+            dirName: String,
             cacheDirApp: File
         ) = CacheFile.cacheFile(
             cacheDirApp,
-            "bitmaps",
+            dirName,
             name.hashCode().toString()
         )
     }
