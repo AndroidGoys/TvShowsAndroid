@@ -1,7 +1,6 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
-import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -14,7 +13,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
@@ -28,7 +26,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
-import good.damn.tvlist.views.StatisticView
+import good.damn.tvlist.views.statistic.StatisticView
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.round.RoundedImageView
 

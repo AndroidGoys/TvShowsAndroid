@@ -1,8 +1,7 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.views.statistic
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
 import android.graphics.Shader
@@ -10,6 +9,9 @@ import android.graphics.Typeface
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import good.damn.tvlist.App
+import good.damn.tvlist.R
+import good.damn.tvlist.views.RatingCanvas
 
 class StatisticView(
     context: Context
@@ -57,6 +59,10 @@ class StatisticView(
     private var mCountTextX = 0f
     private var mCountTextY = 0f
 
+    private val mDrawablePeople = App.drawable(
+        R.drawable.ic_people
+    )
+
     override fun setLayoutParams(
         params: ViewGroup.LayoutParams?
     ) {
@@ -85,6 +91,17 @@ class StatisticView(
         )) * 0.5f
 
         mCountTextY = height * 0.68585f + mPaintCount.textSize
+
+        (mPaintCount.textSize).let { size ->
+            val margin = size * 0.5f
+            val marginV = size * 0.1f
+            mDrawablePeople?.setBounds(
+                (mCountTextX - size - margin).toInt(),
+                (mCountTextY - size + marginV).toInt(),
+                (mCountTextX - margin).toInt(),
+                (mCountTextY + marginV).toInt()
+            )
+        }
 
         val gradient = LinearGradient(
             mRatingTextX,
@@ -127,6 +144,9 @@ class StatisticView(
             mCountTextY,
             mPaintCount
         )
-    }
 
+        mDrawablePeople?.draw(
+            canvas
+        )
+    }
 }
