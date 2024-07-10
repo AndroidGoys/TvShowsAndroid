@@ -33,6 +33,20 @@ class StatisticView(
             mPaintCategory.color = v
         }
 
+    @ColorInt
+    var progressColor: Int = 0
+        set(v) {
+            field = v
+            mPaintProgress.color = v
+        }
+
+    @ColorInt
+    var progressBackColor: Int = 0
+        set(v) {
+            field = v
+            mPaintProgressBack.color = v
+        }
+
     var count: String = "1234567"
 
     var textSizeRatingFactor = 0.2f
@@ -47,11 +61,15 @@ class StatisticView(
             mPaintCategory.typeface = v
         }
 
+    var progressTitles: Array<ProgressTitleDraw>? = null
+
     private var mRatingStr = "4.6"
 
     private val mPaintRating = Paint()
     private val mPaintCount = Paint()
     private val mPaintCategory = Paint()
+    private val mPaintProgress = Paint()
+    private val mPaintProgressBack = Paint()
 
     private var mRatingTextX = 0f
     private var mRatingTextY = 0f
@@ -80,17 +98,42 @@ class StatisticView(
 
         mPaintRating.textSize = height * textSizeRatingFactor
         mPaintCount.textSize = height * textSizeCountFactor
+        mPaintCategory.textSize = height * textSizeCountFactor
 
         val w = width * 0.30747f
 
-        mRatingTextX = (w - textWidth) * 0.5f
-        mRatingTextY = height * 0.16161f + mPaintRating.textSize
+        mRatingTextX = (w - textWidth) * 0.4f
+        mRatingTextY = height * 0.09161f + mPaintRating.textSize
 
         mCountTextX = (w - mPaintCount.measureText(
             count
         )) * 0.5f
 
         mCountTextY = height * 0.68585f + mPaintCount.textSize
+
+        progressTitles?.let {
+            var progressY = 0f
+            val marginProgress = height / it.size - mPaintCount.textSize
+
+            val itemWidth = width - w
+
+            it.forEach { title ->
+
+                title.stylePaint(
+                    mPaintCategory,
+                    mPaintProgress,
+                    mPaintProgressBack
+                )
+
+                title.layout(
+                    w,
+                    progressY,
+                    itemWidth
+                )
+
+                progressY += mPaintCount.textSize + marginProgress
+            }
+        }
 
         (mPaintCount.textSize).let { size ->
             val margin = size * 0.5f
@@ -148,5 +191,9 @@ class StatisticView(
         mDrawablePeople?.draw(
             canvas
         )
+
+        progressTitles?.forEach {
+            it.draw(canvas)
+        }
     }
 }

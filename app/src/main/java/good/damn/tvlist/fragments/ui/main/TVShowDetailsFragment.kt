@@ -29,6 +29,7 @@ import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticView
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.round.RoundedImageView
+import good.damn.tvlist.views.statistic.ProgressTitleDraw
 
 class TVShowDetailsFragment
 : StackFragment() {
@@ -436,13 +437,50 @@ class TVShowDetailsFragment
 
             textSizeRatingFactor = 0.40404f
             textSizeCountFactor = 0.11f
+            textSizeCategoryFactor = 0.151515f
+
+            progressBackColor = App.color(
+                R.color.searchViewBack
+            )
+
+            val c = 123456
+
+            count = c.toString()
+
+            progressTitles = arrayOf(
+                ProgressTitleDraw(
+                    "5",
+                    23425f / c
+                ),
+                ProgressTitleDraw(
+                    "4",
+                    65842f / c
+                ),
+                ProgressTitleDraw(
+                    "3",
+                    25845f / c
+                ),
+                ProgressTitleDraw(
+                    "2",
+                    12452f / c
+                ),
+                ProgressTitleDraw(
+                    "1",
+                    12347f / c
+                )
+            )
+
+            progressColor = App.color(
+                R.color.lime
+            )
 
             rating = program?.rating ?: 0.0f
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL,
                 width = (measureUnit * 348.normalWidth()).toInt(),
-                height = (measureUnit * 99.normalWidth()).toInt()
+                height = (measureUnit * 99.normalWidth()).toInt(),
+                top = measureUnit * 0.048309f
             )
 
             contentLayout.addView(
