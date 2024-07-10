@@ -76,9 +76,34 @@ class TVShowDetailsFragment
             context
         )
 
-        scrollView.setBackgroundColorId(
-            R.color.background
-        )
+        scrollView.apply {
+            setBackgroundColorId(
+                R.color.background
+            )
+
+            contentLayout.post {
+                val triggerY = contentLayout.getChildAt(2)
+                    .y
+
+                var mIsShown = false
+
+                viewTreeObserver.addOnScrollChangedListener {
+                    if (!mIsShown && scrollY > triggerY) {
+                        mIsShown = true
+                        textViewTitle.animate()
+                            .alpha(1.0f)
+                            .start()
+                    }
+
+                    if (mIsShown && scrollY < triggerY) {
+                        mIsShown = false
+                        textViewTitle.animate()
+                            .alpha(0.0f)
+                            .start()
+                    }
+                }
+            }
+        }
 
         ViewUtils.topBarStyleMain(
             layoutTopBar,

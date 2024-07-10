@@ -33,7 +33,6 @@ class TVShowImageViewHolder(
             mImage.widthParams(),
             mImage.heightParams()
         ) {
-            Log.d(TAG, "onBindViewHolder: $it")
             mImage.bitmap = it
             mImage.invalidate()
         }
