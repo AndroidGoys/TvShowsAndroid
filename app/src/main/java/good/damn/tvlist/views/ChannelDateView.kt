@@ -26,6 +26,9 @@ class ChannelDateView(
             mPaintTime.color = v
         }
 
+    var dateString: String? = null
+    var timeString: String? = null
+
     var typeface = Typeface.DEFAULT
         set(v) {
             field = v
@@ -42,6 +45,12 @@ class ChannelDateView(
     private val mPaintTime = Paint()
     private val mPaintGradient = Paint()
 
+    private var mTimeX = 0f
+    private var mTimeY = 0f
+
+    private var mDateX = 0f
+    private var mDateY = 0f
+
     override fun setLayoutParams(
         params: ViewGroup.LayoutParams?
     ) {
@@ -52,6 +61,25 @@ class ChannelDateView(
         }
 
         val height = params.height
+        val width = params.width
+
+        mPaintDate.textSize = height * textSizeDateFactor
+        mPaintTime.textSize = height * textSizeTimeFactor
+
+        timeString?.let {
+            mTimeX = (width - mPaintTime.measureText(
+                "00:00"
+            )) * 0.5f
+            mTimeY = height * (1.0f - 0.06363f)
+        }
+
+        dateString?.let {
+            mDateX = (width - mPaintDate.measureText(
+                "00.00"
+            )) * 0.5f
+
+            mDateY = mTimeY - mPaintTime.textSize - height * 0.03636f
+        }
 
         mPaintGradient.shader = LinearGradient(
             0f,
@@ -89,6 +117,24 @@ class ChannelDateView(
         if (mPaintGradient.shader != null) {
             canvas.drawPaint(
                 mPaintGradient
+            )
+        }
+
+        if (timeString != null) {
+            canvas.drawText(
+                timeString!!,
+                mTimeX,
+                mTimeY,
+                mPaintTime
+            )
+        }
+
+        if (dateString != null) {
+            canvas.drawText(
+                dateString!!,
+                mDateX,
+                mDateY,
+                mPaintDate
             )
         }
 
