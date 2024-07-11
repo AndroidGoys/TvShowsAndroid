@@ -24,7 +24,7 @@ class CacheFile {
                 "${cacheDirApp}/$dirName"
             )
 
-            if (!cacheDir.exists() && cacheDir.mkdir()) {
+            if (!cacheDir.exists() && cacheDir.mkdirs()) {
                 Log.d(TAG, "cacheDir: bitmap cache dir is created")
             }
 

@@ -70,6 +70,13 @@ class NetworkBitmap {
             )?.let {
                 inp.close()
 
+                CacheBitmap.cache(
+                    it,
+                    url,
+                    "origin/$dirName",
+                    App.CACHE_DIR
+                )
+
                 val scaledBitmap = Bitmap.createScaledBitmap(
                     it,
                     widthBitmap,

@@ -722,7 +722,7 @@ class TVShowDetailsFragment
 
         val file = CacheFile.cacheFile(
             App.CACHE_DIR,
-            "bitmapProgram",
+            "origin/bitmapProgram",
             program.imageUrl.hashCode().toString()
         )
 
