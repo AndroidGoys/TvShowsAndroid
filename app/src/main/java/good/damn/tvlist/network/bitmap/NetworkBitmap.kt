@@ -25,12 +25,12 @@ class NetworkBitmap {
         ) = CoroutineScope(
             Dispatchers.IO
         ).launch {
+
             val cachedBitmap = CacheBitmap.loadFromCache(
                 url,
                 dirName,
                 cacheDirApp
             )
-
 
             Log.d(TAG, "loadFromNetwork: $cachedBitmap")
 
@@ -70,13 +70,6 @@ class NetworkBitmap {
             )?.let {
                 inp.close()
 
-                CacheBitmap.cache(
-                    it,
-                    url,
-                    "origin/$dirName",
-                    App.CACHE_DIR
-                )
-
                 val scaledBitmap = Bitmap.createScaledBitmap(
                     it,
                     widthBitmap,
@@ -97,6 +90,7 @@ class NetworkBitmap {
                 App.ui {
                     completion(scaledBitmap)
                 }
+
             }
         }
     }

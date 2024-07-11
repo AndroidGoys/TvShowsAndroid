@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
+import good.damn.tvlist.App
 import good.damn.tvlist.views.recycler_views.scroll_listeners.interfaces.OnUpdateStreamDataListener
 
 class StreamScrollListener(
@@ -48,7 +49,7 @@ class StreamScrollListener(
         mVisibleItemCount = recyclerView.childCount
 
         if (mLoading) {
-            if (mTotalItemCount > mPreviousTotal) {
+            if (mTotalItemCount > mPreviousTotal || !App.NETWORK_AVAILABLE) {
                 mLoading = false
             }
             return

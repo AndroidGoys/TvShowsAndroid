@@ -2,6 +2,8 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import java.util.Calendar
 import android.net.Uri
 import android.util.Log
@@ -50,6 +52,9 @@ import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class TVShowDetailsFragment
 : StackFragment() {
@@ -593,6 +598,19 @@ class TVShowDetailsFragment
             setBackgroundColor(
                 0xffc4c4c4.toInt()
             )
+
+            program?.imageUrl?.let { url ->
+                NetworkBitmap.loadFromNetwork(
+                    url,
+                    App.CACHE_DIR,
+                    "bitmapProgramPreview",
+                    widthParams(),
+                    heightParams()
+                ) {
+                    bitmap = it
+                    invalidate()
+                }
+            }
 
             layoutRootContent.addView(
                 this
