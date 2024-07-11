@@ -18,6 +18,7 @@ import good.damn.tvlist.network.api.models.TVProgram
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.File
+import java.util.Calendar
 
 class App
 : Application() {
@@ -32,6 +33,7 @@ class App
         lateinit var RESOURCES: Resources
         lateinit var CACHE_DIR: File
         const val URL = "http://176.109.106.211:8080"
+        const val NOTIFICATION_ID = "tvShowSchedule"
 
         val IO = CoroutineScope(
             Dispatchers.IO

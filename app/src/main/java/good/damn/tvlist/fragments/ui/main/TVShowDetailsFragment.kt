@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
@@ -29,6 +30,8 @@ import good.damn.tvlist.cache.CacheBitmap
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
+import good.damn.tvlist.extensions.getDayString
+import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.rgba
@@ -617,11 +620,39 @@ class TVShowDetailsFragment
             )
         }
 
+        // Add notification
+        RoundedImageView(
+            context
+        ).apply {
+            val s = (measureUnit * 24.normalWidth()).toInt()
+            drawable = App.drawable(
+                R.drawable.ic_alarm
+            )
+
+            val preview = layoutRootContent.getChildAt(1)
+
+            boundsFrame(
+                gravity = Gravity.END or Gravity.TOP,
+                width = s,
+                height = s,
+                right = marginHorizontal + s * 0.75f,
+                top = preview.topHeightParams() - s * 0.5f
+            )
+
+            setOnClickListener(
+                this@TVShowDetailsFragment::onClickScheduleAlarm
+            )
+
+            layoutRootContent.addView(
+                this
+            )
+        }
+
         // Share option
         RoundedImageView(
             context
         ).apply {
-            val s = (measureUnit * 0.05797f).toInt()
+            val s = (measureUnit * 24.normalWidth()).toInt()
             drawable = App.drawable(
                 R.drawable.ic_share
             )
@@ -726,39 +757,6 @@ class TVShowDetailsFragment
         mBlurView?.clean()
     }
 
-    private fun onClickShare(
-        v: View
-    ) {
-
-        val program = program
-            ?: return
-
-        if (program.imageUrl == null) {
-            shareTVShow(program)
-            return
-        }
-
-        val file = CacheFile.cacheFile(
-            App.CACHE_DIR,
-            "origin/bitmapProgram",
-            program.imageUrl.hashCode().toString()
-        )
-
-        val context = v.context
-
-        val uri = FileProvider.getUriForFile(
-            context,
-            context.packageName + ".provider",
-            file
-        )
-        shareTVShow(
-            program,
-            uri
-        )
-
-        Log.d(TAG, "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri")
-    }
-
     companion object {
         private const val TAG = "TVShowDetailsFragment"
         fun newInstance(
@@ -770,6 +768,62 @@ class TVShowDetailsFragment
 
 }
 
+private fun TVShowDetailsFragment.onClickScheduleAlarm(
+    v: View
+) {
+
+
+
+    val program = program
+        ?: return
+
+    val c = Calendar.getInstance()
+
+    Toast.makeText(
+        v.context,
+        "Установлено напоминание для \"${program.name}\" на " +
+        "${c.getDayString()}.${c.getMonthString()} " +
+        program.startTimeString,
+        Toast.LENGTH_SHORT
+    ).show()
+}
+
+private fun TVShowDetailsFragment.onClickShare(
+    v: View
+) {
+
+    val program = program
+        ?: return
+
+    if (program.imageUrl == null) {
+        shareTVShow(program)
+        return
+    }
+
+    val file = CacheFile.cacheFile(
+        App.CACHE_DIR,
+        "bitmapProgramPreview",
+        program.imageUrl.hashCode().toString()
+    )
+
+    val context = v.context
+
+    val uri = FileProvider.getUriForFile(
+        context,
+        context.packageName + ".provider",
+        file
+    )
+    shareTVShow(
+        program,
+        uri
+    )
+
+    Log.d(
+        "TVShowDetailsFragment",
+        "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
+    )
+}
+
 private fun TVShowDetailsFragment.shareTVShow(
     program: TVProgram,
     data: Uri? = null
@@ -777,25 +831,11 @@ private fun TVShowDetailsFragment.shareTVShow(
     val calendar = Calendar.getInstance()
     calendar.timeInMillis = program.startTime * 1000L
 
-    val day = calendar.get(
-        Calendar.DAY_OF_MONTH
-    )
-
-    val day1 = day / 10
-    val day2 = day % 10
-
-    val month = calendar.get(
-        Calendar.MONTH
-    ) + 1
-
-    val month1 = month / 10
-    val month2 = month % 10
-
     val channel = program.channelName ?: ""
 
     val text = "${getString(R.string.lets_see)} " +
         "\"${program.name}\" " +
-        "$day1$day2.$month1$month2 " +
+        "${calendar.getDayString()}.${calendar.getMonthString()} " +
         "${getString(R.string.at_time)} " +
         "${program.startTimeString} " +
         "${getString(R.string.on_channel)} $channel " +
