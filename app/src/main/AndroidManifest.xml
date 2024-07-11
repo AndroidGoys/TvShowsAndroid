@@ -24,6 +24,16 @@
             </intent-filter>
         </receiver>
 
+        <provider
+            android:authorities="good.damn.tvlist.provider"
+            android:name="androidx.core.content.FileProvider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths"/>
+        </provider>
+        
         <activity android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>

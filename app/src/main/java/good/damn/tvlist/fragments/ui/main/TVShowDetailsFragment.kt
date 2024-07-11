@@ -1,6 +1,10 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.content.Intent
+import java.util.Calendar
+import android.net.Uri
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -11,6 +15,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.shaderblur.views.BlurShaderView
@@ -18,6 +23,8 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
 import good.damn.tvlist.adapters.recycler_view.TVShowImagesAdapter
+import good.damn.tvlist.cache.CacheBitmap
+import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
@@ -35,6 +42,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
@@ -608,6 +616,11 @@ class TVShowDetailsFragment
                 right = measureUnit * 105.normalWidth(),
                 top = prevView.topHeightParams().toFloat() + measureUnit * 0.10386f
             )
+
+            setOnClickListener(
+                this@TVShowDetailsFragment::onClickShare
+            )
+
             layoutRootContent.addView(
                 this
             )
@@ -694,7 +707,41 @@ class TVShowDetailsFragment
         mBlurView?.clean()
     }
 
+    private fun onClickShare(
+        v: View
+    ) {
+
+        val program = program
+            ?: return
+
+        if (program.imageUrl == null) {
+            shareTVShow(program)
+            return
+        }
+
+        val file = CacheFile.cacheFile(
+            App.CACHE_DIR,
+            "bitmapProgram",
+            program.imageUrl.hashCode().toString()
+        )
+
+        val context = v.context
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            context.packageName + ".provider",
+            file
+        )
+        shareTVShow(
+            program,
+            uri
+        )
+
+        Log.d(TAG, "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri")
+    }
+
     companion object {
+        private const val TAG = "TVShowDetailsFragment"
         fun newInstance(
             prog: TVProgram
         ) = TVShowDetailsFragment().apply {
@@ -702,6 +749,38 @@ class TVShowDetailsFragment
         }
     }
 
+}
+
+private fun TVShowDetailsFragment.shareTVShow(
+    program: TVProgram,
+    data: Uri? = null
+) {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = program.startTime * 1000L
+
+    val day = calendar.get(
+        Calendar.DAY_OF_MONTH
+    )
+
+    val month = calendar.get(
+        Calendar.MONTH
+    )
+
+    val text = "${getString(R.string.lets_see)} \"${program.name}\" $day.$month в ${program.startTimeString}?"
+    val intent = Intent().apply {
+        action = Intent.ACTION_SEND
+        type = "image/*"
+        putExtra(Intent.EXTRA_TEXT, text)
+        putExtra(Intent.EXTRA_STREAM, data)
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    }
+
+    startActivity(
+        Intent.createChooser(
+            intent,
+            null
+        )
+    )
 }
 
 private fun TVShowDetailsFragment.chapterTextView(
