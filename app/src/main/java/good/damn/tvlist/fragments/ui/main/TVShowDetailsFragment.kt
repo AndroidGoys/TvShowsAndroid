@@ -27,6 +27,8 @@ import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.topHeightParams
+import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
@@ -65,6 +67,9 @@ class TVShowDetailsFragment
         val layoutTopBar = FrameLayout(
             context
         )
+        val layoutRootContent = FrameLayout(
+            context
+        )
         val contentLayout = ViewUtils.verticalLinear(
             context
         )
@@ -82,8 +87,7 @@ class TVShowDetailsFragment
             )
 
             contentLayout.post {
-                val triggerY = contentLayout.getChildAt(2)
-                    .y
+                val triggerY = contentLayout.y * 1.3f
 
                 var mIsShown = false
 
@@ -163,151 +167,49 @@ class TVShowDetailsFragment
             )
         }
 
-        // Preview tv show
-        RoundedImageView(
+        // Title
+        TextView(
             context
         ).apply {
 
-            val w = measureUnit * 0.492753f
-            boundsLinear(
-                Gravity.CENTER_HORIZONTAL,
-                width = w.toInt(),
-                height = (w * 1.23882f).toInt(),
-                top = measureUnit * 0.03623f
+            typeface = App.font(
+                R.font.open_sans_bold,
+                context
             )
 
-            cornerRadius = heightParams() * 0.06331f
+            setTextColorId(
+                R.color.text
+            )
 
-            setBackgroundColor(
-                0xffc4c4c4.toInt()
+            val originalTextSize = measureUnit * 0.08937f
+
+            program?.name?.let {
+                text = it
+
+                val downScaleFactor = when(it.length) {
+                    in 0..<9 -> 1.0f
+                    in 9..<18 -> 0.85f
+                    in 18..<36 -> 0.6f
+                    in 36..<72 -> 0.5f
+                    else -> 0.35f
+                }
+
+
+                setTextSizePx(
+                    originalTextSize * downScaleFactor
+                )
+            }
+
+            boundsLinear(
+                width = (measureUnit * 0.5942f).toInt(),
+                left = marginHorizontal
             )
 
             contentLayout.addView(
                 this
             )
-
         }
 
-
-        // Title and buttons
-        LinearLayout(
-            context
-        ).let { horizontalLayout ->
-
-            horizontalLayout.orientation = LinearLayout
-                .HORIZONTAL
-
-            horizontalLayout.setBackgroundColorId(
-                R.color.background
-            )
-
-            horizontalLayout.boundsLinear(
-                height = -2,
-                width = -1,
-                left = marginHorizontal,
-                right = marginHorizontal
-            )
-
-            TextView(
-                context
-            ).apply {
-
-                typeface = App.font(
-                    R.font.open_sans_bold,
-                    context
-                )
-
-                setTextColorId(
-                    R.color.text
-                )
-
-                val originalTextSize = measureUnit * 0.08937f
-
-                program?.name?.let {
-                    text = it
-
-                    val downScaleFactor = when(it.length) {
-                        in 0..<9 -> 1.0f
-                        in 9..<18 -> 0.85f
-                        in 18..<36 -> 0.6f
-                        in 36..<72 -> 0.5f
-                        else -> 0.35f
-                    }
-
-
-                    setTextSizePx(
-                        originalTextSize * downScaleFactor
-                    )
-                }
-
-                boundsLinear(
-                    gravity = Gravity.START or Gravity.TOP,
-                    width = (measureUnit * 0.5942f).toInt(),
-                    top = measureUnit * 0.07971f
-                )
-
-                horizontalLayout.addView(
-                    this
-                )
-            }
-
-            AppCompatImageView(
-                context
-            ).apply {
-                val s = (measureUnit * 0.05797f * 2f).toInt()
-                setImageDrawable(
-                    App.drawable(
-                        R.drawable.ic_share
-                    )
-                )
-
-                scaleX = 0.5f
-                scaleY = 0.5f
-
-                boundsLinear(
-                    gravity = Gravity.START or Gravity.TOP,
-                    width = s,
-                    height = s,
-                    top = measureUnit * 0.10386f * 0.75f
-                )
-                horizontalLayout.addView(
-                    this
-                )
-            }
-
-            AppCompatImageButton(
-                context
-            ).apply {
-
-                val s = (measureUnit * 0.13768f).toInt()
-
-                boundsLinear(
-                    gravity = Gravity.START or Gravity.TOP,
-                    width = s,
-                    height = s,
-                    top = measureUnit * 0.0628f
-                )
-
-                background = null
-
-                scaleX = 2.0f
-                scaleY = 2.0f
-
-                setImageDrawable(
-                    App.drawable(
-                        R.drawable.ic_play_fill
-                    )
-                )
-
-                horizontalLayout.addView(
-                    this
-                )
-            }
-
-            contentLayout.addView(
-                horizontalLayout
-            )
-        }
 
         // The cinema studio
         // who develops this show
@@ -660,7 +562,94 @@ class TVShowDetailsFragment
             )
         }
 
+        layoutRootContent.addView(
+            contentLayout
+        )
+
+        // Preview tv show
+        RoundedImageView(
+            context
+        ).apply {
+
+            val w = measureUnit * 0.492753f
+            boundsFrame(
+                Gravity.CENTER_HORIZONTAL,
+                width = w.toInt(),
+                height = (w * 1.23882f).toInt(),
+                top = measureUnit * 0.03623f
+            )
+
+            cornerRadius = heightParams() * 0.06331f
+
+            setBackgroundColor(
+                0xffc4c4c4.toInt()
+            )
+
+            layoutRootContent.addView(
+                this
+            )
+        }
+
+        // Share option
+        RoundedImageView(
+            context
+        ).apply {
+            val s = (measureUnit * 0.05797f).toInt()
+            drawable = App.drawable(
+                R.drawable.ic_share
+            )
+
+            val prevView = layoutRootContent.getChildAt(1)
+
+            boundsFrame(
+                gravity = Gravity.TOP or Gravity.END,
+                width = s,
+                height = s,
+                right = measureUnit * 105.normalWidth(),
+                top = prevView.topHeightParams().toFloat() + measureUnit * 0.10386f
+            )
+            layoutRootContent.addView(
+                this
+            )
+        }
+
+        // Play option
+        RoundedImageView(
+            context
+        ).apply {
+
+            val s = (measureUnit * 0.13768f).toInt()
+
+            val preview = layoutRootContent.getChildAt(1)
+
+            boundsFrame(
+                gravity = Gravity.END,
+                width = s,
+                height = s,
+                right = marginHorizontal,
+                top = preview.topHeightParams() + measureUnit * 0.0628f
+            )
+
+            background = null
+
+            drawable = App.drawable(
+                R.drawable.ic_play_fill
+            )
+
+            layoutRootContent.addView(
+                this
+            )
+
+            contentLayout.boundsFrame(
+                width = App.WIDTH,
+                height = -2,
+                top = topParams().toFloat()
+            )
+        }
+
         scrollView.apply {
+            isHorizontalScrollBarEnabled = false
+            isVerticalScrollBarEnabled = false
             val pad = layoutTopBar.heightParams()
             clipToPadding = false
             setPadding(
@@ -669,7 +658,7 @@ class TVShowDetailsFragment
                 0,
                 pad
             )
-            addView(contentLayout)
+            addView(layoutRootContent)
         }
 
         layout.apply {

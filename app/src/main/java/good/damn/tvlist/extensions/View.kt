@@ -18,6 +18,10 @@ fun View.heightParams() = layoutParams
 fun View.bottomMargin() = frameParams()
     .bottomMargin
 
+fun View.topHeightParams() = frameParams().run {
+    return@run topParams() + heightParams()
+}
+
 fun View.topParams() = frameParams()
     .topMargin
 
