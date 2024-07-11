@@ -25,4 +25,7 @@
     <string name="write_review">Написать отзыв</string>
     <string name="tv_show_shots">Кадры</string>
     <string name="lets_see">Давай посмотрим</string>
+    <string name="at_time">в</string>
+    <string name="on_channel">на канале</string>
+    <string name="in_app">в приложении</string>
 </resources>

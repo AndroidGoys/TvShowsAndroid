@@ -55,6 +55,7 @@ class TVShowDetailsFragment
 : StackFragment() {
 
     var program: TVProgram? = null
+    var channelName: String? = null
 
     private var mBlurView: BlurShaderView? = null
 
@@ -762,11 +763,26 @@ private fun TVShowDetailsFragment.shareTVShow(
         Calendar.DAY_OF_MONTH
     )
 
+    val day1 = day / 10
+    val day2 = day % 10
+
     val month = calendar.get(
         Calendar.MONTH
-    )
+    ) + 1
 
-    val text = "${getString(R.string.lets_see)} \"${program.name}\" $day.$month в ${program.startTimeString}?"
+    val month1 = month / 10
+    val month2 = month % 10
+
+    val channel = program.channelName ?: ""
+
+    val text = "${getString(R.string.lets_see)} " +
+        "\"${program.name}\" " +
+        "$day1$day2.$month1$month2 " +
+        "${getString(R.string.at_time)} " +
+        "${program.startTimeString} " +
+        "${getString(R.string.on_channel)} $channel " +
+        "${getString(R.string.in_app)} ${getString(R.string.app_name)}?"
+
     val intent = Intent().apply {
         action = Intent.ACTION_SEND
         type = "image/*"

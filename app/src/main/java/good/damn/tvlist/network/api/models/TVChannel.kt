@@ -57,7 +57,8 @@ data class TVChannel(
 
             val tvProgram = Array(current.length()) {
                 TVProgram.createFromJSON(
-                    current.getJSONObject(it)
+                    current.getJSONObject(it),
+                    name
                 )
             }
 

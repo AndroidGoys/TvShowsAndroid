@@ -17,14 +17,16 @@ data class TVProgram(
     val rating: Float = 0.0f,
     val shortName: String? = null,
     val startTimeString: String = "",
-    val imageUrl: String? = null
+    val imageUrl: String? = null,
+    val channelName: String? = null
 ) {
 
     companion object {
         private const val TAG = "TVProgram"
 
         fun createFromJSON(
-            json: JSONObject
+            json: JSONObject,
+            channelName: String? = null
         ): TVProgram {
 
             val id = try {
@@ -77,13 +79,14 @@ data class TVProgram(
                 name,
                 desc,
                 CensorAge.ADULT,
-                startTime,
-                Random.nextFloat() * 5f,
-                if (name.length > 15)
+                startTime = startTime,
+                rating = Random.nextFloat() * 5f,
+                shortName = if (name.length > 15)
                     name.substring(0,15) + "…"
                 else null,
-                "$hourString:$minutesString",
-                "https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375"
+                startTimeString = "$hourString:$minutesString",
+                imageUrl = "https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375",
+                channelName = channelName
             )
 
         }

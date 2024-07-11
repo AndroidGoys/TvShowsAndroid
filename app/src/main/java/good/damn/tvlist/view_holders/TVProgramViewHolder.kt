@@ -29,7 +29,6 @@ class TVProgramViewHolder(
         p: TVProgram,
         next: TVProgram?
     ) {
-
         mProgramView.cacheProgram = p
         mProgramView.title = p.shortName ?: p.name
         mProgramView.timeString = p.startTimeString
