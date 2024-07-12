@@ -81,21 +81,24 @@ class FavouritesFragment
         layoutTopBar.apply {
             ViewUtils.topBarStyleMain(
                 this,
-                measureUnit
+                measureUnit,
+                getTopInset()
             )
         }
 
         btnBack.apply {
             ViewUtils.topBarStyleBtnBack(
                 layoutTopBar,
-                this
+                this,
+                getTopInset()
             )
         }
 
         textViewTitle.apply {
             ViewUtils.topBarStyleTitle(
                 layoutTopBar,
-                this
+                this,
+                getTopInset()
             )
             setText(
                 R.string.favourites

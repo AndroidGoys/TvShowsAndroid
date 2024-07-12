@@ -23,11 +23,13 @@ class ViewUtils {
 
         fun topBarStyleTitle(
             layoutTopBar: View,
-            textView: TextView
+            textView: TextView,
+            topInset: Int
         ) {
+            val topInset = topInset * 0.5f
             textView.apply {
                 setTextSizePx(
-                    layoutTopBar.heightParams() * 0.325f
+                    (layoutTopBar.heightParams() - topInset) * 0.325f
                 )
                 typeface = App.font(
                     R.font.open_sans_bold,
@@ -41,20 +43,23 @@ class ViewUtils {
                 boundsFrame(
                     gravity = Gravity.CENTER_VERTICAL or(
                         Gravity.CENTER_HORIZONTAL
-                    )
+                    ),
+                    top = topInset
                 )
             }
         }
 
         fun topBarStyleMain(
             layoutTopBar: View,
-            measureUnit: Int
+            measureUnit: Int,
+            topInset: Int
         ) {
             layoutTopBar.apply {
                 setBackgroundColor(0)
                 boundsFrame(
                     width = measureUnit,
-                    height = (measureUnit * 0.19324f).toInt()
+                    height = (measureUnit * 0.19324f
+                        + topInset * 0.5f).toInt()
                 )
             }
         }
@@ -62,17 +67,20 @@ class ViewUtils {
 
         fun topBarStyleBtnBack(
             layoutTopBar: View,
-            btnBack: ButtonBack
+            btnBack: ButtonBack,
+            topInset: Int
         ) {
+            val topInset = topInset * 0.5f
             val size = (
-                layoutTopBar.heightParams() * 0.45f
+                (layoutTopBar.heightParams() - topInset) * 0.45f
                 ).toInt()
 
             btnBack.boundsFrame(
                 gravity = Gravity.CENTER_VERTICAL or Gravity.START,
                 left = layoutTopBar.widthParams() * 0.03864f,
                 width = size,
-                height = size
+                height = size,
+                top = topInset
             )
         }
 

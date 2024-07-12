@@ -61,7 +61,8 @@ View.OnClickListener {
 
         ViewUtils.topBarStyleMain(
             layoutTopBar,
-            measureUnit
+            measureUnit,
+            getTopInset()
         )
 
         mBlurView = BlurShaderView(
@@ -90,7 +91,8 @@ View.OnClickListener {
 
             ViewUtils.topBarStyleBtnBack(
                 layoutTopBar,
-                this
+                this,
+                getTopInset()
             )
 
             setOnClickListener(
@@ -105,7 +107,8 @@ View.OnClickListener {
         mTextViewTitle?.apply {
             ViewUtils.topBarStyleTitle(
                 layoutTopBar,
-                this
+                this,
+                getTopInset()
             )
 
             alpha = 0f
