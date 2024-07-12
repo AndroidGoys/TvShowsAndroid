@@ -22,7 +22,8 @@ import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
 
 class TVShowFragment
-: StackFragment() {
+: StackFragment(),
+View.OnClickListener {
 
     var program: TVProgram? = null
 
@@ -140,6 +141,28 @@ class TVShowFragment
             addView(layoutTopBar)
         }
 
+        // Setup listeners
+        var isShown = false
+        val triggerY = App.HEIGHT * 0.42f
+        mShowPageFragment.onScrollChangeListener = {
+            scrollY ->
+            if (!isShown && scrollY > triggerY) {
+                isShown = true
+                textViewTitle.animate()
+                    .alpha(1.0f)
+                    .start()
+            }
+
+            if (isShown && scrollY < triggerY) {
+                isShown = false
+                textViewTitle.animate()
+                    .alpha(0.0f)
+                    .start()
+            }
+        }
+
+        mShowPageFragment.onClickReviewsListener = this
+
         return layout
     }
 
@@ -179,6 +202,13 @@ class TVShowFragment
                 fragment.view?.alpha = 1.0f - f
             }
         )
+    }
+
+    // on click - show reviews
+    override fun onClick(
+        v: View?
+    ) {
+        mViewPager?.currentItem = 1
     }
 
     companion object {

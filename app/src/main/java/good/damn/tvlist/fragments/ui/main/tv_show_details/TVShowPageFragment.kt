@@ -37,7 +37,6 @@ import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
-import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -57,6 +56,9 @@ class TVShowPageFragment
     var program: TVProgram? = null
 
     var topPadding: Int = 0
+
+    var onScrollChangeListener: ((Int) -> Unit)? = null
+    var onClickReviewsListener: View.OnClickListener? = null
 
     override fun onCreateView(
         context: Context,
@@ -86,27 +88,13 @@ class TVShowPageFragment
                 R.color.background
             )
 
-            /*contentLayout.post {
-                val triggerY = contentLayout.y * 1.3f
-
-                var mIsShown = false
-
+            contentLayout.post {
                 viewTreeObserver.addOnScrollChangedListener {
-                    if (!mIsShown && scrollY > triggerY) {
-                        mIsShown = true
-                        textViewTitle.animate()
-                            .alpha(1.0f)
-                            .start()
-                    }
-
-                    if (mIsShown && scrollY < triggerY) {
-                        mIsShown = false
-                        textViewTitle.animate()
-                            .alpha(0.0f)
-                            .start()
-                    }
+                    onScrollChangeListener?.invoke(
+                        scrollY
+                    )
                 }
-            }*/
+            }
         }
 
 
@@ -443,6 +431,10 @@ class TVShowPageFragment
                 top = measureUnit * 0.048309f
             )
 
+            setOnClickListener(
+                onClickReviewsListener
+            )
+
             contentLayout.addView(
                 this
             )
@@ -685,7 +677,7 @@ class TVShowPageFragment
                 "${program.startTimeString} " +
                 "${getString(R.string.on_channel)} " +
                 "\"${program.channelName}\"",
-            (program.startTime - 900) * 1000L,
+            (program.startTime - 900) * 1000L, // 900 - 15 minutes
             dirName = DIR_PREVIEW,
             imageUrl = program.imageUrl
         )
@@ -696,7 +688,6 @@ class TVShowPageFragment
             Toast.LENGTH_SHORT
         ).show()
     }
-
 
     companion object {
         private const val TAG = "TVShowDetailsFragment"
@@ -719,7 +710,7 @@ private fun TVShowPageFragment.onClickShare(
 
     val file = CacheFile.cacheFile(
         App.CACHE_DIR,
-        "bitmapProgramPreview",
+        TVShowPageFragment.DIR_PREVIEW,
         program.imageUrl.hashCode().toString()
     )
 
