@@ -8,11 +8,15 @@ import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.activity.result.ActivityResultCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import good.damn.tvlist.App
+import good.damn.tvlist.Manifest
 import good.damn.tvlist.R
 import good.damn.tvlist.animators.FragmentAnimator
 import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver
@@ -26,7 +30,8 @@ import good.damn.tvlist.navigators.MainFragmentNavigator
 
 class MainActivity
 : AppCompatActivity(),
-NetworkListener {
+NetworkListener,
+ActivityResultCallback<Boolean> {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -49,16 +54,26 @@ NetworkListener {
     private lateinit var mNavigator: MainFragmentNavigator<StackFragment>
     private lateinit var mContainer: FrameLayout
 
+    private var mPermissionLauncher: ActivityResultLauncher<String>? = null
+
     private var mWindowController: WindowInsetsControllerCompat? = null
 
     private val mAnimator = FragmentAnimator()
 
     private val mNetworkReceiver = NetworkReceiver()
 
+    private var mPermissionFragment: StackFragment? = null
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
+
+        mPermissionLauncher = registerForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+            this
+        )
+
 
         mNetworkReceiver.networkListener = this
 
@@ -253,6 +268,16 @@ NetworkListener {
         )
     }
 
+    fun requestPermission(
+        permission: String,
+        fragment: StackFragment
+    ) {
+        mPermissionLauncher?.apply {
+            mPermissionFragment = fragment
+            launch(permission)
+        }
+    }
+
     override fun onNetworkConnected() {
         App.NETWORK_AVAILABLE = true
         mNavigator.getFragments().forEach {
@@ -267,6 +292,15 @@ NetworkListener {
             R.string.no_internet_connection,
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    override fun onActivityResult(
+        isGrantedPermission: Boolean
+    ) {
+        mPermissionFragment?.onGrantPermission(
+            isGrantedPermission
+        )
+        mPermissionFragment = null
     }
 
 }

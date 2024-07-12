@@ -1,5 +1,7 @@
 package good.damn.tvlist.fragments.ui.main
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -48,6 +50,8 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
+import good.damn.tvlist.utils.BuildUtils
+import good.damn.tvlist.utils.PermissionUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
@@ -768,22 +772,31 @@ class TVShowDetailsFragment
 
 }
 
+// Manifest.permission.POST_NOTIFICATIONS 33
+@SuppressLint("InlinedApi")
 private fun TVShowDetailsFragment.onClickScheduleAlarm(
     v: View
 ) {
-
-
 
     val program = program
         ?: return
 
     val c = Calendar.getInstance()
 
+    if (BuildUtils.isTiramisu() and (
+       !PermissionUtils.checkNotifications(v.context)
+    )) {
+        requestPermission(
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+        return
+    }
+
     Toast.makeText(
         v.context,
         "Установлено напоминание для \"${program.name}\" на " +
-        "${c.getDayString()}.${c.getMonthString()} " +
-        program.startTimeString,
+            "${c.getDayString()}.${c.getMonthString()} " +
+            program.startTimeString,
         Toast.LENGTH_SHORT
     ).show()
 }

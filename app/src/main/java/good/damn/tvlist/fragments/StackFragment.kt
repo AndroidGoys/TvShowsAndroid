@@ -52,6 +52,10 @@ abstract class StackFragment
         isFragmentFocused: Boolean
     ) {}
 
+    open fun onGrantPermission(
+        isGranted: Boolean
+    ) {}
+
     fun pushFragment(
         fragment: StackFragment,
         withAnimation: FragmentAnimation? = null
@@ -95,6 +99,13 @@ abstract class StackFragment
         .isFragmentFocused(
             this
         )
+
+    fun requestPermission(
+        permission: String
+    ) = mainActivity().requestPermission(
+        permission,
+        this
+    )
 
     protected abstract fun onCreateView(
         context: Context,
