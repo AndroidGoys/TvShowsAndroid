@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
@@ -29,6 +30,7 @@ View.OnClickListener {
 
     private var mViewPager: ViewPager2? = null
     private var mBlurView: BlurShaderView? = null
+    private var mTextViewTitle: AppCompatTextView? = null
 
     private val mShowPageFragment = TVShowPageFragment()
     private val mShowReviewsFragment = TVShowReviewsFragment()
@@ -44,7 +46,7 @@ View.OnClickListener {
         val layoutTopBar = FrameLayout(
             context
         )
-        val textViewTitle = TextView(
+        mTextViewTitle = AppCompatTextView(
             context
         )
 
@@ -100,7 +102,7 @@ View.OnClickListener {
             )
         }
 
-        textViewTitle.apply {
+        mTextViewTitle?.apply {
             ViewUtils.topBarStyleTitle(
                 layoutTopBar,
                 this
@@ -142,22 +144,23 @@ View.OnClickListener {
         }
 
         // Setup listeners
-        var isShown = false
-        val triggerY = App.HEIGHT * 0.42f
-        mShowPageFragment.onScrollChangeListener = {
-            scrollY ->
-            if (!isShown && scrollY > triggerY) {
-                isShown = true
-                textViewTitle.animate()
-                    .alpha(1.0f)
-                    .start()
-            }
+        mTextViewTitle?.let {
+            var isShown = false
+            val triggerY = App.HEIGHT * 0.42f
+            mShowPageFragment.onScrollChangeListener = { scrollY ->
+                if (!isShown && scrollY > triggerY) {
+                    isShown = true
+                    it.animate()
+                        .alpha(1.0f)
+                        .start()
+                }
 
-            if (isShown && scrollY < triggerY) {
-                isShown = false
-                textViewTitle.animate()
-                    .alpha(0.0f)
-                    .start()
+                if (isShown && scrollY < triggerY) {
+                    isShown = false
+                    it.animate()
+                        .alpha(0.0f)
+                        .start()
+                }
             }
         }
 
@@ -193,6 +196,7 @@ View.OnClickListener {
         mViewPager?.apply {
             if (currentItem > 0) {
                 currentItem--
+                fadeInTextViewTitle()
                 return
             }
         }
@@ -209,6 +213,19 @@ View.OnClickListener {
         v: View?
     ) {
         mViewPager?.currentItem = 1
+        fadeInTextViewTitle()
+    }
+
+    private fun fadeInTextViewTitle() {
+        mTextViewTitle?.apply {
+            if (alpha > 0.8f) {
+                return
+            }
+
+            animate()
+                .alpha(1.0f)
+                .start()
+        }
     }
 
     companion object {
