@@ -803,13 +803,3 @@ private fun TVShowPageFragment.chapterTextView(
         top = measureUnit * 0.08816f
     )
 }
-
-private fun TVShowPageFragment.onClickBtnBack(
-    v: View
-) {
-    popFragment(
-        FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = 1.0f-f
-        }
-    )
-}

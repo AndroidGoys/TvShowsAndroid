@@ -30,6 +30,7 @@ class TVShowFragment
     private var mBlurView: BlurShaderView? = null
 
     private val mShowPageFragment = TVShowPageFragment()
+    private val mShowReviewsFragment = TVShowReviewsFragment()
 
     override fun onCreateView(
         context: Context,
@@ -126,7 +127,8 @@ class TVShowFragment
 
             adapter = FragmentAdapter(
                 arrayOf(
-                    mShowPageFragment
+                    mShowPageFragment,
+                    mShowReviewsFragment
                 ),
                 childFragmentManager,
                 lifecycle
@@ -165,6 +167,13 @@ class TVShowFragment
     private fun onClickBtnBack(
         v: View
     ) {
+        mViewPager?.apply {
+            if (currentItem > 0) {
+                currentItem--
+                return
+            }
+        }
+
         popFragment(
             FragmentAnimation { f, fragment ->
                 fragment.view?.alpha = 1.0f - f
