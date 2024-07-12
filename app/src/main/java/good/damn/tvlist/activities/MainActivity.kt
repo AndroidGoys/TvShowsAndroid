@@ -16,7 +16,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import good.damn.tvlist.App
-import good.damn.tvlist.Manifest
 import good.damn.tvlist.R
 import good.damn.tvlist.animators.FragmentAnimator
 import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver

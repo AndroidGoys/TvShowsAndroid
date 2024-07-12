@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
-import android.graphics.Typeface
 import android.os.Looper
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
@@ -14,11 +13,13 @@ import android.os.Handler
 import android.util.Log
 import android.webkit.WebView
 import androidx.annotation.DrawableRes
+import good.damn.tvlist.extensions.getNotificationManager
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.utils.BuildUtils
+import good.damn.tvlist.utils.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.File
-import java.util.Calendar
 
 class App
 : Application() {
@@ -94,5 +95,32 @@ class App
             .cacheDir
 
         Log.d(TAG, "onCreate: USER_AGENT: $USER_AGENT")
+
+        createNotificationChannels()
+
     }
+}
+
+private fun App.createNotificationChannels() {
+    if (!BuildUtils.isOreo26()) {
+        return
+    }
+
+    val manager = applicationContext
+        .getNotificationManager()
+
+    if (manager
+        .notificationChannels
+        .isNotEmpty()
+    ) {
+        return
+    }
+
+    NotificationUtils.createNotificationChannel(
+        App.NOTIFICATION_ID,
+        getString(R.string.nt_schedule),
+        getString(R.string.nd_schedule),
+        applicationContext
+    )
+
 }

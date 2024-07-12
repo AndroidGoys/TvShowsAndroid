@@ -25,6 +25,8 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".broadcast_receivers.notificaition.TVShowScheduleReceiver"/>
+
         <provider
             android:authorities="good.damn.tvlist.provider"
             android:name="androidx.core.content.FileProvider"

@@ -28,4 +28,7 @@
     <string name="at_time">в</string>
     <string name="on_channel">на канале</string>
     <string name="in_app">в приложении</string>
+    <string name="nt_schedule">Напомимание</string>
+    <string name="nd_schedule">Уведомление о старте шоу в определённое время</string>
+    <string name="time_for_watch">Время для просмотра</string>
 </resources>

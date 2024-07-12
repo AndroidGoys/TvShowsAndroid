@@ -4,21 +4,16 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import java.util.Calendar
 import android.net.Uri
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.StringRes
-import androidx.appcompat.widget.AppCompatImageButton
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +23,6 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
 import good.damn.tvlist.adapters.recycler_view.TVShowImagesAdapter
-import good.damn.tvlist.cache.CacheBitmap
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
@@ -51,6 +45,7 @@ import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.BuildUtils
+import good.damn.tvlist.utils.NotificationUtils
 import good.damn.tvlist.utils.PermissionUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
@@ -59,15 +54,11 @@ import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class TVShowDetailsFragment
 : StackFragment() {
 
     var program: TVProgram? = null
-    var channelName: String? = null
 
     private var mBlurView: BlurShaderView? = null
 
@@ -610,7 +601,7 @@ class TVShowDetailsFragment
                 NetworkBitmap.loadFromNetwork(
                     url,
                     App.CACHE_DIR,
-                    "bitmapProgramPreview",
+                    DIR_PREVIEW,
                     widthParams(),
                     heightParams()
                 ) {
@@ -761,8 +752,54 @@ class TVShowDetailsFragment
         mBlurView?.clean()
     }
 
+
+    // Manifest.permission.POST_NOTIFICATIONS 33
+    @SuppressLint("InlinedApi")
+    private fun onClickScheduleAlarm(
+        v: View
+    ) {
+
+        val program = program
+            ?: return
+
+        val context = activity?.applicationContext
+            ?: return
+
+        if (BuildUtils.isTiramisu33() and (
+                !PermissionUtils.checkNotifications(context)
+                )
+        ) {
+            requestPermission(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+            return
+        }
+
+        NotificationUtils.scheduleNotification(
+            context,
+            "${program.name}${program.startTime}${program.channelName}".hashCode(),
+            getString(R.string.time_for_watch),
+            program.name +
+                " - " +
+                "${program.startTimeString} " +
+                "${getString(R.string.on_channel)} " +
+                "\"${program.channelName}\"",
+            System.currentTimeMillis() + 10000, // Half an hour
+            dirName = DIR_PREVIEW,
+            imageUrl = program.imageUrl
+        )
+
+        Toast.makeText(
+            context,
+            "Set",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+
     companion object {
         private const val TAG = "TVShowDetailsFragment"
+        const val DIR_PREVIEW = "bitmapProgramPreview"
         fun newInstance(
             prog: TVProgram
         ) = TVShowDetailsFragment().apply {
@@ -770,35 +807,6 @@ class TVShowDetailsFragment
         }
     }
 
-}
-
-// Manifest.permission.POST_NOTIFICATIONS 33
-@SuppressLint("InlinedApi")
-private fun TVShowDetailsFragment.onClickScheduleAlarm(
-    v: View
-) {
-
-    val program = program
-        ?: return
-
-    val c = Calendar.getInstance()
-
-    if (BuildUtils.isTiramisu() and (
-       !PermissionUtils.checkNotifications(v.context)
-    )) {
-        requestPermission(
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-        return
-    }
-
-    Toast.makeText(
-        v.context,
-        "Установлено напоминание для \"${program.name}\" на " +
-            "${c.getDayString()}.${c.getMonthString()} " +
-            program.startTimeString,
-        Toast.LENGTH_SHORT
-    ).show()
 }
 
 private fun TVShowDetailsFragment.onClickShare(
