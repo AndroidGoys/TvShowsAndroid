@@ -1,4 +1,4 @@
-package good.damn.tvlist.fragments.ui.main
+package good.damn.tvlist.fragments.ui.main.tv_show_details
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,7 +18,6 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
@@ -30,11 +29,9 @@ import good.damn.tvlist.extensions.getDayString
 import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
-import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
-import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.topHeightParams
 import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
@@ -50,17 +47,16 @@ import good.damn.tvlist.utils.PermissionUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
-import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
 
-class TVShowDetailsFragment
+class TVShowPageFragment
 : StackFragment() {
 
     var program: TVProgram? = null
 
-    private var mBlurView: BlurShaderView? = null
+    var topPadding: Int = 0
 
     override fun onCreateView(
         context: Context,
@@ -73,12 +69,6 @@ class TVShowDetailsFragment
 
         val marginHorizontal = measureUnit * 0.07004f
 
-        val layout = FrameLayout(
-            context
-        )
-        val layoutTopBar = FrameLayout(
-            context
-        )
         val layoutRootContent = FrameLayout(
             context
         )
@@ -89,16 +79,14 @@ class TVShowDetailsFragment
             context
         )
 
-        val textViewTitle = TextView(
-            context
-        )
+
 
         scrollView.apply {
             setBackgroundColorId(
                 R.color.background
             )
 
-            contentLayout.post {
+            /*contentLayout.post {
                 val triggerY = contentLayout.y * 1.3f
 
                 var mIsShown = false
@@ -118,66 +106,10 @@ class TVShowDetailsFragment
                             .start()
                     }
                 }
-            }
+            }*/
         }
 
-        ViewUtils.topBarStyleMain(
-            layoutTopBar,
-            measureUnit
-        )
 
-        mBlurView = BlurShaderView(
-            context,
-            scrollView,
-            blurRadius = 5,
-            scaleFactor = 0.35f,
-            shadeColor = App.color(
-                R.color.background
-            ).withAlpha(
-                0.5f
-            ).rgba()
-        ).apply {
-            boundsFrame(
-                width = layoutTopBar.widthParams(),
-                height = layoutTopBar.heightParams()
-            )
-            layoutTopBar.addView(this)
-            startRenderLoop()
-        }
-
-        ButtonBack.createFrame(
-            context,
-            measureUnit
-        ).apply {
-
-            ViewUtils.topBarStyleBtnBack(
-                layoutTopBar,
-                this
-            )
-
-            setOnClickListener(
-                this@TVShowDetailsFragment::onClickBtnBack
-            )
-
-            layoutTopBar.addView(
-                this
-            )
-        }
-
-        textViewTitle.apply {
-            ViewUtils.topBarStyleTitle(
-                layoutTopBar,
-                this
-            )
-
-            alpha = 0f
-
-            text = program?.shortName ?: program?.name
-
-            layoutTopBar.addView(
-                this
-            )
-        }
 
         // Title
         TextView(
@@ -635,7 +567,7 @@ class TVShowDetailsFragment
             )
 
             setOnClickListener(
-                this@TVShowDetailsFragment::onClickScheduleAlarm
+                this@TVShowPageFragment::onClickScheduleAlarm
             )
 
             layoutRootContent.addView(
@@ -663,7 +595,7 @@ class TVShowDetailsFragment
             )
 
             setOnClickListener(
-                this@TVShowDetailsFragment::onClickShare
+                this@TVShowPageFragment::onClickShare
             )
 
             layoutRootContent.addView(
@@ -708,48 +640,17 @@ class TVShowDetailsFragment
         scrollView.apply {
             isHorizontalScrollBarEnabled = false
             isVerticalScrollBarEnabled = false
-            val pad = layoutTopBar.heightParams()
             clipToPadding = false
-            setPadding(
+            setPadding(0,
+                topPadding,
                 0,
-                pad,
-                0,
-                pad
+                topPadding
             )
+
             addView(layoutRootContent)
         }
 
-        layout.apply {
-            size(-1, -1)
-            setBackgroundColorId(
-                R.color.background
-            )
-            addView(scrollView)
-            addView(layoutTopBar)
-        }
-
-        return layout
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mBlurView?.apply {
-            startRenderLoop()
-            onResume()
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mBlurView?.apply {
-            stopRenderLoop()
-            onPause()
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mBlurView?.clean()
+        return scrollView
     }
 
 
@@ -800,16 +701,11 @@ class TVShowDetailsFragment
     companion object {
         private const val TAG = "TVShowDetailsFragment"
         const val DIR_PREVIEW = "bitmapProgramPreview"
-        fun newInstance(
-            prog: TVProgram
-        ) = TVShowDetailsFragment().apply {
-            program = prog
-        }
     }
 
 }
 
-private fun TVShowDetailsFragment.onClickShare(
+private fun TVShowPageFragment.onClickShare(
     v: View
 ) {
 
@@ -845,7 +741,7 @@ private fun TVShowDetailsFragment.onClickShare(
     )
 }
 
-private fun TVShowDetailsFragment.shareTVShow(
+private fun TVShowPageFragment.shareTVShow(
     program: TVProgram,
     data: Uri? = null
 ) {
@@ -878,7 +774,7 @@ private fun TVShowDetailsFragment.shareTVShow(
     )
 }
 
-private fun TVShowDetailsFragment.chapterTextView(
+private fun TVShowPageFragment.chapterTextView(
     context: Context,
     measureUnit: Int,
     @StringRes textId: Int
@@ -908,7 +804,7 @@ private fun TVShowDetailsFragment.chapterTextView(
     )
 }
 
-private fun TVShowDetailsFragment.onClickBtnBack(
+private fun TVShowPageFragment.onClickBtnBack(
     v: View
 ) {
     popFragment(

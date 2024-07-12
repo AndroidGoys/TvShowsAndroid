@@ -1,7 +1,6 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
@@ -11,7 +10,8 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
-import good.damn.tvlist.fragments.ui.main.TVShowDetailsFragment
+import good.damn.tvlist.fragments.ui.main.tv_show_details.TVShowFragment
+import good.damn.tvlist.fragments.ui.main.tv_show_details.TVShowPageFragment
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.program.OnClickProgramListener
@@ -103,7 +103,7 @@ class TVProgramViewHolder(
                     }
 
                     (view.context as? MainActivity)?.pushFragment(
-                        TVShowDetailsFragment.newInstance(
+                        TVShowFragment.newInstance(
                             program
                         ), FragmentAnimation { f, fragment ->
                             fragment.view?.scaleX = f
