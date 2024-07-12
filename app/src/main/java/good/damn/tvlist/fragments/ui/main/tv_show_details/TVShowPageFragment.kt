@@ -18,6 +18,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
@@ -29,6 +30,7 @@ import good.damn.tvlist.extensions.getDayString
 import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
@@ -37,6 +39,7 @@ import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -45,6 +48,7 @@ import good.damn.tvlist.utils.NotificationUtils
 import good.damn.tvlist.utils.PermissionUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.RateView
+import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.statistic.StatisticsView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
@@ -53,12 +57,21 @@ import good.damn.tvlist.views.statistic.ProgressTitleDraw
 class TVShowPageFragment
 : StackFragment() {
 
+    companion object {
+        private const val TAG = "TVShowDetailsFragment"
+        const val DIR_PREVIEW = "bitmapProgramPreview"
+
+        fun newInstance(
+            program: TVProgram?
+        ) = TVShowPageFragment().apply {
+            this.program = program
+        }
+
+    }
+
     var program: TVProgram? = null
 
-    var topPadding: Int = 0
-
-    var onScrollChangeListener: ((Int) -> Unit)? = null
-    var onClickReviewsListener: View.OnClickListener? = null
+    private var mBlurView: BlurShaderView? = null
 
     override fun onCreateView(
         context: Context,
@@ -71,6 +84,10 @@ class TVShowPageFragment
 
         val marginHorizontal = measureUnit * 0.07004f
 
+        val layout = FrameLayout(
+            context
+        )
+
         val layoutRootContent = FrameLayout(
             context
         )
@@ -81,7 +98,73 @@ class TVShowPageFragment
             context
         )
 
+        val layoutTopBar = FrameLayout(
+            context
+        )
+        val mTextViewTitle = AppCompatTextView(
+            context
+        )
 
+        ViewUtils.topBarStyleMain(
+            layoutTopBar,
+            measureUnit,
+            getTopInset()
+        )
+
+        mBlurView = BlurShaderView(
+            context,
+            scrollView,
+            blurRadius = 5,
+            scaleFactor = 0.35f,
+            shadeColor = App.color(
+                R.color.background
+            ).withAlpha(
+                0.5f
+            ).rgba()
+        ).apply {
+            boundsFrame(
+                width = layoutTopBar.widthParams(),
+                height = layoutTopBar.heightParams()
+            )
+            layoutTopBar.addView(this)
+            startRenderLoop()
+        }
+
+        ButtonBack.createFrame(
+            context,
+            measureUnit
+        ).apply {
+
+            ViewUtils.topBarStyleBtnBack(
+                layoutTopBar,
+                this,
+                getTopInset()
+            )
+
+            setOnClickListener(
+                this@TVShowPageFragment::onClickBtnBack
+            )
+
+            layoutTopBar.addView(
+                this
+            )
+        }
+
+        mTextViewTitle.apply {
+            ViewUtils.topBarStyleTitle(
+                layoutTopBar,
+                this,
+                getTopInset()
+            )
+
+            alpha = 0f
+
+            text = program?.shortName ?: program?.name
+
+            layoutTopBar.addView(
+                this
+            )
+        }
 
         scrollView.apply {
             setBackgroundColorId(
@@ -89,10 +172,22 @@ class TVShowPageFragment
             )
 
             contentLayout.post {
+                var isShown = false
+                val triggerY = contentLayout.y * 1.3f
                 viewTreeObserver.addOnScrollChangedListener {
-                    onScrollChangeListener?.invoke(
-                        scrollY
-                    )
+                    if (!isShown && scrollY > triggerY) {
+                        isShown = true
+                        mTextViewTitle.animate()
+                            .alpha(1.0f)
+                            .start()
+                    }
+
+                    if (isShown && scrollY < triggerY) {
+                        isShown = false
+                        mTextViewTitle.animate()
+                            .alpha(0.0f)
+                            .start()
+                    }
                 }
             }
         }
@@ -255,6 +350,10 @@ class TVShowPageFragment
             boundsLinear(
                 left = marginHorizontal,
                 top = measureUnit * 30.normalWidth()
+            )
+
+            setOnClickListener(
+                this@TVShowPageFragment::onClickPostReview
             )
 
             contentLayout.addView(
@@ -432,7 +531,7 @@ class TVShowPageFragment
             )
 
             setOnClickListener(
-                onClickReviewsListener
+                this@TVShowPageFragment::onClickShowReviews
             )
 
             contentLayout.addView(
@@ -633,6 +732,10 @@ class TVShowPageFragment
             isHorizontalScrollBarEnabled = false
             isVerticalScrollBarEnabled = false
             clipToPadding = false
+
+            val topPadding = getTopInset() +
+                layoutTopBar.heightParams()
+
             setPadding(0,
                 topPadding,
                 0,
@@ -642,9 +745,37 @@ class TVShowPageFragment
             addView(layoutRootContent)
         }
 
-        return scrollView
+        layout.apply {
+            setBackgroundColorId(
+                R.color.background
+            )
+            addView(scrollView)
+            addView(layoutTopBar)
+        }
+
+        return layout
     }
 
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.apply {
+            startRenderLoop()
+            onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.apply {
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBlurView?.clean()
+    }
 
     // Manifest.permission.POST_NOTIFICATIONS 33
     @SuppressLint("InlinedApi")
@@ -689,11 +820,27 @@ class TVShowPageFragment
         ).show()
     }
 
-    companion object {
-        private const val TAG = "TVShowDetailsFragment"
-        const val DIR_PREVIEW = "bitmapProgramPreview"
-    }
+}
 
+private fun TVShowPageFragment.onClickShowReviews(
+    v: View
+) {
+    pushFragment(
+        TVShowReviewsFragment(),
+        FragmentAnimation { f, fragment ->
+            fragment.view?.alpha = f
+        }
+    )
+}
+
+private fun TVShowPageFragment.onClickBtnBack(
+    v: View
+) {
+    popFragment(
+        FragmentAnimation { f, fragment ->
+            fragment.view?.alpha = 1.0f - f
+        }
+    )
 }
 
 private fun TVShowPageFragment.onClickShare(
@@ -729,6 +876,22 @@ private fun TVShowPageFragment.onClickShare(
     Log.d(
         "TVShowDetailsFragment",
         "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
+    )
+}
+
+private fun TVShowPageFragment.onClickPostReview(
+    v: View
+) {
+    val program = program
+        ?: return
+
+    pushFragment(
+        TVShowPostReviewFragment.newInstance(
+            TVShowPostReviewFragment.TVShowPost(
+                program.id,
+                program.name
+            )
+        )
     )
 }
 

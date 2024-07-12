@@ -10,7 +10,6 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
-import good.damn.tvlist.fragments.ui.main.tv_show_details.TVShowFragment
 import good.damn.tvlist.fragments.ui.main.tv_show_details.TVShowPageFragment
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -103,7 +102,7 @@ class TVProgramViewHolder(
                     }
 
                     (view.context as? MainActivity)?.pushFragment(
-                        TVShowFragment.newInstance(
+                        TVShowPageFragment.newInstance(
                             program
                         ), FragmentAnimation { f, fragment ->
                             fragment.view?.scaleX = f

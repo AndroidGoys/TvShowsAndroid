@@ -43,7 +43,7 @@ class TVShowScheduleReceiver
             context,
             App.NOTIFICATION_ID
         ).setSmallIcon(
-            R.drawable.notification_icon
+            R.drawable.ic_play_fill
         ).setContentText(
             largeText
         ).setContentTitle(

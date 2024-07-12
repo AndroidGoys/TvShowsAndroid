@@ -51,14 +51,12 @@ class FavouritesFragment
             context
         )
 
-        val layoutTopBar = FrameLayout(
-            context
-        )
-        val btnBack = ButtonBack.createDefault(
-            context
-        )
-        val textViewTitle = TextView(
-            context
+        val layoutTopBar = ViewUtils.topBar(
+            context,
+            R.string.favourites,
+            measureUnit,
+            getTopInset(),
+            this::onClickBtnBack
         )
 
         mBlurView = BlurShaderView(
@@ -78,32 +76,7 @@ class FavouritesFragment
             R.color.background
         )
 
-        layoutTopBar.apply {
-            ViewUtils.topBarStyleMain(
-                this,
-                measureUnit,
-                getTopInset()
-            )
-        }
 
-        btnBack.apply {
-            ViewUtils.topBarStyleBtnBack(
-                layoutTopBar,
-                this,
-                getTopInset()
-            )
-        }
-
-        textViewTitle.apply {
-            ViewUtils.topBarStyleTitle(
-                layoutTopBar,
-                this,
-                getTopInset()
-            )
-            setText(
-                R.string.favourites
-            )
-        }
 
         recyclerView.apply {
             setBackgroundColorId(
@@ -142,22 +115,18 @@ class FavouritesFragment
                 height = layoutTopBar.heightParams()
             )
             layoutTopBar.addView(
-                this
+                this,
+                0
             )
 
             startRenderLoop()
         }
 
-        layoutTopBar.apply {
-            addView(btnBack)
-            addView(textViewTitle)
-        }
 
         layout.apply {
             addView(recyclerView)
             addView(layoutTopBar)
         }
-
 
 
         App.IO.launch {
@@ -168,10 +137,6 @@ class FavouritesFragment
             }
         }
 
-
-        btnBack.setOnClickListener(
-            this::onClickBtnBack
-        )
 
         return layout
     }

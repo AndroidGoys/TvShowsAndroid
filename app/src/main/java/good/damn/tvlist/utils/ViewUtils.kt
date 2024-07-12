@@ -5,8 +5,10 @@ import android.icu.util.MeasureUnit
 import android.view.Gravity
 import android.view.View
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.StringRes
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
@@ -20,6 +22,76 @@ import good.damn.tvlist.views.buttons.ButtonBack
 class ViewUtils {
     companion object {
         private const val TAG = "ViewUtils"
+
+        fun topBar(
+            context: Context,
+            title: String,
+            measureUnit: Int,
+            topInset: Int,
+            btnBackClickListener: View.OnClickListener
+        ): FrameLayout {
+            val layoutTopBar = FrameLayout(
+                context
+            )
+            val btnBack = ButtonBack.createDefault(
+                context
+            )
+            val textViewTitle = TextView(
+                context
+            )
+
+            layoutTopBar.apply {
+                topBarStyleMain(
+                    this,
+                    measureUnit,
+                    topInset
+                )
+            }
+
+            btnBack.apply {
+                topBarStyleBtnBack(
+                    layoutTopBar,
+                    this,
+                    topInset
+                )
+
+                setOnClickListener(
+                    btnBackClickListener
+                )
+            }
+
+            textViewTitle.apply {
+                topBarStyleTitle(
+                    layoutTopBar,
+                    this,
+                    topInset
+                )
+                text = title
+            }
+
+            layoutTopBar.apply {
+                addView(btnBack)
+                addView(textViewTitle)
+            }
+
+            return layoutTopBar
+        }
+
+        fun topBar(
+            context: Context,
+            @StringRes titleId: Int,
+            measureUnit: Int,
+            topInset: Int,
+            btnBackClickListener: View.OnClickListener
+        ) = topBar(
+            context,
+            context.getString(
+                titleId
+            ),
+            measureUnit,
+            topInset,
+            btnBackClickListener
+        )
 
         fun topBarStyleTitle(
             layoutTopBar: View,
