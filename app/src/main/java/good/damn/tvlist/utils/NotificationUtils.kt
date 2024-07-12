@@ -83,14 +83,12 @@ class NotificationUtils {
 
             val pending = PendingIntent.getBroadcast(
                 context,
-                1,
+                notificationId,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or (
                     PendingIntent.FLAG_IMMUTABLE
                 )
             )
-
-            Log.d(TAG, "scheduleNotification: $atTime ${System.currentTimeMillis()}")
 
             val alarm = context.getAlarmManager()
             alarm.set(

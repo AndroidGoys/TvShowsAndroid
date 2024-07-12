@@ -784,7 +784,7 @@ class TVShowDetailsFragment
                 "${program.startTimeString} " +
                 "${getString(R.string.on_channel)} " +
                 "\"${program.channelName}\"",
-            System.currentTimeMillis() + 10000, // Half an hour
+            (program.startTime - 900) * 1000L,
             dirName = DIR_PREVIEW,
             imageUrl = program.imageUrl
         )
@@ -913,7 +913,7 @@ private fun TVShowDetailsFragment.onClickBtnBack(
 ) {
     popFragment(
         FragmentAnimation { f, fragment ->
-            fragment.view?.scaleX = 1.0f-f
+            fragment.view?.alpha = 1.0f-f
         }
     )
 }
