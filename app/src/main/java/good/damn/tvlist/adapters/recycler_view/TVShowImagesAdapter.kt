@@ -3,7 +3,7 @@ package good.damn.tvlist.adapters.recycler_view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.network.api.models.show.TVShowImage
-import good.damn.tvlist.view_holders.TVShowImageViewHolder
+import good.damn.tvlist.view_holders.tv_show.TVShowImageViewHolder
 
 class TVShowImagesAdapter(
     private val mData: Array<TVShowImage>,

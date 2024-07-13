@@ -1,7 +1,6 @@
-package good.damn.tvlist.view_holders
+package good.damn.tvlist.view_holders.tv_show
 
 import android.content.Context
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.extensions.heightParams

@@ -3,7 +3,7 @@ package good.damn.tvlist.adapters.recycler_view
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
-import good.damn.tvlist.view_holders.TVShowChannelsViewHolder
+import good.damn.tvlist.view_holders.tv_show.TVShowChannelsViewHolder
 
 class TVShowChannelsAdapter(
     private val mData: Array<TVShowChannelDate>,
