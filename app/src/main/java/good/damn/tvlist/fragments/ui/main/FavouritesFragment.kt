@@ -27,6 +27,8 @@ import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
+import good.damn.tvlist.views.top_bars.TopBarView
+import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 import kotlinx.coroutines.launch
 import java.io.Closeable
 
@@ -51,13 +53,15 @@ class FavouritesFragment
             context
         )
 
-        val layoutTopBar = ViewUtils.topBar(
+        val topBar = TopBarView(
             context,
-            R.string.favourites,
-            measureUnit,
-            getTopInset(),
-            this::onClickBtnBack
-        )
+            getTopInset()
+        ).apply {
+            defaultTopBarStyle(
+                measureUnit,
+                getTopInset()
+            )
+        }
 
         mBlurView = BlurShaderView(
             context,
@@ -100,7 +104,7 @@ class FavouritesFragment
                 height = App.HEIGHT
             )
             clipToPadding = false
-            val pad = layoutTopBar.heightParams()
+            val pad = topBar.heightParams()
             setPadding(
                 0,
                 pad,
@@ -111,10 +115,10 @@ class FavouritesFragment
 
         mBlurView?.apply {
             boundsFrame(
-                width = layoutTopBar.widthParams(),
-                height = layoutTopBar.heightParams()
+                width = topBar.widthParams(),
+                height = topBar.heightParams()
             )
-            layoutTopBar.addView(
+            topBar.addView(
                 this,
                 0
             )
@@ -125,7 +129,7 @@ class FavouritesFragment
 
         layout.apply {
             addView(recyclerView)
-            addView(layoutTopBar)
+            addView(topBar)
         }
 
 

@@ -53,6 +53,8 @@ import good.damn.tvlist.views.statistic.StatisticsView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
+import good.damn.tvlist.views.top_bars.TopBarView
+import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 
 class TVShowPageFragment
 : StackFragment() {
@@ -98,15 +100,12 @@ class TVShowPageFragment
             context
         )
 
-        val layoutTopBar = FrameLayout(
-            context
-        )
-        val mTextViewTitle = AppCompatTextView(
-            context
+        val topBar = TopBarView(
+            context,
+            getTopInset()
         )
 
-        ViewUtils.topBarStyleMain(
-            layoutTopBar,
+        topBar.defaultTopBarStyle(
             measureUnit,
             getTopInset()
         )
@@ -123,47 +122,21 @@ class TVShowPageFragment
             ).rgba()
         ).apply {
             boundsFrame(
-                width = layoutTopBar.widthParams(),
-                height = layoutTopBar.heightParams()
+                width = topBar.widthParams(),
+                height = topBar.heightParams()
             )
-            layoutTopBar.addView(this)
+            topBar.addView(this,0)
             startRenderLoop()
         }
 
-        ButtonBack.createFrame(
-            context,
-            measureUnit
-        ).apply {
 
-            ViewUtils.topBarStyleBtnBack(
-                layoutTopBar,
-                this,
-                getTopInset()
-            )
+        topBar.btnBack.setOnClickListener(
+            this::onClickBtnBack
+        )
 
-            setOnClickListener(
-                this@TVShowPageFragment::onClickBtnBack
-            )
-
-            layoutTopBar.addView(
-                this
-            )
-        }
-
-        mTextViewTitle.apply {
-            ViewUtils.topBarStyleTitle(
-                layoutTopBar,
-                this,
-                getTopInset()
-            )
-
+        topBar.textViewTitle.apply {
             alpha = 0f
-
             text = program?.shortName ?: program?.name
-
-            layoutTopBar.addView(
-                this
-            )
         }
 
         scrollView.apply {
@@ -177,14 +150,14 @@ class TVShowPageFragment
                 viewTreeObserver.addOnScrollChangedListener {
                     if (!isShown && scrollY > triggerY) {
                         isShown = true
-                        mTextViewTitle.animate()
+                        topBar.textViewTitle.animate()
                             .alpha(1.0f)
                             .start()
                     }
 
                     if (isShown && scrollY < triggerY) {
                         isShown = false
-                        mTextViewTitle.animate()
+                        topBar.textViewTitle.animate()
                             .alpha(0.0f)
                             .start()
                     }
@@ -734,7 +707,7 @@ class TVShowPageFragment
             clipToPadding = false
 
             val topPadding = getTopInset() +
-                layoutTopBar.heightParams()
+                topBar.heightParams()
 
             setPadding(0,
                 topPadding,
@@ -750,7 +723,7 @@ class TVShowPageFragment
                 R.color.background
             )
             addView(scrollView)
-            addView(layoutTopBar)
+            addView(topBar)
         }
 
         return layout

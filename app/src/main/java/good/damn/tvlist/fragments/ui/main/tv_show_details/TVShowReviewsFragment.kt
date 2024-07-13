@@ -10,8 +10,6 @@ import good.damn.tvlist.fragments.StackFragment
 class TVShowReviewsFragment
 : StackFragment() {
 
-    var topPadding: Int = 0
-
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -26,12 +24,6 @@ class TVShowReviewsFragment
             )
 
             clipToPadding = false
-            setPadding(
-                0,
-                topPadding,
-                0,
-                topPadding
-            )
         }
 
         return recyclerView
