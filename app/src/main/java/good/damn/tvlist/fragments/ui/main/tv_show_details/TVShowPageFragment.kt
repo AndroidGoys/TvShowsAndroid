@@ -48,17 +48,17 @@ import good.damn.tvlist.utils.BuildUtils
 import good.damn.tvlist.utils.NotificationUtils
 import good.damn.tvlist.utils.PermissionUtils
 import good.damn.tvlist.utils.ViewUtils
-import good.damn.tvlist.views.RateView
-import good.damn.tvlist.views.buttons.ButtonBack
+import good.damn.tvlist.views.rate.RateView
 import good.damn.tvlist.views.statistic.StatisticsView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
+import good.damn.tvlist.views.rate.OnRateClickListener
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 
 class TVShowPageFragment
-: StackFragment() {
+: StackFragment(), OnRateClickListener {
 
     companion object {
         private const val TAG = "TVShowDetailsFragment"
@@ -294,6 +294,8 @@ class TVShowPageFragment
                 top = measureUnit * 23.normalWidth(),
                 height = (measureUnit * 38.normalWidth()).toInt()
             )
+
+            this.onRateClickListener = this@TVShowPageFragment
 
             contentLayout.addView(
                 this
@@ -751,49 +753,64 @@ class TVShowPageFragment
         mBlurView?.clean()
     }
 
-    // Manifest.permission.POST_NOTIFICATIONS 33
-    @SuppressLint("InlinedApi")
-    private fun onClickScheduleAlarm(
-        v: View
+    override fun onClickRate(
+        rate: Byte
     ) {
-
-        val program = program
-            ?: return
-
-        val context = activity?.applicationContext
-            ?: return
-
-        if (BuildUtils.isTiramisu33() and (
-                !PermissionUtils.checkNotifications(context)
-                )
-        ) {
-            requestPermission(
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-            return
-        }
-
-        NotificationUtils.scheduleNotification(
-            context,
-            "${program.name}${program.startTime}${program.channelName}".hashCode(),
-            getString(R.string.time_for_watch),
-            program.name +
-                " - " +
-                "${program.startTimeString} " +
-                "${getString(R.string.on_channel)} " +
-                "\"${program.channelName}\"",
-            (program.startTime - 900) * 1000L, // 900 - 15 minutes
-            dirName = DIR_PREVIEW,
-            imageUrl = program.imageUrl
+        createReview(
+            grade = rate
         )
+    }
+}
 
-        Toast.makeText(
-            context,
-            "Set",
-            Toast.LENGTH_SHORT
-        ).show()
+private fun TVShowPageFragment.onClickPostReview(
+    v: View
+) {
+    createReview(
+        grade = 0
+    )
+}
+
+// Manifest.permission.POST_NOTIFICATIONS 33
+@SuppressLint("InlinedApi")
+private fun TVShowPageFragment.onClickScheduleAlarm(
+    v: View
+) {
+
+    val program = program
+        ?: return
+
+    val context = v.context
+        ?: return
+
+    if (BuildUtils.isTiramisu33() and (
+            !PermissionUtils.checkNotifications(context)
+            )
+    ) {
+        requestPermission(
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+        return
     }
 
+    NotificationUtils.scheduleNotification(
+        context,
+        "${program.name}${program.startTime}${program.channelName}".hashCode(),
+        getString(R.string.time_for_watch),
+        program.name +
+            " - " +
+            "${program.startTimeString} " +
+            "${getString(R.string.on_channel)} " +
+            "\"${program.channelName}\"",
+        (program.startTime - 900) * 1000L, // 900 - 15 minutes
+        dirName = TVShowPageFragment.DIR_PREVIEW,
+        imageUrl = program.imageUrl
+    )
+
+    Toast.makeText(
+        context,
+        "Set",
+        Toast.LENGTH_SHORT
+    ).show()
 }
 
 private fun TVShowPageFragment.onClickShowReviews(
@@ -859,8 +876,8 @@ private fun TVShowPageFragment.onClickShare(
     )
 }
 
-private fun TVShowPageFragment.onClickPostReview(
-    v: View
+private fun TVShowPageFragment.createReview(
+    grade: Byte
 ) {
     val program = program
         ?: return
@@ -869,11 +886,12 @@ private fun TVShowPageFragment.onClickPostReview(
         TVShowPostReviewFragment.newInstance(
             TVShowReview(
                 program.id,
-                program.shortName ?: program.name
-            )
+                program.shortName ?: program.name,
+            ),
+            grade
         ),
         FragmentAnimation {
-            f, fragment ->
+                f, fragment ->
             fragment.view?.alpha = f
         }
     )

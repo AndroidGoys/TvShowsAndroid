@@ -1,4 +1,4 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.views.rate
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import good.damn.tvlist.extensions.checkBounds
+import good.damn.tvlist.views.Star
 
 class RateView(
     context: Context
@@ -21,7 +22,9 @@ class RateView(
         Star()
     }
 
-    private var mRate = 0
+    private var mRate: Byte = 0
+
+    var onRateClickListener: OnRateClickListener? = null
 
     init {
         super.setOnTouchListener(
@@ -95,25 +98,27 @@ class RateView(
             return false
         }
 
-        if (event.action == MotionEvent.ACTION_UP) {
-            if (checkBounds(
+        if (event.action != MotionEvent.ACTION_UP) {
+            return true
+        }
+
+        if (checkBounds(
                 event.x,
                 event.y
             )) {
-                for (i in mStars.indices) {
-                    val s = mStars[i].bounds
-                        ?: return false
-                    if (!(event.x <= s.left || event.x >= s.right)) {
-                        Log.d(TAG, "onTouch: TOUCHED: $i")
-                        mRate = i + 1
-                        invalidate()
-                        return true
-                    }
+            for (i in mStars.indices) {
+                val s = mStars[i].bounds
+                    ?: return false
+                if (!(event.x <= s.left || event.x >= s.right)) {
+                    mRate = (i + 1).toByte()
+                    onRateClickListener?.onClickRate(
+                        mRate
+                    )
+                    invalidate()
+                    return true
                 }
-
             }
         }
-
         return true
     }
 

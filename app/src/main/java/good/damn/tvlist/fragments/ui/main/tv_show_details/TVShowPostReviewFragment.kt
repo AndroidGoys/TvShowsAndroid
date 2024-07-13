@@ -16,7 +16,19 @@ import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 class TVShowPostReviewFragment
 : StackFragment() {
 
+    companion object {
+        private const val TAG = "TVShowPostReviewFragmen"
+        fun newInstance(
+            tvShow: TVShowReview?,
+            grade: Byte
+        ) = TVShowPostReviewFragment().apply {
+            this.review = tvShow
+            this.grade = grade
+        }
+    }
+
     var review: TVShowReview? = null
+    var grade: Byte = 0
 
     override fun onCreateView(
         context: Context,
@@ -47,15 +59,6 @@ class TVShowPostReviewFragment
         }
 
         return layout
-    }
-
-    companion object {
-        private const val TAG = "TVShowPostReviewFragmen"
-        fun newInstance(
-            tvShow: TVShowReview?
-        ) = TVShowPostReviewFragment().apply {
-            this.review = tvShow
-        }
     }
 }
 
