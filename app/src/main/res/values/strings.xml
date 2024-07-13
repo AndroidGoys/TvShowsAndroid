@@ -31,4 +31,6 @@
     <string name="nt_schedule">Напомимание</string>
     <string name="nd_schedule">Уведомление о старте шоу в определённое время</string>
     <string name="time_for_watch">Время для просмотра</string>
+    <string name="your_rate">Оценка</string>
+    <string name="hint_text_review">Текст отзыва (необязательно)</string>
 </resources>

@@ -82,7 +82,7 @@ class TVShowPageFragment
     ): View {
 
         val showService = TVShowService(
-            context.cacheDir
+            App.CACHE_DIR
         )
 
         val marginHorizontal = measureUnit * 0.07004f

@@ -57,7 +57,7 @@ class RateView(
 
         val margin = width / 5 - height
 
-        var xOffset = 0
+        var xOffset = margin / 2
 
         mStars.forEach {
             it.setBounds(
@@ -120,6 +120,13 @@ class RateView(
             }
         }
         return true
+    }
+
+    fun setStarsRate(
+        grade: Byte
+    ) {
+        mRate = grade
+        invalidate()
     }
 
 }
