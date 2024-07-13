@@ -1,6 +1,7 @@
 package good.damn.tvlist.views
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -39,6 +40,8 @@ class UserHeaderView(
             field = v
             mPaintRating.typeface = v
         }
+
+    var bitmap: Bitmap? = null
 
     @ColorInt
     var textColor: Int = Color.RED
@@ -124,6 +127,17 @@ class UserHeaderView(
                 mPaintDate
             )
         }
+
+        if (bitmap == null) {
+            return
+        }
+
+        canvas.drawBitmap(
+            bitmap!!,
+            0f,
+            0f,
+            mPaintUsername
+        )
 
     }
 

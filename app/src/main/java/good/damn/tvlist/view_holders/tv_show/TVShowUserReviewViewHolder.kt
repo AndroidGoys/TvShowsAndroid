@@ -48,7 +48,8 @@ class TVShowUserReviewViewHolder(
             mUserHeader.heightParams(),
             mUserHeader.heightParams()
         ) {
-
+            mUserHeader.bitmap = it
+            mUserHeader.invalidate()
         }
     }
 
