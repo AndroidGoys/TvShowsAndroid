@@ -33,4 +33,5 @@
     <string name="time_for_watch">Время для просмотра</string>
     <string name="your_rate">Оценка</string>
     <string name="hint_text_review">Текст отзыва (необязательно)</string>
+    <string name="post_review">Опубликовать</string>
 </resources>

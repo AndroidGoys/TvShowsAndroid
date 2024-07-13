@@ -12,4 +12,6 @@
     <color name="mediaIcon">#8818191f</color>
     <color name="bigButtonIcon">#858588</color>
     <color name="text">#18191f</color>
+    <color name="btnText">#ffffff</color>
+    <color name="btnBack">#18191f</color>
 </resources>
