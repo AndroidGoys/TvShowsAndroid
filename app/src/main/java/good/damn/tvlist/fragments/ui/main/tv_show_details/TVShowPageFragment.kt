@@ -21,8 +21,8 @@ import androidx.recyclerview.widget.RecyclerView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.adapters.recycler_view.TVShowChannelsAdapter
-import good.damn.tvlist.adapters.recycler_view.TVShowImagesAdapter
+import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowChannelsAdapter
+import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowImagesAdapter
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear

@@ -13,6 +13,8 @@ import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.withAlpha
+import good.damn.tvlist.network.api.models.show.TVShowUserReview
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.UserHeaderView
 
@@ -23,6 +25,32 @@ class TVShowUserReviewViewHolder(
 ): RecyclerView.ViewHolder(
     layout
 ) {
+
+    fun onBindViewHolder(
+        userReview: TVShowUserReview
+    ) {
+        mUserHeader.textUsername = userReview.username
+        mUserHeader.textRating = userReview.rating.toString()
+        mUserHeader.textDate = userReview.dateString
+        mUserHeader.invalidate()
+
+        mTextViewUserReview.text = userReview.textReview
+
+        if (userReview.usernameImageUrl == null) {
+            return
+        }
+
+        NetworkBitmap.loadFromNetwork(
+            userReview.usernameImageUrl,
+            App.CACHE_DIR,
+            "userlogo",
+            mUserHeader.heightParams(),
+            mUserHeader.heightParams()
+        ) {
+
+        }
+    }
+
     companion object {
         fun create(
             context: Context,
@@ -60,6 +88,8 @@ class TVShowUserReviewViewHolder(
                     R.font.open_sans_semi_bold,
                     context
                 )
+
+                textSizeFUsername = 0.24193f
 
             }
 

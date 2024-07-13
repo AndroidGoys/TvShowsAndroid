@@ -1,4 +1,4 @@
-package good.damn.tvlist.adapters.recycler_view
+package good.damn.tvlist.adapters.recycler_view.tv_show
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
