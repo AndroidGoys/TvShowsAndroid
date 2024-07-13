@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -13,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import good.damn.tvlist.App
@@ -63,6 +65,8 @@ ActivityResultCallback<Boolean> {
 
     private var mPermissionFragment: StackFragment? = null
 
+    private var mTopInset = 0
+
     override fun onCreate(
         savedInstanceState: Bundle?
     ) {
@@ -72,7 +76,6 @@ ActivityResultCallback<Boolean> {
             ActivityResultContracts.RequestPermission(),
             this
         )
-
 
         mNetworkReceiver.networkListener = this
 
@@ -92,6 +95,21 @@ ActivityResultCallback<Boolean> {
             mContainer
         )
 
+        ViewCompat.setOnApplyWindowInsetsListener(
+            window.decorView
+        ) { v, insets ->
+            if (mTopInset == 0) {
+                mTopInset = insets.stableInsetTop
+            }
+
+            Log.d(TAG, "onCreate: INSETS: $mTopInset")
+
+            ViewCompat.setOnApplyWindowInsetsListener(
+                v, null
+            )
+
+            WindowInsetsCompat.CONSUMED
+        }
 
 
         mContainer.generateId()
@@ -145,30 +163,14 @@ ActivityResultCallback<Boolean> {
             window.decorView
         )
 
-        mWindowController?.apply {
-
-            hide(
-                WindowInsetsCompat.Type.statusBars() or (
-                    WindowInsetsCompat.Type.navigationBars()
-                ) or (
-                    WindowInsetsCompat.Type.systemBars()
-                )
-            )
-
-            systemBarsBehavior = WindowInsetsControllerCompat
-                .BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-
-        }
-
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
     }
 
-    fun getTopInset() = if (
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
-    ) window.decorView
-        .rootWindowInsets
-        .displayCutout
-        ?.safeInsetTop ?: 0
-    else 0
+    // WTF is deprecated? (systemWindowInsetTop)
+    fun getTopInset() = mTopInset
 
     fun pushFragment(
         fragment: StackFragment,
