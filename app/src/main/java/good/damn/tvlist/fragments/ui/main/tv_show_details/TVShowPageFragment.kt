@@ -40,6 +40,7 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -798,8 +799,14 @@ class TVShowPageFragment
 private fun TVShowPageFragment.onClickShowReviews(
     v: View
 ) {
+    val program = program ?: return
     pushFragment(
-        TVShowReviewsFragment(),
+        TVShowReviewsFragment.newInstance(
+            TVShowReview(
+                program.id,
+                program.shortName ?: program.name
+            )
+        ),
         FragmentAnimation { f, fragment ->
             fragment.view?.alpha = f
         }
@@ -860,11 +867,15 @@ private fun TVShowPageFragment.onClickPostReview(
 
     pushFragment(
         TVShowPostReviewFragment.newInstance(
-            TVShowPostReviewFragment.TVShowPost(
+            TVShowReview(
                 program.id,
-                program.name
+                program.shortName ?: program.name
             )
-        )
+        ),
+        FragmentAnimation {
+            f, fragment ->
+            fragment.view?.alpha = f
+        }
     )
 }
 

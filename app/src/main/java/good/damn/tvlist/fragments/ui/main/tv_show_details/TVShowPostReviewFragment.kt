@@ -8,6 +8,7 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
@@ -15,7 +16,7 @@ import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 class TVShowPostReviewFragment
 : StackFragment() {
 
-    var tvShow: TVShowPost? = null
+    var review: TVShowReview? = null
 
     override fun onCreateView(
         context: Context,
@@ -34,6 +35,8 @@ class TVShowPostReviewFragment
                 getTopInset()
             )
 
+            textViewTitle.text = review?.title
+
             btnBack.setOnClickListener(
                 this@TVShowPostReviewFragment::onClickBtnBack
             )
@@ -49,16 +52,11 @@ class TVShowPostReviewFragment
     companion object {
         private const val TAG = "TVShowPostReviewFragmen"
         fun newInstance(
-            tvShow: TVShowPost?
+            tvShow: TVShowReview?
         ) = TVShowPostReviewFragment().apply {
-            this.tvShow = tvShow
+            this.review = tvShow
         }
     }
-
-    data class TVShowPost(
-        val showId: Long,
-        val title: String? = null
-    )
 }
 
 private fun TVShowPostReviewFragment.onClickBtnBack(
