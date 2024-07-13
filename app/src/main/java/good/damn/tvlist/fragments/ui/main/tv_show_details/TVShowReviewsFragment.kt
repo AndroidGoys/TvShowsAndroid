@@ -43,7 +43,8 @@ class TVShowReviewsFragment
         )
 
         val topBar = TopBarView(
-            context
+            context,
+            getTopInset()
         ).apply {
             defaultTopBarStyle(
                 measureUnit,
