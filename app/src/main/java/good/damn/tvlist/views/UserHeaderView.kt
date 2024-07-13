@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.RectF
 import android.graphics.Typeface
 import android.view.View
 import androidx.annotation.ColorInt
@@ -14,6 +16,8 @@ class UserHeaderView(
 ): View(
     context
 ) {
+
+    var bitmapRadius = 0f
 
     var textSizeFUsername = 0.2f
     var textSizeFDate = 0.1f
@@ -52,6 +56,8 @@ class UserHeaderView(
             mPaintRating.color = v
         }
 
+    private val mRectBitmap = RectF()
+
     private val mPaintUsername = Paint()
     private val mPaintDate = Paint()
     private val mPaintRating = Paint()
@@ -64,6 +70,8 @@ class UserHeaderView(
 
     private var mTextRatingX = 0f
     private var mTextRatingY = 0f
+
+    private val mPath = Path()
 
     override fun onLayout(
         changed: Boolean,
@@ -85,13 +93,23 @@ class UserHeaderView(
         mPaintRating.textSize = height * textSizeFRating
 
         mTextUsernameX = width * 0.23404f
-        mTextUsernameY = height * 0.08064f + mPaintUsername.textSize
+        mTextUsernameY = height * 0.08064f +
+            mPaintUsername.textSize
 
         mTextDateX = mTextUsernameX
-        mTextDateY = mTextUsernameY + mPaintDate.textSize + height * 0.12f
+        mTextDateY = mTextUsernameY +
+            mPaintDate.textSize +
+            height * 0.12f
 
         mTextRatingX = mTextUsernameX
-        mTextRatingY = mTextDateY + mPaintRating.textSize + height * 0.01f
+        mTextRatingY = mTextDateY +
+            mPaintRating.textSize +
+            height * 0.01f
+
+        mRectBitmap.top = 0f
+        mRectBitmap.left = 0f
+        mRectBitmap.bottom = height.toFloat()
+        mRectBitmap.right = mRectBitmap.bottom
     }
 
     override fun onDraw(
@@ -131,6 +149,19 @@ class UserHeaderView(
         if (bitmap == null) {
             return
         }
+
+        mPath.reset()
+        mPath.addRoundRect(
+            mRectBitmap,
+            bitmapRadius,
+            bitmapRadius,
+            Path.Direction.CW
+        )
+        mPath.close()
+
+        canvas.clipPath(
+            mPath
+        )
 
         canvas.drawBitmap(
             bitmap!!,

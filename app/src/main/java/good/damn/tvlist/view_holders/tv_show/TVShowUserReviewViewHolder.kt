@@ -91,6 +91,8 @@ class TVShowUserReviewViewHolder(
                     context
                 )
 
+                bitmapRadius = heightParams() * 0.2258f
+
                 textSizeFUsername = 0.24193f
                 textSizeFDate = 0.17742f
                 textSizeFRating = 0.24193f
