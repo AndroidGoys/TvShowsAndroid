@@ -16,6 +16,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.services.TVShowService
+import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 
@@ -76,6 +77,15 @@ class TVShowReviewsFragment
                 false
             )
 
+            (measureUnit * 0.045895f).toInt().let {
+                addItemDecoration(
+                    MarginItemDecoration(
+                        left = it,
+                        top = it
+                    )
+                )
+            }
+
             clipToPadding = false
 
             val pad = topBar.heightParams()
@@ -94,7 +104,7 @@ class TVShowReviewsFragment
                 showId
             ) {
                 recyclerView.adapter = TVShowUserReviewsAdapter(
-                    (measureUnit * 0.90821f).toInt(),
+                    (measureUnit * 0.90811f).toInt(),
                     it
                 )
             }

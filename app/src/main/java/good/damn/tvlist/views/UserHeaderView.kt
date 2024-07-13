@@ -84,6 +84,11 @@ class UserHeaderView(
         mTextUsernameX = width * 0.23404f
         mTextUsernameY = height * 0.08064f + mPaintUsername.textSize
 
+        mTextDateX = mTextUsernameX
+        mTextDateY = mTextUsernameY + mPaintDate.textSize + height * 0.12f
+
+        mTextRatingX = mTextUsernameX
+        mTextRatingY = mTextDateY + mPaintRating.textSize + height * 0.01f
     }
 
     override fun onDraw(
@@ -99,6 +104,24 @@ class UserHeaderView(
                 mTextUsernameX,
                 mTextUsernameY,
                 mPaintUsername
+            )
+        }
+
+        if (textDate != null) {
+            canvas.drawText(
+                textDate!!,
+                mTextDateX,
+                mTextDateY,
+                mPaintDate
+            )
+        }
+
+        if (textRating != null) {
+            canvas.drawText(
+                textRating!!,
+                mTextRatingX,
+                mTextRatingY,
+                mPaintDate
             )
         }
 

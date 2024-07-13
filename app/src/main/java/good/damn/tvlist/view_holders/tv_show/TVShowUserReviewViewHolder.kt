@@ -1,6 +1,7 @@
 package good.damn.tvlist.view_holders.tv_show
 
 import android.content.Context
+import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
@@ -90,6 +91,8 @@ class TVShowUserReviewViewHolder(
                 )
 
                 textSizeFUsername = 0.24193f
+                textSizeFDate = 0.17742f
+                textSizeFRating = 0.24193f
 
             }
 
