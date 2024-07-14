@@ -77,6 +77,11 @@ ActivityResultCallback<Boolean> {
             this
         )
 
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+        )
+
         mNetworkReceiver.networkListener = this
 
         val context = this
@@ -98,6 +103,7 @@ ActivityResultCallback<Boolean> {
         ViewCompat.setOnApplyWindowInsetsListener(
             window.decorView
         ) { v, insets ->
+            // WTF is deprecated? (systemWindowInsetTop and stableInsetTop)
             if (mTopInset == 0) {
                 mTopInset = insets.stableInsetTop
             }
@@ -162,14 +168,8 @@ ActivityResultCallback<Boolean> {
             window,
             window.decorView
         )
-
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-        )
     }
 
-    // WTF is deprecated? (systemWindowInsetTop)
     fun getTopInset() = mTopInset
 
     fun pushFragment(
