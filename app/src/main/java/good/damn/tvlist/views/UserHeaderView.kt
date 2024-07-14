@@ -10,6 +10,8 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.view.View
 import androidx.annotation.ColorInt
+import androidx.core.view.marginStart
+import good.damn.tvlist.views.rate.RateView
 
 class UserHeaderView(
     context: Context
@@ -21,11 +23,17 @@ class UserHeaderView(
 
     var textSizeFUsername = 0.2f
     var textSizeFDate = 0.1f
-    var textSizeFRating = 0.1f
 
     var textUsername: String? = null
     var textDate: String? = null
-    var textRating: String? = null
+
+    var grade: Byte = 1
+        set(v) {
+            field = v
+            mRatingStars.setStarsRate(
+                grade
+            )
+        }
 
     var typefaceUsername = Typeface.DEFAULT
         set(v) {
@@ -39,12 +47,6 @@ class UserHeaderView(
             mPaintDate  .typeface = v
         }
 
-    var typefaceRating = Typeface.DEFAULT
-        set(v) {
-            field = v
-            mPaintRating.typeface = v
-        }
-
     var bitmap: Bitmap? = null
 
     @ColorInt
@@ -53,14 +55,12 @@ class UserHeaderView(
             field = v
             mPaintUsername.color = v
             mPaintDate.color = v
-            mPaintRating.color = v
         }
 
     private val mRectBitmap = RectF()
 
     private val mPaintUsername = Paint()
     private val mPaintDate = Paint()
-    private val mPaintRating = Paint()
 
     private var mTextUsernameX = 0f
     private var mTextUsernameY = 0f
@@ -68,10 +68,13 @@ class UserHeaderView(
     private var mTextDateX = 0f
     private var mTextDateY = 0f
 
-    private var mTextRatingX = 0f
-    private var mTextRatingY = 0f
-
     private val mPath = Path()
+
+    private val mRatingStars = RateView(
+        context
+    ).apply {
+        setOnTouchListener(null)
+    }
 
     override fun onLayout(
         changed: Boolean,
@@ -90,7 +93,6 @@ class UserHeaderView(
 
         mPaintUsername.textSize = height * textSizeFUsername
         mPaintDate.textSize = height * textSizeFDate
-        mPaintRating.textSize = height * textSizeFRating
 
         mTextUsernameX = width * 0.23404f
         mTextUsernameY = height * 0.08064f +
@@ -101,10 +103,19 @@ class UserHeaderView(
             mPaintDate.textSize +
             height * 0.12f
 
-        mTextRatingX = mTextUsernameX
-        mTextRatingY = mTextDateY +
-            mPaintRating.textSize +
-            height * 0.01f
+        val widthRate = width * 0.199468f
+        val heightRate = height * 0.241935f
+
+        mRatingStars.setPosition(
+            mTextUsernameX.toInt(),
+            (mTextDateY + height * 0.09f).toInt()
+        )
+        mRatingStars.layout(
+            0,
+            0,
+            (widthRate).toInt(),
+            (heightRate).toInt()
+        )
 
         mRectBitmap.top = 0f
         mRectBitmap.left = 0f
@@ -137,14 +148,18 @@ class UserHeaderView(
             )
         }
 
-        if (textRating != null) {
+        mRatingStars.draw(
+            canvas
+        )
+
+        /*if (textRating != null) {
             canvas.drawText(
                 textRating!!,
                 mTextRatingX,
                 mTextRatingY,
                 mPaintDate
             )
-        }
+        }*/
 
         if (bitmap == null) {
             return

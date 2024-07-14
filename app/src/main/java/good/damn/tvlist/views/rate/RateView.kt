@@ -24,7 +24,11 @@ class RateView(
 
     private var mRate: Byte = 0
 
+    private var mX = 0
+    private var mY = 0
+
     var onRateClickListener: OnRateClickListener? = null
+
 
     init {
         super.setOnTouchListener(
@@ -36,7 +40,8 @@ class RateView(
         l: OnTouchListener?
     ) {
         super.setOnTouchListener(
-            this
+            if (l == null) null
+            else this
         )
     }
 
@@ -57,12 +62,12 @@ class RateView(
 
         val margin = width / 5 - height
 
-        var xOffset = margin / 2
+        var xOffset = mX + margin / 2
 
         mStars.forEach {
             it.setBounds(
                 xOffset,
-                0,
+                mY,
                 height,
                 height
             )
@@ -120,6 +125,14 @@ class RateView(
             }
         }
         return true
+    }
+
+    fun setPosition(
+        x: Int,
+        y: Int
+    ) {
+        mX = x
+        mY = y
     }
 
     fun setStarsRate(

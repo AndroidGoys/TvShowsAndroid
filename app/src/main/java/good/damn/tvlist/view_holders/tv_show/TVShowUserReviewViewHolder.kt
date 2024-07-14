@@ -31,8 +31,8 @@ class TVShowUserReviewViewHolder(
         userReview: TVShowUserReview
     ) {
         mUserHeader.textUsername = userReview.username
-        mUserHeader.textRating = userReview.rating.toString()
         mUserHeader.textDate = userReview.dateString
+        mUserHeader.grade = userReview.rating
         mUserHeader.invalidate()
 
         mTextViewUserReview.text = userReview.textReview
@@ -86,16 +86,10 @@ class TVShowUserReviewViewHolder(
                     context
                 )
 
-                typefaceRating = App.font(
-                    R.font.open_sans_semi_bold,
-                    context
-                )
-
                 bitmapRadius = heightParams() * 0.2258f
 
                 textSizeFUsername = 0.24193f
                 textSizeFDate = 0.17742f
-                textSizeFRating = 0.24193f
 
             }
 
