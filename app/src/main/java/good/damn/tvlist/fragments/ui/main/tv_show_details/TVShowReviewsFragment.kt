@@ -62,12 +62,22 @@ class TVShowReviewsFragment
                 height = (measureUnit * 31.normalWidth()).toInt()
             )
 
+            interval = measureUnit * 14.normalWidth()
+
+            setPadding(
+                0,
+                0,
+                interval.toInt(),
+                0
+            )
+
             addTab("Все")
             addTab("5")
             addTab("4")
             addTab("3")
             addTab("2")
             addTab("1")
+
         }
 
         val topBar = TopBarView(
@@ -134,8 +144,8 @@ class TVShowReviewsFragment
         mBlurView = BlurShaderView(
             context,
             recyclerView,
-            5,
-            0.4f,
+            6,
+            0.33f,
             shadeColor = App.color(
                 R.color.background
             ).withAlpha(
