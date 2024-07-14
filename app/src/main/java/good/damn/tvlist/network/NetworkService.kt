@@ -3,6 +3,7 @@ package good.damn.tvlist.network
 import android.util.Log
 import good.damn.tvlist.App
 import kotlinx.coroutines.launch
+import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -15,7 +16,8 @@ open class NetworkService {
     }
 
     private val mRequestBuilder = Request.Builder()
-        .header("User-Agent", App.USER_AGENT)
+        .addHeader("User-Agent", App.USER_AGENT)
+        .cacheControl(CacheControl.FORCE_NETWORK)
 
     private val mClient = OkHttpClient()
 

@@ -24,14 +24,15 @@ class ViewUtils {
         private const val TAG = "ViewUtils"
 
         fun topBarStyleTitle(
+            y: Int,
             layoutTopBar: View,
             textView: TextView,
             topInset: Int
         ) {
-            val topInset = topInset * 0.5f
             textView.apply {
+                val h = layoutTopBar.heightParams() - topInset
                 setTextSizePx(
-                    (layoutTopBar.heightParams() - topInset) * 0.325f
+                    h * 0.325f
                 )
                 typeface = App.font(
                     R.font.open_sans_bold,
@@ -43,10 +44,8 @@ class ViewUtils {
                 )
 
                 boundsFrame(
-                    gravity = Gravity.CENTER_VERTICAL or(
-                        Gravity.CENTER_HORIZONTAL
-                    ),
-                    top = topInset
+                    gravity = Gravity.CENTER_HORIZONTAL,
+                    top = y.toFloat()
                 )
             }
         }
@@ -56,17 +55,16 @@ class ViewUtils {
             btnBack: ButtonBack,
             topInset: Int
         ) {
-            val topInset = topInset * 0.5f
+            val h = layoutTopBar.heightParams() - topInset
             val size = (
-                (layoutTopBar.heightParams() - topInset) * 0.45f
-                ).toInt()
+                h * 0.45f
+            ).toInt()
 
             btnBack.boundsFrame(
-                gravity = Gravity.CENTER_VERTICAL or Gravity.START,
                 left = layoutTopBar.widthParams() * 0.03864f,
                 width = size,
                 height = size,
-                top = topInset
+                top = topInset + (h - size) * 0.45f
             )
         }
 

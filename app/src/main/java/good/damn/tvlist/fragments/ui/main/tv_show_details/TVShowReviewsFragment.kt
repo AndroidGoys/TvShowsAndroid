@@ -13,6 +13,7 @@ import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowUserReviewsAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
@@ -22,6 +23,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.views.decorations.MarginItemDecoration
+import good.damn.tvlist.views.tab_bars.TabBar
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 
@@ -49,6 +51,25 @@ class TVShowReviewsFragment
             context
         )
 
+        val tabBarFilter = TabBar(
+            context
+        ).apply {
+            setBackgroundColor(0)
+
+            boundsFrame(
+                Gravity.BOTTOM,
+                width = measureUnit,
+                height = (measureUnit * 31.normalWidth()).toInt()
+            )
+
+            addTab("Все")
+            addTab("5")
+            addTab("4")
+            addTab("3")
+            addTab("2")
+            addTab("1")
+        }
+
         val topBar = TopBarView(
             context,
             getTopInset()
@@ -58,11 +79,18 @@ class TVShowReviewsFragment
                 getTopInset()
             )
 
+            boundsFrame(
+                width = widthParams(),
+                height = heightParams() + tabBarFilter.heightParams(),
+            )
+
             textViewTitle.text = review?.title
 
             btnBack.setOnClickListener(
                 this@TVShowReviewsFragment::onClickBtnBack
             )
+
+            addView(tabBarFilter)
         }
 
         val recyclerView = RecyclerView(

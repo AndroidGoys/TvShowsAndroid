@@ -9,6 +9,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
 
@@ -41,14 +42,7 @@ class TopBarView(
         addView(textViewTitle)
     }
 
-    override fun setLayoutParams(
-        params: ViewGroup.LayoutParams?
-    ) {
-        super.setLayoutParams(params)
-        if (params == null) {
-            return
-        }
-
+    fun layoutChild() {
         btnBack.apply {
             ViewUtils.topBarStyleBtnBack(
                 this@TopBarView,
@@ -59,6 +53,7 @@ class TopBarView(
 
         textViewTitle.apply {
             ViewUtils.topBarStyleTitle(
+                btnBack.topParams(),
                 this@TopBarView,
                 this,
                 mTopInset
@@ -78,4 +73,5 @@ fun TopBarView.defaultTopBarStyle(
         height = (measureUnit * 0.19324f
             + topInset * 0.5f).toInt()
     )
+    layoutChild()
 }
