@@ -6,12 +6,17 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowUserReviewsAdapter
+import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.extensions.widthParams
+import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
@@ -32,6 +37,8 @@ class TVShowReviewsFragment
     }
 
     var review: TVShowReview? = null
+
+    private var mBlurView: BlurShaderView? = null
 
     override fun onCreateView(
         context: Context,
@@ -60,9 +67,7 @@ class TVShowReviewsFragment
 
         val recyclerView = RecyclerView(
             context
-        )
-
-        recyclerView.apply {
+        ).apply {
             setBackgroundColorId(
                 R.color.background
             )
@@ -98,6 +103,27 @@ class TVShowReviewsFragment
             )
         }
 
+        mBlurView = BlurShaderView(
+            context,
+            recyclerView,
+            5,
+            0.4f,
+            shadeColor = App.color(
+                R.color.background
+            ).withAlpha(
+                0.5f
+            ).rgba()
+        ).apply {
+
+            boundsFrame(
+                width = topBar.widthParams(),
+                height = topBar.heightParams()
+            )
+            topBar.addView(this,0)
+
+            startRenderLoop()
+        }
+
         review?.id?.let { showId ->
             TVShowService(
                 App.CACHE_DIR
@@ -112,12 +138,38 @@ class TVShowReviewsFragment
         }
 
         layout.apply {
+            setBackgroundColorId(
+                R.color.background
+            )
             addView(recyclerView)
             addView(topBar)
         }
 
         return layout
     }
+
+
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.apply {
+            startRenderLoop()
+            onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.apply {
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBlurView?.clean()
+    }
+
 }
 
 private fun TVShowReviewsFragment.onClickBtnBack(

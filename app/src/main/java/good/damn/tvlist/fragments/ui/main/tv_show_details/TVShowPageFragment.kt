@@ -722,9 +722,6 @@ class TVShowPageFragment
         }
 
         layout.apply {
-            setBackgroundColorId(
-                R.color.background
-            )
             addView(scrollView)
             addView(topBar)
         }
@@ -734,6 +731,11 @@ class TVShowPageFragment
 
     override fun onResume() {
         super.onResume()
+
+        if (!isFragmentFocused()) {
+            return
+        }
+
         mBlurView?.apply {
             startRenderLoop()
             onResume()
@@ -742,6 +744,11 @@ class TVShowPageFragment
 
     override fun onPause() {
         super.onPause()
+
+        if (!isFragmentFocused()) {
+            return
+        }
+
         mBlurView?.apply {
             stopRenderLoop()
             onPause()
@@ -751,6 +758,28 @@ class TVShowPageFragment
     override fun onDestroy() {
         super.onDestroy()
         mBlurView?.clean()
+    }
+
+    override fun onFocusChanged(
+        isFragmentFocused: Boolean
+    ) {
+        super.onFocusChanged(
+            isFragmentFocused
+        )
+
+        if (isFragmentFocused) {
+            mBlurView?.apply {
+                onResume()
+                startRenderLoop()
+            }
+            return
+        }
+
+        mBlurView?.apply {
+            onPause()
+            stopRenderLoop()
+        }
+
     }
 
     override fun onClickRate(
@@ -825,7 +854,7 @@ private fun TVShowPageFragment.onClickShowReviews(
             )
         ),
         FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = f
+            fragment.view?.x = App.WIDTH * (1.0f - f)
         }
     )
 }
