@@ -1,11 +1,13 @@
 package good.damn.tvlist.views.tab_bars
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.View
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import androidx.annotation.DrawableRes
 import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -48,7 +50,8 @@ class TabBar(
     }
 
     fun addTab(
-        title: String
+        title: String,
+        @DrawableRes drawId: Int = 0
     ) {
         TabView(
             context
@@ -72,6 +75,11 @@ class TabBar(
             )
             cornerRadius = h * 0.5f
 
+            if (drawId != 0) {
+                drawable = App.drawable(
+                    R.drawable.ic_star_out
+                )
+            }
 
             setBackgroundColor(0)
 

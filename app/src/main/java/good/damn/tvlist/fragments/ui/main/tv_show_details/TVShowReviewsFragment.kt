@@ -72,11 +72,11 @@ class TVShowReviewsFragment
             )
 
             addTab("Все")
-            addTab("5")
-            addTab("4")
-            addTab("3")
-            addTab("2")
-            addTab("1")
+            addTab("5", R.drawable.ic_star_out)
+            addTab("4", R.drawable.ic_star_out)
+            addTab("3", R.drawable.ic_star_out)
+            addTab("2", R.drawable.ic_star_out)
+            addTab("1", R.drawable.ic_star_out)
 
         }
 

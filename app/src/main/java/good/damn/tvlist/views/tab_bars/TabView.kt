@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorInt
 import good.damn.tvlist.views.round.RoundView
@@ -39,6 +40,7 @@ class TabView(
             mPaintStroke.color = v
         }
 
+    var drawable: Drawable? = null
 
     var textSizeFactor = 0.2f
     var strokeWidth = 0f
@@ -74,24 +76,44 @@ class TabView(
 
         mPaintText.textSize = height * textSizeFactor
 
+        val ts = mPaintText.textSize
+        var widthText = 0f
+
         text?.let {
-            mTextX = (width - mPaintText.measureText(
+            widthText = mPaintText.measureText(
                 it
-            )) * 0.5f
+            )
+            mTextX = (width - widthText) * 0.5f
         }
-        mTextY = (height + mPaintText.textSize) * 0.475f
+        mTextY = (height + ts) * 0.475f
 
         val sw = mPaintStroke.strokeWidth
         mRectStroke.top = sw
         mRectStroke.left = sw
         mRectStroke.bottom = height - sw
         mRectStroke.right = width - sw
+
+        drawable?.apply {
+            mTextX -= ts * 0.5f
+
+            val dx = mTextX + widthText
+            setBounds(
+                dx.toInt(),
+                (mTextY - ts).toInt(),
+                (dx + ts).toInt(),
+                mTextY.toInt()
+            )
+        }
     }
 
     override fun onDraw(
         canvas: Canvas
     ) {
         super.onDraw(
+            canvas
+        )
+
+        drawable?.draw(
             canvas
         )
 
