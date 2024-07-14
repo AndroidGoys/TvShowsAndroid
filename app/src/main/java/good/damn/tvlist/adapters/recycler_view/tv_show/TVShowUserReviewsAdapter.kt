@@ -7,7 +7,7 @@ import good.damn.tvlist.view_holders.tv_show.TVShowUserReviewViewHolder
 
 class TVShowUserReviewsAdapter(
     private val mHolderWidth: Int,
-    private val mData: Array<TVShowUserReview>
+    private var mData: ArrayList<TVShowUserReview>
 ): RecyclerView.Adapter<
     TVShowUserReviewViewHolder
 >() {
@@ -28,5 +28,12 @@ class TVShowUserReviewsAdapter(
         mData[position]
     )
 
+    fun addData(
+        d: ArrayList<TVShowUserReview>
+    ) {
+        mData.addAll(
+            d
+        )
+    }
 
 }

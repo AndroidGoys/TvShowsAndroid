@@ -8,6 +8,7 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.ActionBar.Tab
 import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -28,6 +29,8 @@ class TabBar(
     companion object {
         private const val TAG = "TabBar"
     }
+
+    var onTabClickListener: OnTabClickListener? = null
 
     var interval = 0f
 
@@ -81,6 +84,8 @@ class TabBar(
                 )
             }
 
+            index = mLayout.childCount
+
             setBackgroundColor(0)
 
             setOnClickListener(
@@ -107,9 +112,12 @@ class TabBar(
             setBackgroundColor(0)
             invalidate()
         }
-        v?.apply {
+        (v as? TabView)?.apply {
             setBackgroundColorId(
                 R.color.lime
+            )
+            onTabClickListener?.onTabClick(
+                this
             )
             invalidate()
         }

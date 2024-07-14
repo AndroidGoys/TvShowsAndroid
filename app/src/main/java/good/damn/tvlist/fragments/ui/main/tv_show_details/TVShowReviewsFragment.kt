@@ -23,12 +23,15 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.views.decorations.MarginItemDecoration
+import good.damn.tvlist.views.tab_bars.OnTabClickListener
 import good.damn.tvlist.views.tab_bars.TabBar
+import good.damn.tvlist.views.tab_bars.TabView
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 
 class TVShowReviewsFragment
-: StackFragment() {
+: StackFragment(),
+OnTabClickListener {
 
     companion object {
         fun newInstance(
@@ -41,6 +44,12 @@ class TVShowReviewsFragment
     var review: TVShowReview? = null
 
     private var mBlurView: BlurShaderView? = null
+
+    private var mRecyclerView: RecyclerView? = null
+
+    private val mShowService = TVShowService(
+        App.CACHE_DIR
+    )
 
     override fun onCreateView(
         context: Context,
@@ -63,6 +72,8 @@ class TVShowReviewsFragment
             )
 
             interval = measureUnit * 14.normalWidth()
+
+            onTabClickListener = this@TVShowReviewsFragment
 
             setPadding(
                 0,
@@ -103,7 +114,7 @@ class TVShowReviewsFragment
             addView(tabBarFilter)
         }
 
-        val recyclerView = RecyclerView(
+        mRecyclerView = RecyclerView(
             context
         ).apply {
             setBackgroundColorId(
@@ -141,9 +152,10 @@ class TVShowReviewsFragment
             )
         }
 
+
         mBlurView = BlurShaderView(
             context,
-            recyclerView,
+            mRecyclerView!!,
             6,
             0.33f,
             shadeColor = App.color(
@@ -163,15 +175,16 @@ class TVShowReviewsFragment
         }
 
         review?.id?.let { showId ->
-            TVShowService(
-                App.CACHE_DIR
-            ).getReviews(
+            mShowService.getReviews(
                 showId
             ) {
-                recyclerView.adapter = TVShowUserReviewsAdapter(
-                    (measureUnit * 0.90811f).toInt(),
-                    it
-                )
+                val d = it
+                App.ui {
+                    mRecyclerView?.adapter = TVShowUserReviewsAdapter(
+                        (measureUnit * 0.90811f).toInt(),
+                        d
+                    )
+                }
             }
         }
 
@@ -179,7 +192,7 @@ class TVShowReviewsFragment
             setBackgroundColorId(
                 R.color.background
             )
-            addView(recyclerView)
+            addView(mRecyclerView)
             addView(topBar)
         }
 
@@ -206,6 +219,31 @@ class TVShowReviewsFragment
     override fun onDestroy() {
         super.onDestroy()
         mBlurView?.clean()
+    }
+
+    override fun onTabClick(
+        tab: TabView
+    ) {
+        val id = review?.id
+            ?: return
+
+        val recyclerView = mRecyclerView
+            ?: return
+
+        recyclerView.animate()
+            .alpha(0.0f)
+            .start()
+
+        mShowService.getReviews(
+            id
+        ) {
+            val ad = (recyclerView.adapter as? TVShowUserReviewsAdapter)
+                ?: return@getReviews
+            ad.addData(it)
+            App.ui {
+                ad.notifyDataSetChanged()
+            }
+        }
     }
 
 }

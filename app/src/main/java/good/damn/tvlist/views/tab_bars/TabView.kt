@@ -18,6 +18,8 @@ class TabView(
     context
 ) {
 
+    var index: Int = -1
+
     var text: String? = null
 
     var typeface: Typeface? = null

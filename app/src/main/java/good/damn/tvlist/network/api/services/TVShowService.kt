@@ -21,12 +21,12 @@ class TVShowService(
 
     fun getReviews(
         showId: Long,
-        completion: (Array<TVShowUserReview>) -> Unit
+        completionBackground: (ArrayList<TVShowUserReview>) -> Unit
     ) {
 
         App.IO.launch {
 
-            val data = arrayOf(
+            val data = arrayListOf(
                 TVShowUserReview(
                     "Киберниндзя2077",
                     5,
@@ -71,10 +71,7 @@ class TVShowService(
                 )
             )
 
-            App.ui {
-                completion(data)
-            }
-
+            completionBackground(data)
         }
 
     }
