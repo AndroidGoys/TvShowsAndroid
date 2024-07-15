@@ -22,6 +22,9 @@ fun View.topHeightParams() = frameParams().run {
     return@run topParams() + heightParams()
 }
 
+fun View.leftParams() = frameParams()
+    .leftMargin
+
 fun View.topParams() = frameParams()
     .topMargin
 

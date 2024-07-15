@@ -21,6 +21,7 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
+import good.damn.tvlist.fragments.SearchFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
@@ -150,6 +151,10 @@ OnItemClickNavigationListener {
             typefaceWord = App.font(
                 R.font.open_sans_bold,
                 context
+            )
+
+            setOnClickListener(
+                this@MainContentFragment::onClickSearch
             )
 
             // Text
@@ -392,6 +397,17 @@ OnItemClickNavigationListener {
     override fun onNetworkDisconnected() {
         mFragments[0].onNetworkDisconnected()
     }
+}
+
+private fun MainContentFragment.onClickSearch(
+    view: View
+) {
+    pushFragment(
+        SearchFragment(),
+        FragmentAnimation { f, fragment ->
+            fragment.view?.alpha = f
+        }
+    )
 }
 
 private fun MainContentFragment.onClickImageViewLikes(

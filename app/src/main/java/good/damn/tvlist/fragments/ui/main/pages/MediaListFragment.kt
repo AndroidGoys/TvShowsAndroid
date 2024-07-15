@@ -8,14 +8,14 @@ import androidx.annotation.StringRes
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
-import good.damn.tvlist.fragments.IOSNavigationFragment
+import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.BigButtonView
 
 class MediaListFragment
-: IOSNavigationFragment() {
+: StackFragment() {
 
-    override fun onContentView(
+    override fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View {
