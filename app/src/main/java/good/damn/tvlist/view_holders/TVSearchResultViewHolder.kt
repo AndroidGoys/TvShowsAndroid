@@ -4,8 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.tvlist.App
+import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVSearchResult
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.TVIconNameView
 
 class TVSearchResultViewHolder(
@@ -24,7 +28,26 @@ class TVSearchResultViewHolder(
 
         mIconNameView.apply {
             text = result.name
+            bitmap = null
             invalidate()
+        }
+
+        if (result.imageURL == null) {
+            return
+        }
+
+        val bitmapSize = mIconNameView.heightParams()
+        NetworkBitmap.loadFromNetwork(
+            result.imageURL,
+            App.CACHE_DIR,
+            "bitmapSearch",
+            bitmapSize,
+            bitmapSize
+        ) {
+            mIconNameView.apply {
+                bitmap = it
+                invalidate()
+            }
         }
     }
 
