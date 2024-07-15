@@ -12,6 +12,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVSearchResultAdapter
@@ -19,10 +20,12 @@ import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.leftParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.widthParams
+import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.services.TVSearchService
 import good.damn.tvlist.views.buttons.ButtonBack
@@ -48,6 +51,8 @@ Runnable {
     private var mSearchResultAdapter: TVSearchResultAdapter? = null
 
     private var mSearchRequest = ""
+
+    private var mBlurView: BlurShaderView? = null
 
     override fun onCreateView(
         context: Context,
@@ -199,6 +204,32 @@ Runnable {
             )
         }
 
+
+        mBlurView = BlurShaderView(
+            context,
+            recyclerView,
+            6,
+            0.35f,
+            shadeColor = App.color(
+                R.color.background
+            ).withAlpha(
+                0.5f
+            ).rgba()
+        ).apply {
+
+            boundsFrame(
+                width = topBar.widthParams(),
+                height = topBar.heightParams()
+            )
+
+            topBar.addView(
+                this, 0
+            )
+
+            startRenderLoop()
+        }
+
+
         layout.apply {
             addView(recyclerView)
             addView(topBar)
@@ -277,6 +308,26 @@ Runnable {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        mBlurView?.apply {
+            startRenderLoop()
+            onResume()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mBlurView?.apply {
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mBlurView?.clean()
+    }
 
     override fun beforeTextChanged(
         s: CharSequence?,
