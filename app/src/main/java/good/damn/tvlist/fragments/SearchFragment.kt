@@ -236,8 +236,8 @@ Runnable {
 
         mSearchService.getChannelsByName(
             mSearchRequest
-        ) {
-            if (it == null) {
+        ) { channels ->
+            if (channels == null) {
                 return@getChannelsByName
             }
 
@@ -245,11 +245,31 @@ Runnable {
                 ?: return@getChannelsByName
 
             adapter.addResult(
-                it
+                channels
             )
 
             App.ui {
                 adapter.notifyDataSetChanged()
+            }
+
+            mSearchService.getShowsByName(
+                mSearchRequest
+            ) { shows ->
+                if (shows == null) {
+                    return@getShowsByName
+                }
+
+                val channelsPos = adapter.itemCount
+                adapter.addResult(
+                    shows
+                )
+
+                App.ui {
+                    adapter.notifyItemRangeInserted(
+                        channelsPos,
+                        shows.size
+                    )
+                }
             }
         }
     }
