@@ -61,6 +61,14 @@ class FavouritesFragment
                 measureUnit,
                 getTopInset()
             )
+
+            btnBack.setOnClickListener(
+                this@FavouritesFragment::onClickBtnBack
+            )
+
+            textViewTitle.setText(
+                R.string.favourites
+            )
         }
 
         mBlurView = BlurShaderView(

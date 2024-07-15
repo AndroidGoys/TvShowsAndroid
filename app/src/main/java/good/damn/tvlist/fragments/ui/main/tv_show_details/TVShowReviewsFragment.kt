@@ -229,19 +229,17 @@ OnTabClickListener {
 
         val recyclerView = mRecyclerView
             ?: return
-
-        recyclerView.animate()
-            .alpha(0.0f)
-            .start()
-
         mShowService.getReviews(
             id
         ) {
             val ad = (recyclerView.adapter as? TVShowUserReviewsAdapter)
                 ?: return@getReviews
+            val s = ad.itemCount
             ad.addData(it)
             App.ui {
-                ad.notifyDataSetChanged()
+                ad.notifyItemRangeInserted(
+                    s,it.size
+                )
             }
         }
     }
