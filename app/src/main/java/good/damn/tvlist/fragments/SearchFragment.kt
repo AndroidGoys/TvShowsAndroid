@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.adapters.recycler_view.TVSearchResultAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.leftParams
@@ -38,6 +39,8 @@ Runnable {
     )
 
     private val mSearchService = TVSearchService()
+
+    private var mSearchResultAdapter: TVSearchResultAdapter? = null
 
     private var mSearchRequest = ""
 
@@ -149,7 +152,24 @@ Runnable {
             setBackgroundColorId(
                 R.color.background
             )
+
+            val pad = topBar.heightParams()
+            setPadding(
+                0,
+                pad,
+                0,
+                pad
+            )
         }
+
+        mSearchResultAdapter = TVSearchResultAdapter(
+            (measureUnit *
+                368.normalWidth()
+            ).toInt(),
+            mHolderHeight = (measureUnit *
+                58.normalWidth()
+            ).toInt()
+        )
 
         layout.apply {
             addView(recyclerView)
@@ -165,9 +185,11 @@ Runnable {
         before: Int,
         count: Int
     ) {
+        // Check adapter validation ?
         if (s == null) {
             return
         }
+
         mHandlerSearch.removeCallbacks(
             this
         )
@@ -179,6 +201,7 @@ Runnable {
     }
 
     override fun run() {
+
         mSearchService.getChannelsByName(
             mSearchRequest
         ) {
@@ -186,7 +209,17 @@ Runnable {
                 return@getChannelsByName
             }
 
+            val adapter = mSearchResultAdapter
+                ?: return@getChannelsByName
 
+            adapter.addResult(
+                it
+            )
+
+            adapter.notifyItemRangeInserted(
+                0,
+                it.size
+            )
         }
     }
 

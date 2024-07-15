@@ -3,6 +3,7 @@ package good.damn.tvlist.network.api.services
 import good.damn.tvlist.App
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.TVSearchResult
 import good.damn.tvlist.network.api.models.TVSearchResultChannels
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -20,7 +21,7 @@ class TVSearchService
 
     fun getChannelsByName(
         name: String,
-        completionBackground: (ArrayList<TVChannel2?>?) -> Unit
+        completionBackground: (ArrayList<TVSearchResult?>?) -> Unit
     ) {
         searchRequest(
             name,
@@ -42,7 +43,7 @@ class TVSearchService
 
             val len = chan.channels.length()
 
-            val channels = ArrayList<TVChannel2?>(
+            val channels = ArrayList<TVSearchResult?>(
                 len
             )
 
@@ -52,7 +53,10 @@ class TVSearchService
                 ) ?: continue
 
                 channels.add(
-                    channel
+                    TVSearchResult(
+                        channel.name,
+                        channel.imageUrl
+                    )
                 )
             }
 
