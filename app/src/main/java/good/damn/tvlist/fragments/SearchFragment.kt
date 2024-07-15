@@ -6,10 +6,11 @@ import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
-import android.view.Gravity
+import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -24,15 +25,18 @@ import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.network.api.services.TVSearchService
-import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
+import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.text_fields.TextFieldRound
-import good.damn.tvlist.views.top_bars.TopBarView
 
 class SearchFragment
 : StackFragment(),
 TextWatcher,
 Runnable {
+
+    companion object {
+        private const val TAG = "SearchFragment"
+    }
 
     private val mHandlerSearch = Handler(
         Looper.getMainLooper()
@@ -146,12 +150,44 @@ Runnable {
             )
         }
 
+        mSearchResultAdapter = TVSearchResultAdapter(
+            (measureUnit *
+                368.normalWidth()
+                ).toInt(),
+            mHolderHeight = (measureUnit *
+                58.normalWidth()
+                ).toInt()
+        )
+
         val recyclerView = RecyclerView(
             context
         ).apply {
             setBackgroundColorId(
                 R.color.background
             )
+
+            layoutManager = LinearLayoutManager(
+                context,
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+
+            val horizontal = (measureUnit *
+                23.normalWidth()
+            ).toInt()
+
+            addItemDecoration(
+                MarginItemDecoration(
+                    horizontal,
+                    (measureUnit * 16.normalWidth()).toInt(),
+                    0,
+                    0
+                )
+            )
+
+            adapter = mSearchResultAdapter
+
+            clipToPadding = false
 
             val pad = topBar.heightParams()
             setPadding(
@@ -161,15 +197,6 @@ Runnable {
                 pad
             )
         }
-
-        mSearchResultAdapter = TVSearchResultAdapter(
-            (measureUnit *
-                368.normalWidth()
-            ).toInt(),
-            mHolderHeight = (measureUnit *
-                58.normalWidth()
-            ).toInt()
-        )
 
         layout.apply {
             addView(recyclerView)
@@ -186,9 +213,11 @@ Runnable {
         count: Int
     ) {
         // Check adapter validation ?
-        if (s == null) {
+        if (s.isNullOrBlank()) {
             return
         }
+
+        Log.d(TAG, "onTextChanged: $s")
 
         mHandlerSearch.removeCallbacks(
             this
@@ -201,6 +230,11 @@ Runnable {
     }
 
     override fun run() {
+
+        Log.d(TAG, "run: ")
+        mSearchResultAdapter?.apply {
+            cleanCurrentResult()
+        }
 
         mSearchService.getChannelsByName(
             mSearchRequest
@@ -216,10 +250,12 @@ Runnable {
                 it
             )
 
-            adapter.notifyItemRangeInserted(
-                0,
-                it.size
-            )
+            App.ui {
+                adapter.notifyItemRangeInserted(
+                    0,
+                    it.size
+                )
+            }
         }
     }
 

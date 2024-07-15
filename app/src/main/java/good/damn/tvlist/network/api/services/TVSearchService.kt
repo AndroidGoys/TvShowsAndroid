@@ -1,5 +1,6 @@
 package good.damn.tvlist.network.api.services
 
+import android.util.Log
 import good.damn.tvlist.App
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.TVChannel2
@@ -47,7 +48,7 @@ class TVSearchService
                 len
             )
 
-            for (i in 0..<channels.size) {
+            for (i in 0..<len) {
                 val channel = TVChannel2.createFromJSON(
                     chan.channels.getJSONObject(i)
                 ) ?: continue

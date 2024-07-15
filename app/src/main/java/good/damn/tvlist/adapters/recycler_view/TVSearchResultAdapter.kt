@@ -36,4 +36,17 @@ class TVSearchResultAdapter(
         mData.addAll(t)
     }
 
+    fun cleanCurrentResult() {
+        val len = mData.size
+        if (len == 0) {
+            return
+        }
+        notifyItemRangeRemoved(
+            0,
+            len
+        )
+
+        mData.clear()
+    }
+
 }
