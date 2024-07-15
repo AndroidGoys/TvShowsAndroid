@@ -224,7 +224,7 @@ Runnable {
         )
         mHandlerSearch.postDelayed(
             this,
-            2400
+            1250
         )
         mSearchRequest = s.toString()
     }
@@ -232,9 +232,7 @@ Runnable {
     override fun run() {
 
         Log.d(TAG, "run: ")
-        mSearchResultAdapter?.apply {
-            cleanCurrentResult()
-        }
+        mSearchResultAdapter?.cleanCurrentResult()
 
         mSearchService.getChannelsByName(
             mSearchRequest
@@ -251,10 +249,7 @@ Runnable {
             )
 
             App.ui {
-                adapter.notifyItemRangeInserted(
-                    0,
-                    it.size
-                )
+                adapter.notifyDataSetChanged()
             }
         }
     }

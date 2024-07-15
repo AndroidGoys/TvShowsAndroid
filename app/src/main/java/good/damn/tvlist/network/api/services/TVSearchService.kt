@@ -2,6 +2,8 @@ package good.damn.tvlist.network.api.services
 
 import android.util.Log
 import good.damn.tvlist.App
+import good.damn.tvlist.interfaces.Typeable
+import good.damn.tvlist.models.TVSearchResultTitle
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.TVSearchResult
@@ -22,7 +24,7 @@ class TVSearchService
 
     fun getChannelsByName(
         name: String,
-        completionBackground: (ArrayList<TVSearchResult?>?) -> Unit
+        completionBackground: (ArrayList<Typeable?>?) -> Unit
     ) {
         searchRequest(
             name,
@@ -44,8 +46,14 @@ class TVSearchService
 
             val len = chan.channels.length()
 
-            val channels = ArrayList<TVSearchResult?>(
-                len
+            val channels = ArrayList<Typeable?>(
+                len + 1
+            )
+
+            channels.add(
+                TVSearchResultTitle(
+                    "Каналы"
+                )
             )
 
             for (i in 0..<len) {
