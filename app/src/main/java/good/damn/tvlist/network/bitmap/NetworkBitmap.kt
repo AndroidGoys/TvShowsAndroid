@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.net.URL
+import kotlin.math.abs
 
 class NetworkBitmap {
     companion object {
@@ -19,8 +20,8 @@ class NetworkBitmap {
             url: String,
             cacheDirApp: File,
             dirName: String,
-            widthBitmap: Int,
-            heightBitmap: Int,
+            viewWidth: Int,
+            viewHeight: Int,
             completion: (Bitmap) -> Unit
         ) = CoroutineScope(
             Dispatchers.IO
@@ -56,12 +57,12 @@ class NetworkBitmap {
 
 
             val option = BitmapFactory.Options()
-            option.inSampleSize = if (heightBitmap > widthBitmap)
-                heightBitmap / widthBitmap
-            else widthBitmap / heightBitmap
+            option.inSampleSize = if (viewHeight > viewWidth)
+                viewHeight / viewWidth
+            else viewWidth / viewHeight
 
-            option.outWidth = widthBitmap
-            option.outHeight = heightBitmap
+            option.outWidth = viewWidth
+            option.outHeight = viewHeight
 
             BitmapFactory.decodeStream(
                 inp,
@@ -70,15 +71,70 @@ class NetworkBitmap {
             )?.let {
                 inp.close()
 
-                val scaledBitmap = Bitmap.createScaledBitmap(
-                    it,
-                    widthBitmap,
-                    heightBitmap,
-                    false
-                )
+                val bitmapWidth = it.width
+                val bitmapHeight = it.height
+
+                val correctedBitmap: Bitmap
+
+                //if (bitmapWidth == bitmapHeight) {
+                    correctedBitmap = Bitmap.createScaledBitmap(
+                        it,
+                        viewWidth,
+                        viewHeight,
+                        false
+                    )
+                /*} else {
+                    val dh = viewHeight - bitmapHeight
+                    val dw = viewWidth - bitmapWidth
+
+                    val dstWidth: Int
+                    val dstHeight: Int
+
+                    if (dh > dw) {
+                        dstWidth = bitmapWidth + dh
+                        dstHeight = viewHeight
+                    } else {
+                        dstWidth = viewWidth
+                        dstHeight = bitmapHeight + dw
+                    }
+
+                    val scaledUpBitmap = Bitmap.createScaledBitmap(
+                        it,
+                        dstWidth,
+                        dstHeight,
+                        false
+                    )
+
+                    val x: Int
+                    val y: Int
+
+                    if (dstWidth > dstHeight) {
+                        x = (dstWidth - bitmapWidth) / 2
+                        y = 0
+                    } else {
+                        x = 0
+                        y = (dstHeight - bitmapHeight) / 2
+                    }
+
+                    Log.d(TAG, "loadFromNetwork: ____________")
+                    Log.d(TAG, "loadFromNetwork: BITMAP: $bitmapWidth $bitmapHeight")
+                    Log.d(TAG, "loadFromNetwork: DST: $dstWidth $dstHeight")
+                    Log.d(TAG, "loadFromNetwork: VIEW: $viewWidth $viewHeight")
+                    Log.d(TAG, "loadFromNetwork: XY: $x $y")
+
+                    correctedBitmap = Bitmap.createBitmap(
+                        scaledUpBitmap,
+                        abs(x),
+                        abs(y),
+                        viewWidth,
+                        viewHeight
+                    )
+                }*/
+
+
 
                 CacheBitmap.cache(
-                    scaledBitmap,
+                    correctedBitmap,
                     url,
                     dirName,
                     cacheDirApp
@@ -88,7 +144,7 @@ class NetworkBitmap {
                     return@launch
                 }
                 App.ui {
-                    completion(scaledBitmap)
+                    completion(correctedBitmap)
                 }
 
             }

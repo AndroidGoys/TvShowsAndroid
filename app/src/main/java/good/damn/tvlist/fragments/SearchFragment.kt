@@ -28,6 +28,7 @@ import good.damn.tvlist.network.api.services.TVSearchService
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.text_fields.TextFieldRound
+import kotlinx.coroutines.delay
 
 class SearchFragment
 : StackFragment(),
@@ -231,7 +232,6 @@ Runnable {
 
     override fun run() {
 
-        Log.d(TAG, "run: ")
         mSearchResultAdapter?.cleanCurrentResult()
 
         mSearchService.getChannelsByName(
@@ -249,7 +249,10 @@ Runnable {
             )
 
             App.ui {
-                adapter.notifyDataSetChanged()
+                adapter.notifyItemChanged(
+                    0,
+                    channels.size
+                )
             }
 
             mSearchService.getShowsByName(
