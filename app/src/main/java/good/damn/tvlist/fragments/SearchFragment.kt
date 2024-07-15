@@ -1,6 +1,8 @@
 package good.damn.tvlist.fragments
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.InputType
 import android.text.TextWatcher
@@ -20,6 +22,7 @@ import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.network.api.services.TVSearchService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.text_fields.TextFieldRound
@@ -27,7 +30,16 @@ import good.damn.tvlist.views.top_bars.TopBarView
 
 class SearchFragment
 : StackFragment(),
-TextWatcher {
+TextWatcher,
+Runnable {
+
+    private val mHandlerSearch = Handler(
+        Looper.getMainLooper()
+    )
+
+    private val mSearchService = TVSearchService()
+
+    private var mSearchRequest = ""
 
     override fun onCreateView(
         context: Context,
@@ -153,7 +165,29 @@ TextWatcher {
         before: Int,
         count: Int
     ) {
+        if (s == null) {
+            return
+        }
+        mHandlerSearch.removeCallbacks(
+            this
+        )
+        mHandlerSearch.postDelayed(
+            this,
+            2400
+        )
+        mSearchRequest = s.toString()
+    }
 
+    override fun run() {
+        mSearchService.getChannelsByName(
+            mSearchRequest
+        ) {
+            if (it == null) {
+                return@getChannelsByName
+            }
+
+
+        }
     }
 
 
@@ -168,7 +202,6 @@ TextWatcher {
     override fun afterTextChanged(
         s: Editable?
     ) = Unit
-
 }
 
 private fun SearchFragment.onClickBtnBack(
