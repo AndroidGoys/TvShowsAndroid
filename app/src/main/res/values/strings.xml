@@ -39,4 +39,7 @@
     <string name="welcome_back">С возвращением в</string>
     <string name="email">Email</string>
     <string name="password">Пароль</string>
+    <string name="mask_password">Латинские символы, цифры, знак подчёркивания</string>
+    <string name="sign_in">Зарегистрироваться</string>
+    <string name="already_have_an_account">Уже есть аккаунт?</string>
 </resources>
