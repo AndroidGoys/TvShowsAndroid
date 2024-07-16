@@ -37,9 +37,9 @@ open class NetworkJSONService(
         }
 
         val body = response.body
-        Log.d(TAG, "getJSON: RESPONSE $response $body")
+        Log.d(TAG, "postJSON: RESPONSE $response $body")
         if (body == null || response.code != 200) {
-            Log.d(TAG, "getJSON: INVALID RESPONSE")
+            Log.d(TAG, "postJSON: INVALID RESPONSE")
             return null
         }
 
