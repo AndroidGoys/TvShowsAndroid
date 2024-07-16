@@ -24,6 +24,7 @@ import good.damn.tvlist.network.api.models.enums.CensorAge
 import good.damn.tvlist.network.api.services.TVChannelsService
 import good.damn.tvlist.views.recycler_views.TVChannelsRecyclerView
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
+import kotlinx.coroutines.launch
 
 class TVProgramFragment
 : StackFragment() {
@@ -100,17 +101,22 @@ class TVProgramFragment
         if (mRecyclerView == null) {
             return
         }
+        App.IO.launch {
+            val channels = mChannelService.getChannels(
+                from = 1,
+                limit = UPDATE_COUNT
+            )
 
-        mChannelService.getChannels(
-            from = 1,
-            limit = UPDATE_COUNT
-        ) {
-            Log.d(TAG, "onCreateView: CHANNELS: ${it.size}")
+            if (channels == null) {
+                return@launch
+            }
+
+            Log.d(TAG, "onCreateView: CHANNELS: ${channels.size}")
             App.ui {
                 mRecyclerView?.adapterChannels = TVChannelAdapter(
                     App.WIDTH,
                     App.HEIGHT,
-                    it
+                    channels
                 )
             }
         }

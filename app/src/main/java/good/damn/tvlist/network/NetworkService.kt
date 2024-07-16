@@ -44,26 +44,19 @@ open class NetworkService {
         .build()
 
     protected fun execute(
-        request: Request,
-        completionBackground: (Response) -> Unit
-    ) {
+        request: Request
+    ): Response? {
         if (!App.NETWORK_AVAILABLE) {
-            return
+            return null
         }
 
-        App.IO.launch {
-            val response = try {
-                mClient.newCall(
-                    request
-                ).execute()
-            } catch (e: Exception) {
-                Log.d(TAG, "execute: ERROR CONNECTION: ${e.message}")
-                return@launch
-            }
-
-            completionBackground(
-                response
-            )
+        return try {
+            mClient.newCall(
+                request
+            ).execute()
+        } catch (e: Exception) {
+            Log.d(TAG, "execute: ERROR CONNECTION: ${e.message}")
+            return null
         }
     }
 

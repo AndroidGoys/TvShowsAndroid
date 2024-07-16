@@ -1,17 +1,10 @@
 package good.damn.tvlist.views.recycler_views
 
 import android.content.Context
-import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
-import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.services.TVChannelsService
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
-import good.damn.tvlist.views.recycler_views.scroll_listeners.interfaces.OnUpdateStreamDataListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class TVChannelsRecyclerView(
@@ -35,18 +28,59 @@ class TVChannelsRecyclerView(
     override fun onUpdateDataStream(
         currentIndex: Int
     ) {
-        mChannelService.getChannels(
-            from = (currentIndex / mStreamScrollListener.updateCount)+1,
-            mStreamScrollListener.updateCount
-        ) {
-            adapterChannels?.addChannels(
-                it
+        App.IO.launch {
+            val currentIndex = currentIndex
+            val adapterFrom = currentIndex / mStreamScrollListener.updateCount
+            val from = adapterFrom + 1
+            val updateCount = mStreamScrollListener.updateCount
+
+            val cachedChannels = mChannelService.getChannels(
+                from,
+                updateCount,
+                fromCache = true
+            )
+
+            if (cachedChannels != null) {
+                adapterChannels?.addChannels(
+                    cachedChannels
+                )
+
+                App.ui {
+                    adapterChannels?.notifyItemRangeInserted(
+                        currentIndex,
+                        updateCount
+                    )
+                }
+            }
+
+            val networkChannels = mChannelService.getChannels(
+                from,
+                updateCount,
+                fromCache = false
+            ) ?: return@launch
+
+            if (cachedChannels == null) {
+                adapterChannels?.addChannels(
+                    networkChannels
+                )
+                App.ui {
+                    adapterChannels?.notifyItemRangeInserted(
+                        currentIndex,
+                        updateCount
+                    )
+                }
+                return@launch
+            }
+
+            adapterChannels?.updateData(
+                currentIndex,
+                networkChannels
             )
 
             App.ui {
-                adapterChannels?.notifyItemRangeInserted(
+                adapterChannels?.notifyItemRangeChanged(
                     currentIndex,
-                    mStreamScrollListener.updateCount
+                    updateCount
                 )
             }
 

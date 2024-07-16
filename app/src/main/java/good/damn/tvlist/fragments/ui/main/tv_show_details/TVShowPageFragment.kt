@@ -56,6 +56,7 @@ import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
+import kotlinx.coroutines.launch
 
 class TVShowPageFragment
 : StackFragment(), OnRateClickListener {
@@ -428,13 +429,18 @@ class TVShowPageFragment
                 )
             )
 
-            showService.getImages {
-                adapter = TVShowImagesAdapter(
-                    it,
-                    (heightParams() * 1.77777f).toInt(),
-                    heightParams()
-                )
+            App.IO.launch {
+                val images = showService.getImages()
+                App.ui {
+                    adapter = TVShowImagesAdapter(
+                        images,
+                        (heightParams() * 1.77777f).toInt(),
+                        heightParams()
+                    )
+                }
             }
+
+
 
             contentLayout.addView(
                 this
@@ -560,12 +566,15 @@ class TVShowPageFragment
                 )
             )
 
-            showService.getChannelPointers {
-                adapter = TVShowChannelsAdapter(
-                    it,
-                    heightParams(),
-                    heightParams()
-                )
+            App.IO.launch {
+                val pointers = showService.getChannelPointers()
+                App.ui {
+                    adapter = TVShowChannelsAdapter(
+                        pointers,
+                        heightParams(),
+                        heightParams()
+                    )
+                }
             }
 
             contentLayout.addView(

@@ -24,6 +24,7 @@ import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
+import good.damn.tvlist.extensions.singleLined
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.animation.FragmentAnimation
@@ -32,6 +33,7 @@ import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.text_fields.TextFieldRound
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SearchFragment
 : StackFragment(),
@@ -110,9 +112,7 @@ Runnable {
                 this@SearchFragment
             )
 
-            maxLines = 1
-            minLines = 1
-            inputType = InputType.TYPE_CLASS_TEXT
+            singleLined()
 
             val left = (widthParams() * 0.03728f)
                 .toInt()
@@ -262,54 +262,83 @@ Runnable {
     }
 
     override fun run() {
-
         mSearchResultAdapter?.cleanCurrentResult()
+        App.IO.launch {
+            val channels = mSearchService.getChannelsByName(
+                mSearchRequest
+            )
 
-        mSearchService.getChannelsByName(
-            mSearchRequest
-        ) { channels ->
             if (channels == null) {
-                return@getChannelsByName
+                return@launch
             }
 
             val adapter = mSearchResultAdapter
-                ?: return@getChannelsByName
+                ?: return@launch
 
             adapter.addResult(
                 channels
             )
 
             App.ui {
-                adapter.notifyItemChanged(
+                adapter.notifyItemRangeInserted(
                     0,
                     channels.size
                 )
-            }
 
-            mSearchService.getShowsByName(
-                mSearchRequest
-            ) { shows ->
-                if (shows == null) {
-                    return@getShowsByName
-                }
-
-                val channelsPos = adapter.itemCount
-                adapter.addResult(
-                    shows
-                )
-
-                App.ui {
-                    adapter.notifyItemRangeInserted(
-                        channelsPos,
-                        shows.size
+                App.IO.launch {
+                    val shows = mSearchService.getShowsByName(
+                        mSearchRequest
                     )
+
+                    if (shows == null) {
+                        return@launch
+                    }
+
+                    val channelsPos = adapter.itemCount
+                    adapter.addResult(
+                        shows
+                    )
+
+                    App.ui {
+                        adapter.notifyItemRangeInserted(
+                            channelsPos,
+                            shows.size
+                        )
+                    }
                 }
             }
         }
     }
 
+    override fun onFocusChanged(
+        isFragmentFocused: Boolean
+    ) {
+        super.onFocusChanged(
+            isFragmentFocused
+        )
+
+        mBlurView?.apply {
+            if (isFragmentFocused) {
+                startRenderLoop()
+                onResume()
+                return@apply
+            }
+
+            mHandlerSearch.removeCallbacks(
+                this@SearchFragment
+            )
+            stopRenderLoop()
+            onPause()
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+
+        if (!isFragmentFocused()) {
+            return
+        }
+
         mBlurView?.apply {
             startRenderLoop()
             onResume()
@@ -318,6 +347,15 @@ Runnable {
 
     override fun onPause() {
         super.onPause()
+
+        if (!isFragmentFocused()) {
+            return
+        }
+
+        mHandlerSearch.removeCallbacks(
+            this@SearchFragment
+        )
+
         mBlurView?.apply {
             stopRenderLoop()
             onPause()

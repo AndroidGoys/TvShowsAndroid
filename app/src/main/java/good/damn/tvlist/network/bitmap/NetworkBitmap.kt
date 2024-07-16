@@ -47,9 +47,15 @@ class NetworkBitmap {
             // Check expiration period?
 
             val inp = try {
-                URL(
+                val connection = URL(
                     url
-                ).openStream()
+                ).openConnection()
+
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                connection.connect()
+
+                connection.getInputStream()
             } catch (e: Exception) {
                 Log.d(TAG, "loadFromNetwork: ERROR: ${e.message}")
                 return@launch
@@ -76,26 +82,29 @@ class NetworkBitmap {
 
                 val correctedBitmap: Bitmap
 
-                //if (bitmapWidth == bitmapHeight) {
+                if (bitmapWidth == bitmapHeight) {
                     correctedBitmap = Bitmap.createScaledBitmap(
                         it,
                         viewWidth,
                         viewHeight,
                         false
                     )
-                /*} else {
+                } else { // !(dh < 0 & dw < 0)
                     val dh = viewHeight - bitmapHeight
                     val dw = viewWidth - bitmapWidth
+
+                    val kw = bitmapWidth.toFloat() / bitmapHeight
+                    val kh = bitmapHeight.toFloat() / bitmapWidth
 
                     val dstWidth: Int
                     val dstHeight: Int
 
                     if (dh > dw) {
-                        dstWidth = bitmapWidth + dh
+                        dstWidth = (bitmapWidth + dh * kw).toInt()
                         dstHeight = viewHeight
                     } else {
                         dstWidth = viewWidth
-                        dstHeight = bitmapHeight + dw
+                        dstHeight = (bitmapHeight + dw * kh).toInt()
                     }
 
                     val scaledUpBitmap = Bitmap.createScaledBitmap(
@@ -105,16 +114,8 @@ class NetworkBitmap {
                         false
                     )
 
-                    val x: Int
-                    val y: Int
-
-                    if (dstWidth > dstHeight) {
-                        x = (dstWidth - bitmapWidth) / 2
-                        y = 0
-                    } else {
-                        x = 0
-                        y = (dstHeight - bitmapHeight) / 2
-                    }
+                    val x = (dstWidth - viewWidth) / 2
+                    val y = (dstHeight - viewHeight) / 2
 
                     Log.d(TAG, "loadFromNetwork: ____________")
                     Log.d(TAG, "loadFromNetwork: BITMAP: $bitmapWidth $bitmapHeight")
@@ -124,12 +125,12 @@ class NetworkBitmap {
 
                     correctedBitmap = Bitmap.createBitmap(
                         scaledUpBitmap,
-                        abs(x),
-                        abs(y),
+                        x,
+                        y,
                         viewWidth,
                         viewHeight
                     )
-                }*/
+                }
 
 
 

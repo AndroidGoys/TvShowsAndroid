@@ -28,6 +28,7 @@ import good.damn.tvlist.views.tab_bars.TabBar
 import good.damn.tvlist.views.tab_bars.TabView
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
+import kotlinx.coroutines.launch
 
 class TVShowReviewsFragment
 : StackFragment(),
@@ -175,14 +176,15 @@ OnTabClickListener {
         }
 
         review?.id?.let { showId ->
-            mShowService.getReviews(
-                showId
-            ) {
-                val d = it
+            App.IO.launch {
+                val reviews = mShowService.getReviews(
+                    showId
+                ) ?: return@launch
+
                 App.ui {
                     mRecyclerView?.adapter = TVShowUserReviewsAdapter(
                         (measureUnit * 0.90811f).toInt(),
-                        d
+                        reviews
                     )
                 }
             }
@@ -229,19 +231,23 @@ OnTabClickListener {
 
         val recyclerView = mRecyclerView
             ?: return
-        mShowService.getReviews(
-            id
-        ) {
+
+        App.IO.launch {
+            val reviews = mShowService.getReviews(
+                id
+            )
             val ad = (recyclerView.adapter as? TVShowUserReviewsAdapter)
-                ?: return@getReviews
+                ?: return@launch
             val s = ad.itemCount
-            ad.addData(it)
+            ad.addData(reviews)
+
             App.ui {
                 ad.notifyItemRangeInserted(
-                    s,it.size
+                    s,reviews.size
                 )
             }
         }
+
     }
 
 }

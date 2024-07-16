@@ -1,13 +1,9 @@
 package good.damn.tvlist.network
 
 import android.util.Log
-import good.damn.tvlist.App
 import good.damn.tvlist.cache.CacheJSON
-import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import java.io.File
@@ -24,10 +20,9 @@ open class NetworkJSONService(
     protected fun postJSON(
         url: String,
         json: JSONObject,
-        mediaType: String,
-        completionBackground: (ResponseBody) -> Unit
-    ) {
-        execute(
+        mediaType: String
+    ): ResponseBody? {
+        val response = execute(
             makeRequestPOST(
                 url,
                 ACCEPT,
@@ -35,73 +30,70 @@ open class NetworkJSONService(
                     mediaType.toMediaType()
                 )
             )
-        ) {
-            val body = it.body
-            Log.d(TAG, "getJSON: RESPONSE $it $body")
-            if (body == null || it.code != 200) {
-                Log.d(TAG, "getJSON: INVALID RESPONSE")
-                return@execute
-            }
+        )
 
-            completionBackground(
-                body
-            )
+        if (response == null) {
+            return null
         }
+
+        val body = response.body
+        Log.d(TAG, "getJSON: RESPONSE $response $body")
+        if (body == null || response.code != 200) {
+            Log.d(TAG, "getJSON: INVALID RESPONSE")
+            return null
+        }
+
+        return body
     }
 
-    protected fun getJSON(
-        url: String,
-        completionBackground: (JSONObject?) -> Unit
-    ) {
+    protected fun getCachedJson(
+        url: String
+    ): JSONObject? {
+        val cachedJson = CacheJSON.load(
+            url.hashCode().toString(),
+            mCacheDirApp
+        )
 
-        App.IO.launch {
-            val cachedJson = CacheJSON.load(
-                url.hashCode().toString(),
-                mCacheDirApp
+        Log.d(TAG, "getCachedJson: CACHED_JSON ${cachedJson?.length()}")
+        return cachedJson
+    }
+
+    protected fun getNetworkJSON(
+        url: String
+    ): JSONObject? {
+        val response = execute(
+            makeRequestGET(
+                url,
+                ACCEPT
             )
+        )
 
-            if (cachedJson != null) {
-                completionBackground(
-                    cachedJson
-                )
-            }
+        if (response == null) {
+            return null
+        }
 
-            execute(
-                makeRequestGET(
-                    url,
-                    ACCEPT
-                )
-            ) {
-                val body = it.body
-                Log.d(TAG, "getJSON: RESPONSE $it $body")
-                if (body == null || it.code != 200) {
-                    Log.d(TAG, "getJSON: INVALID RESPONSE")
-                    return@execute
-                }
+        val body = response.body
+        Log.d(TAG, "getJSON: RESPONSE $response $body")
+        if (body == null || response.code != 200) {
+            Log.d(TAG, "getJSON: INVALID RESPONSE")
+            return null
+        }
 
-                val json = body.string()
+        val json = body.string()
 
-                CacheJSON.cache(
-                    json,
-                    url.hashCode().toString(),
-                    mCacheDirApp
-                )
+        CacheJSON.cache(
+            json,
+            url.hashCode().toString(),
+            mCacheDirApp
+        )
 
-                if (cachedJson != null) {
-                    return@execute
-                }
-
-                completionBackground(
-                    try {
-                        JSONObject(
-                            json
-                        )
-                    } catch (e: Exception) {
-                        Log.d(TAG, "getJSON: ERROR: ${e.message}")
-                        null
-                    }
-                )
-            }
+        return try {
+            JSONObject(
+                json
+            )
+        } catch (e: Exception) {
+            Log.d(TAG, "getJSON: ERROR: ${e.message}")
+            null
         }
     }
 

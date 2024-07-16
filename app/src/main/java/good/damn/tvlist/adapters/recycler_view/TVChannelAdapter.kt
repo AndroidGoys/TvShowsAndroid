@@ -1,5 +1,6 @@
 package good.damn.tvlist.adapters.recycler_view
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,10 @@ class TVChannelAdapter(
     private val height: Int,
     private val data: ArrayList<TVChannel?>
 ): RecyclerView.Adapter<TVChannelViewHolder>() {
+
+    companion object {
+        private const val TAG = "TVChannelAdapter"
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -29,6 +34,17 @@ class TVChannelAdapter(
     ) = holder.onBindViewHolder(
        data[position]
     )
+
+    @WorkerThread
+    fun updateData(
+        from: Int,
+        data: ArrayList<TVChannel?>
+    ) {
+        for (i in 0..<data.size) {
+            Log.d(TAG, "updateData: $from $i ${data.size} ${this.data.size}")
+            this.data[from+i] = data[i]
+        }
+    }
 
     @WorkerThread
     fun addChannels(

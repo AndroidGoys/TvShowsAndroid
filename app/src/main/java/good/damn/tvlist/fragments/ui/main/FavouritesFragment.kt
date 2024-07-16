@@ -15,6 +15,8 @@ import good.damn.tvlist.adapters.recycler_view.TVProgramsAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.pause
+import good.damn.tvlist.extensions.resume
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
@@ -153,6 +155,24 @@ class FavouritesFragment
         return layout
     }
 
+    override fun onFocusChanged(
+        isFragmentFocused: Boolean
+    ) {
+        super.onFocusChanged(
+            isFragmentFocused
+        )
+
+        mBlurView?.apply {
+            if (isFragmentFocused) {
+                resume()
+                return@apply
+            }
+
+            pause()
+        }
+
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mBlurView?.clean()
@@ -162,18 +182,17 @@ class FavouritesFragment
     override fun onResume() {
         super.onResume()
         Log.d(TAG, "onResume: ")
-        mBlurView?.apply {
-            startRenderLoop()
-            onResume()
+
+        if (isFragmentFocused()) {
+            mBlurView?.resume()
         }
     }
 
     override fun onPause() {
         super.onPause()
         Log.d(TAG, "onPause: ")
-        mBlurView?.apply {
-            stopRenderLoop()
-            onPause()
+        if (isFragmentFocused()) {
+            mBlurView?.pause()
         }
     }
 
