@@ -2,6 +2,7 @@ package good.damn.tvlist.network.api.services
 
 import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
+import good.damn.tvlist.Unicode
 import good.damn.tvlist.interfaces.Typeable
 import good.damn.tvlist.models.TVSearchResultTitle
 import good.damn.tvlist.network.NetworkJSONService
@@ -27,11 +28,13 @@ class TVSearchService
     @WorkerThread
     fun getShowsByName(
         name: String,
+        fromCache: Boolean = false
     ): ArrayList<Typeable?>? {
         val json = searchRequest(
             name,
             URL_SHOWS,
-            limit = 25
+            limit = 25,
+            fromCache
         )
 
         if (json == null || json.length() == 0) {
@@ -63,9 +66,13 @@ class TVSearchService
                 showsJson.shows.getJSONObject(i)
             ) ?: continue
 
+            val showName = if (show.name.length >= 26)
+                show.name.substring(0,26) + Unicode.DOTS
+            else show.name
+
             shows.add(
                 TVSearchResult(
-                    show.name,
+                    showName,
                     show.previewUrl
                 )
             )
@@ -76,12 +83,14 @@ class TVSearchService
 
     @WorkerThread
     fun getChannelsByName(
-        name: String
+        name: String,
+        fromCache: Boolean = false
     ): ArrayList<Typeable?>? {
         val json = searchRequest(
             name,
             URL_CHANNELS,
-            limit = 8
+            limit = 8,
+            fromCache
         )
 
         if (json == null || json.length() == 0) {
@@ -127,15 +136,21 @@ class TVSearchService
     private fun searchRequest(
         name: String,
         url: String,
-        limit: Int
+        limit: Int,
+        fromCache: Boolean
     ): JSONObject? {
         val encodedName = URLEncoder.encode(
             name,
             StandardCharsets.UTF_8.name()
         )
 
-        return getNetworkJSON(
-            "$url?limit=$limit&offset=0&name=$encodedName"
+        val url = "$url?limit=$limit&offset=0&name=$encodedName"
+
+        return if (fromCache)
+            getCachedJson(
+                url
+        ) else getNetworkJSON(
+            url
         )
     }
 

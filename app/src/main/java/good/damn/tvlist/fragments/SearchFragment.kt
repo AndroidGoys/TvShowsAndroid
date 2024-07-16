@@ -265,7 +265,8 @@ Runnable {
         mSearchResultAdapter?.cleanCurrentResult()
         App.IO.launch {
             val channels = mSearchService.getChannelsByName(
-                mSearchRequest
+                mSearchRequest,
+                fromCache = !App.NETWORK_AVAILABLE
             )
 
             if (channels == null) {
@@ -287,7 +288,8 @@ Runnable {
 
                 App.IO.launch {
                     val shows = mSearchService.getShowsByName(
-                        mSearchRequest
+                        mSearchRequest,
+                        fromCache = !App.NETWORK_AVAILABLE
                     )
 
                     if (shows == null) {

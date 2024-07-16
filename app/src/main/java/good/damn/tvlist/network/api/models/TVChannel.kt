@@ -1,6 +1,7 @@
 package good.damn.tvlist.network.api.models
 
 import android.util.Log
+import good.damn.tvlist.Unicode
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.log
@@ -35,7 +36,7 @@ data class TVChannel(
             }
 
             val shortName = if (name.length >= 21)
-                name.substring(0,21) + "…"
+                name.substring(0,21) + Unicode.DOTS
             else null
 
             val current = try {

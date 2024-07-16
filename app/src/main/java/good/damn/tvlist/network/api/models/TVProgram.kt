@@ -1,6 +1,7 @@
 package good.damn.tvlist.network.api.models
 
 import android.util.Log
+import good.damn.tvlist.Unicode
 import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.network.api.models.enums.CensorAge
 import org.json.JSONObject
@@ -82,7 +83,7 @@ data class TVProgram(
                 startTime = startTime,
                 rating = Random.nextFloat() * 5f,
                 shortName = if (name.length > 15)
-                    name.substring(0,15) + "…"
+                    name.substring(0,15) + Unicode.DOTS
                 else null,
                 startTimeString = "$hourString:$minutesString",
                 imageUrl = "https://www.cats.org.uk/media/13136/220325case013.jpg?width=500&height=333.49609375",
