@@ -122,9 +122,13 @@ class TVSearchService
                 chan.channels.getJSONObject(i)
             ) ?: continue
 
+            val channelName = if (channel.name.length >= 26)
+                channel.name.substring(0,26) + Unicode.DOTS
+            else channel.name
+
             channels.add(
                 TVSearchResult(
-                    channel.name,
+                    channelName,
                     channel.imageUrl
                 )
             )
