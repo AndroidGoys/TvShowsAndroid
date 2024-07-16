@@ -9,6 +9,9 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.Toast
+import android.window.OnBackInvokedCallback
+import android.window.OnBackInvokedDispatcher
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -153,6 +156,26 @@ ActivityResultCallback<Boolean> {
             )
 
         }
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(
+                true
+            ) {
+                override fun handleOnBackPressed() {
+                    if (mNavigator.size <= 1) {
+                        finish()
+                        return
+                    }
+                    popFragment(
+                        FragmentAnimation { f, fragment ->
+                            fragment.view?.scaleX = 1.0f - f
+                        }
+                    )
+                }
+            }
+        )
+
 
         setContentView(
             mContainer

@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
@@ -13,15 +12,14 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.auth.SigninFragment
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.BigButtonView
 import good.damn.tvlist.views.buttons.ButtonBack
-import java.io.Closeable
 
 class ProfileFragment
 : StackFragment() {
@@ -158,12 +156,16 @@ class ProfileFragment
         ).apply {
             defaultBigButton(
                 this,
-                R.string.logout,
+                R.string.login,
                 R.drawable.ic_logout_red,
                 textColor = 0xffFF7E7E.toInt(),
                 measureUnit = measureUnit,
                 topFactor = 0.036231f,
                 layout = layout
+            )
+
+            setOnClickListener(
+                this@ProfileFragment::onClickLogIn
             )
         }
 
@@ -171,6 +173,17 @@ class ProfileFragment
         return layout
     }
 
+}
+
+private fun ProfileFragment.onClickLogIn(
+    v: View
+) {
+    pushFragment(
+        SigninFragment(),
+        FragmentAnimation { f, fragment ->
+            fragment.view?.alpha = f
+        }
+    )
 }
 
 private fun ProfileFragment.defaultBigButton(

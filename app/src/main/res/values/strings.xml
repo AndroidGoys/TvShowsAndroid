@@ -34,4 +34,9 @@
     <string name="your_rate">Оценка</string>
     <string name="hint_text_review">Текст отзыва (необязательно)</string>
     <string name="post_review">Опубликовать</string>
+    <string name="login">Войти в аккаунт</string>
+    <string name="lets_sign_in">Давайте\nзарегистрируемся!</string>
+    <string name="welcome_back">С возвращением в</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
 </resources>
