@@ -10,6 +10,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
+import good.damn.tvlist.extensions.widthParams
 
 class RoundedImageView(
     context: Context
@@ -31,6 +32,15 @@ class RoundedImageView(
         }
 
     var bitmap: Bitmap? = null
+        set(v) {
+            field = v
+            if (v == null || width == 0) {
+                return
+            }
+
+            mBitmapX = (width - v.width) * 0.5f
+            mBitmapY = (height - v.height) * 0.5f
+        }
     var drawable: Drawable? = null
 
     var imageScaleX = 1f
@@ -39,6 +49,9 @@ class RoundedImageView(
     private val mPaint = Paint()
 
     private var mRectStroke = RectF()
+
+    private var mBitmapX = 0f
+    private var mBitmapY = 0f
 
     init {
         mPaint.style = Paint.Style.STROKE
@@ -83,8 +96,8 @@ class RoundedImageView(
         if (bitmap != null) {
             canvas.drawBitmap(
                 bitmap!!,
-                0f,
-                0f,
+                mBitmapX,
+                mBitmapY,
                 mPaint
             )
         }
