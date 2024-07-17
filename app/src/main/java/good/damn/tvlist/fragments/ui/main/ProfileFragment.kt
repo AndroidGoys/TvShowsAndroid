@@ -2,8 +2,6 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -14,6 +12,8 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.removeAccessToken
+import good.damn.tvlist.extensions.removeRefreshToken
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.fragments.StackFragment
@@ -26,13 +26,25 @@ import good.damn.tvlist.views.buttons.ButtonBack
 class ProfileFragment
 : StackFragment() {
 
+    private var mBtnLogout: BigButtonView? = null
+    private var mBtnLogin: BigButtonView? = null
+
+    private var mLayout: LinearLayout? = null
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View {
-        val layout = ViewUtils.verticalLinear(
+        mLayout = ViewUtils.verticalLinear(
             context
-        )
+        ).apply {
+            setPadding(
+                0,
+                getTopInset(),
+                0,
+                0
+            )
+        }
 
         ButtonBack.createLinear(
             context,
@@ -43,7 +55,8 @@ class ProfileFragment
                 this@ProfileFragment::onClickBtnBack
             )
 
-            layout.addView(
+
+            mLayout?.addView(
                 this
             )
         }
@@ -74,7 +87,7 @@ class ProfileFragment
                 top = measureUnit * 0.08057f
             )
 
-            layout.addView(
+            mLayout?.addView(
                 this
             )
         }
@@ -94,7 +107,7 @@ class ProfileFragment
                 ),
                 measureUnit,
                 0.072463f,
-                layout
+                mLayout
             )
         }
 
@@ -113,7 +126,7 @@ class ProfileFragment
                 ),
                 measureUnit,
                 0.036231f,
-                layout
+                mLayout
             )
         }
 
@@ -132,7 +145,7 @@ class ProfileFragment
                 ),
                 measureUnit,
                 0.036231f,
-                layout
+                mLayout
             )
         }
 
@@ -149,30 +162,71 @@ class ProfileFragment
                 ),
                 measureUnit,
                 0.036231f,
-                layout
+                mLayout
             )
         }
 
-        BigButtonView(
+        mBtnLogin = BigButtonView(
             context
         ).apply {
             defaultBigButton(
                 this,
                 R.string.login,
-                R.drawable.ic_logout_red,
-                textColor = 0xffFF7E7E.toInt(),
+                R.drawable.ic_logout,
+                textColor = App.color(
+                    R.color.text
+                ),
                 measureUnit = measureUnit,
-                topFactor = 0.036231f,
-                layout = layout
+                topFactor = 0.036231f
             )
-
             setOnClickListener(
                 this@ProfileFragment::onClickLogIn
             )
+            if (App.TOKEN_AUTH == null) {
+                mLayout?.addView(
+                    this
+                )
+            }
+        }
+
+        mBtnLogout = BigButtonView(
+            context
+        ).apply {
+
+            defaultBigButton(
+                this,
+                R.string.logout,
+                R.drawable.ic_logout_red,
+                textColor = 0xffFF7E7E.toInt(),
+                measureUnit = measureUnit,
+                topFactor = 0.036231f
+            )
+
+            setOnClickListener(
+                this@ProfileFragment::onClickLogout
+            )
+
+            if (App.TOKEN_AUTH != null) {
+                mLayout?.addView(
+                    this
+                )
+            }
         }
 
 
-        return layout
+        return mLayout ?: View(context)
+    }
+
+    private fun onClickLogout(
+        v: View
+    ) {
+        sharedStorage().edit().apply {
+            removeAccessToken()
+            removeRefreshToken()
+            apply()
+        }
+        App.TOKEN_AUTH = null
+        updateLayoutAuthState()
     }
 
     private fun onClickLogIn(
@@ -196,6 +250,27 @@ class ProfileFragment
                 fragment.view?.alpha = 1.0f - f
             }
         )
+
+        updateLayoutAuthState()
+    }
+
+    private fun updateLayoutAuthState() {
+        val btnLogin = mBtnLogin
+            ?: return
+
+        val btnLogout = mBtnLogout
+            ?: return
+
+        mLayout?.apply {
+            if (App.TOKEN_AUTH == null) {
+                removeView(btnLogout)
+                addView(btnLogin)
+                return
+            }
+
+            removeView(btnLogin)
+            addView(btnLogout)
+        }
     }
 
 }
@@ -208,7 +283,7 @@ private fun ProfileFragment.defaultBigButton(
     textColor: Int,
     measureUnit: Int,
     topFactor: Float,
-    layout: LinearLayout
+    layout: LinearLayout? = null
 ) {
     btn.apply {
         text = getString(
@@ -248,7 +323,7 @@ private fun ProfileFragment.defaultBigButton(
         imageEndSizeFactor = 0.31579f
         textSizeFactor = 0.22368f
 
-        layout.addView(
+        layout?.addView(
             this
         )
     }

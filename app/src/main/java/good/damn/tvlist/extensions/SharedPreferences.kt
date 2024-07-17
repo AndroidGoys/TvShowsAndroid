@@ -2,20 +2,30 @@ package good.damn.tvlist.extensions
 
 import android.content.SharedPreferences
 
+private const val keyAccess = "access_token"
+private const val keyRefresh = "refresh_token"
+
 fun SharedPreferences.accessToken() = getString(
-    "access_token",
+    keyAccess,
     null
 )
 
 fun SharedPreferences.refreshToken() = getString(
-    "refresh_token",
+    keyRefresh,
     null
 )
 
+fun SharedPreferences.Editor.removeAccessToken() =
+    remove(keyAccess)
+
+
+fun SharedPreferences.Editor.removeRefreshToken() =
+    remove(keyRefresh)
+
 fun SharedPreferences.Editor.accessToken(
     s: String
-) = putString("access_token",s)
+) = putString(keyAccess, s)
 
 fun SharedPreferences.Editor.refreshToken(
     s: String
-) = putString("refresh_token", s)
+) = putString(keyRefresh, s)

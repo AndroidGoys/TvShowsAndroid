@@ -14,6 +14,7 @@ import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
@@ -338,9 +339,11 @@ class LoginFragment
 
         mShared?.edit()?.apply {
             accessToken(tokenAuth.accessToken)
-            accessToken(tokenAuth.refreshToken)
+            refreshToken(tokenAuth.refreshToken)
             commit() // synchronous write to share storage
         }
+
+        App.TOKEN_AUTH = tokenAuth
 
         App.ui {
             mBtnLogin?.apply {

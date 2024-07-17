@@ -501,6 +501,8 @@ class SigninFragment
             commit() // sync write
         }
 
+        App.TOKEN_AUTH = tokenAuth
+
         App.ui {
             mBtnSignIn?.apply {
                 text = getString(
@@ -509,7 +511,6 @@ class SigninFragment
                 recalculateTextPosition()
                 invalidate()
             }
-
             onSignInSuccess?.invoke()
         }
     }
@@ -541,8 +542,7 @@ class SigninFragment
             Looper.getMainLooper()
         ).postDelayed({
             onSignInSuccess?.invoke()
-        }, 500
-        )
+        }, 500)
     }
 
 }
