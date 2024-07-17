@@ -2,6 +2,8 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
@@ -173,17 +175,29 @@ class ProfileFragment
         return layout
     }
 
-}
+    private fun onClickLogIn(
+        v: View
+    ) {
+        pushFragment(
+            SigninFragment().apply {
+                onSignInSuccess = this@ProfileFragment::onSignInSuccess
+            },
+            FragmentAnimation { f, fragment ->
+                fragment.view?.alpha = f
+            }
+        )
+    }
 
-private fun ProfileFragment.onClickLogIn(
-    v: View
-) {
-    pushFragment(
-        SigninFragment(),
-        FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = f
-        }
-    )
+    private fun onSignInSuccess() {
+        Handler(
+            Looper.getMainLooper()
+        ).postDelayed({
+                popFragment()
+            },
+            1500
+        )
+    }
+
 }
 
 private fun ProfileFragment.defaultBigButton(

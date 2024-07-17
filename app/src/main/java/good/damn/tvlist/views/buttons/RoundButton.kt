@@ -52,15 +52,7 @@ class RoundButton(
         )
 
         mPaintText.textSize = height * textSizeFactor
-        mTextY = (height + mPaintText.textSize) * 0.45f
-
-        if (text == null) {
-            return
-        }
-
-        mTextX = (width - mPaintText.measureText(
-            text
-        )) * 0.5f
+        recalculateTextPosition()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -76,6 +68,18 @@ class RoundButton(
             mTextY,
             mPaintText
         )
+    }
+
+    fun recalculateTextPosition() {
+        mTextY = (height + mPaintText.textSize) * 0.45f
+
+        if (text == null) {
+            return
+        }
+
+        mTextX = (width - mPaintText.measureText(
+            text
+        )) * 0.5f
     }
 
 }

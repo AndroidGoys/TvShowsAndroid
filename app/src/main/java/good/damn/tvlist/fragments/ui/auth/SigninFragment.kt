@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ScrollView
+import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.view.children
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.accessToken
@@ -32,6 +35,8 @@ import kotlinx.coroutines.launch
 
 class SigninFragment
 : StackFragment() {
+
+    var onSignInSuccess: (()->Unit)? = null
 
     private val mAuthService = AuthService()
 
@@ -200,7 +205,7 @@ class SigninFragment
                 ).withAlpha(0.3f)
             )
 
-            gravity = Gravity.CENTER_HORIZONTAL
+            gravity = Gravity.CENTER
 
             singleLined()
 
@@ -252,7 +257,7 @@ class SigninFragment
                 ).withAlpha(0.3f)
             )
 
-            gravity = Gravity.CENTER_HORIZONTAL
+            gravity = Gravity.CENTER
 
             singleLined()
 
@@ -298,7 +303,7 @@ class SigninFragment
                 R.string.mask_password
             )
 
-            gravity = Gravity.CENTER_HORIZONTAL
+            gravity = Gravity.CENTER
 
             boundsLinear(
                 Gravity.CENTER_HORIZONTAL,
@@ -430,12 +435,15 @@ class SigninFragment
             return
         }
 
-        v.isEnabled = false
+        enableInteraction(
+            false
+        )
 
         mBtnSignIn?.apply {
             text = getString(
                 R.string.checking
             )
+            recalculateTextPosition()
             invalidate()
         }
 
@@ -446,15 +454,18 @@ class SigninFragment
                 username
             )
 
-            if (tokenAuthResult.result == null) {
+            val tokenAuth = tokenAuthResult.result
+
+            if (tokenAuth == null) {
                 App.ui {
                     mBtnSignIn?.apply {
                         text = getString(
                             R.string.sign_in
                         )
+                        enableInteraction(true)
+                        recalculateTextPosition()
                         invalidate()
                     }
-
                     val errorId = tokenAuthResult
                         .errorStringId
 
@@ -466,14 +477,51 @@ class SigninFragment
                 return@launch
             }
 
-            val tokenAuth = tokenAuthResult.result
             mSharedPreferences?.edit()?.apply {
                 accessToken(tokenAuth.accessToken)
                 refreshToken(tokenAuth.refreshToken)
                 commit() // sync write
             }
 
+            App.ui {
+                mBtnSignIn?.apply {
+                    text = getString(
+                        R.string.success
+                    )
+                    recalculateTextPosition()
+                    invalidate()
+                }
 
+                onSignInSuccess?.invoke()
+            }
+        }
+    }
+
+    private fun enableInteraction(
+        isIt: Boolean
+    ) {
+        val group = (view as? ViewGroup)
+            ?: return
+        isEnabledViewGroup(
+            group,
+            isIt
+        )
+    }
+
+    private fun isEnabledViewGroup(
+        group: ViewGroup,
+        isIt: Boolean
+    ) {
+        (group as? ViewGroup)?.children?.forEach {
+            if (it is ViewGroup) {
+                isEnabledViewGroup(
+                    it,
+                    isIt
+                )
+                return@forEach
+            }
+
+            it.isEnabled = isIt
         }
     }
 }
