@@ -48,27 +48,10 @@ class TVSearchResultAdapter(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val data = mData[position]
-            ?: return
-
-        when(data.onGetType()) {
-            SearchResultType.RESULT -> {
-                if (data !is TVSearchResult) {
-                    return
-                }
-                (holder as? TVSearchResultViewHolder)
-                    ?.onBindViewHolder(data)
-            }
-            else -> {
-                if (data !is TVSearchResultTitle)
-                    return
-
-                (holder as? TVSearchTitleViewHolder)
-                    ?.setTitle(
-                        data.title
-                    )
-            }
-        }
+        mData[position]?.onBindViewHolder(
+            position,
+            holder
+        )
     }
 
     fun addResult(

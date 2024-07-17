@@ -9,12 +9,17 @@ import android.graphics.RectF
 import android.view.View
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.network.api.models.TVSearchResult
 
 class TVIconNameView(
     context: Context
 ): View(
     context
-) {
+), View.OnClickListener {
+
+    var onClickDataListener: ((TVSearchResult)->Unit)? = null
+
+    var model: TVSearchResult? = null
 
     var bitmap: Bitmap? = null
     var text: String? = null
@@ -38,6 +43,10 @@ class TVIconNameView(
 
         mPaintText.color = App.color(
             R.color.text
+        )
+
+        super.setOnClickListener(
+            this
         )
     }
 
@@ -108,6 +117,25 @@ class TVIconNameView(
             0f,
             0f,
             mPaintText
+        )
+    }
+
+    override fun setOnClickListener(
+        l: OnClickListener?
+    ) {
+        super.setOnClickListener(
+            this
+        )
+    }
+
+    override fun onClick(
+        v: View?
+    ) {
+        if (model == null) {
+            return
+        }
+        onClickDataListener?.invoke(
+            model!!
         )
     }
 }

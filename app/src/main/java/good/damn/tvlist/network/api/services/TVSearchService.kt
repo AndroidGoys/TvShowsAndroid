@@ -3,6 +3,7 @@ package good.damn.tvlist.network.api.services
 import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.Unicode
+import good.damn.tvlist.enums.SearchResultCategory
 import good.damn.tvlist.interfaces.Typeable
 import good.damn.tvlist.models.TVSearchResultTitle
 import good.damn.tvlist.network.NetworkJSONService
@@ -73,7 +74,9 @@ class TVSearchService
             shows.add(
                 TVSearchResult(
                     showName,
-                    show.previewUrl
+                    show.previewUrl,
+                    SearchResultCategory.SHOW,
+                    show
                 )
             )
         }
@@ -129,7 +132,9 @@ class TVSearchService
             channels.add(
                 TVSearchResult(
                     channelName,
-                    channel.imageUrl
+                    channel.imageUrl,
+                    SearchResultCategory.CHANNEL,
+                    channel
                 )
             )
         }
