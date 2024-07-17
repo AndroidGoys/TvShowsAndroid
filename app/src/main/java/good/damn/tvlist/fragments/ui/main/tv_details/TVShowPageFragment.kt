@@ -30,6 +30,8 @@ import good.damn.tvlist.extensions.getDayString
 import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.pause
+import good.damn.tvlist.extensions.resume
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
@@ -246,7 +248,7 @@ class TVShowPageFragment
         }
 
         // Censor age
-        AppCompatTextView(
+        val textViewCensorAge = AppCompatTextView(
             context
         ).apply {
             setTextColor(
@@ -284,6 +286,7 @@ class TVShowPageFragment
                 R.string.rate_tv_show
             )
         )
+
         RateView(
             context
         ).apply {
@@ -347,7 +350,7 @@ class TVShowPageFragment
             )
         )
 
-        AppCompatTextView(
+        val textViewDesc = AppCompatTextView(
             context
         ).apply {
 
@@ -383,7 +386,7 @@ class TVShowPageFragment
             )
         }
 
-        // CHAPTER: Screenshots
+        // CHAPTER: Images (frames)
         contentLayout.addView(
             chapterTextView(
                 context,
@@ -392,7 +395,7 @@ class TVShowPageFragment
             )
         )
 
-        RecyclerView(
+        val recyclerViewImages = RecyclerView(
             context
         ).apply {
 
@@ -428,19 +431,6 @@ class TVShowPageFragment
                     0
                 )
             )
-
-            App.IO.launch {
-                val images = showService.getImages()
-                App.ui {
-                    adapter = TVShowImagesAdapter(
-                        images,
-                        (heightParams() * 1.77777f).toInt(),
-                        heightParams()
-                    )
-                }
-            }
-
-
 
             contentLayout.addView(
                 this
@@ -667,7 +657,8 @@ class TVShowPageFragment
                 width = s,
                 height = s,
                 right = measureUnit * 105.normalWidth(),
-                top = prevView.topHeightParams().toFloat() + measureUnit * 0.10386f
+                top = prevView.topHeightParams().toFloat()
+                    + measureUnit * 0.10386f
             )
 
             setOnClickListener(
@@ -693,7 +684,8 @@ class TVShowPageFragment
                 width = s,
                 height = s,
                 right = marginHorizontal,
-                top = preview.topHeightParams() + measureUnit * 0.0628f
+                top = preview.topHeightParams() +
+                    measureUnit * 0.0628f
             )
 
             background = null
@@ -735,6 +727,33 @@ class TVShowPageFragment
             addView(topBar)
         }
 
+        val id = data?.id
+            ?: return layout
+
+        App.IO.launch {
+            val details = showService.getShowDetails(
+                id.toInt(),
+                fromCache = !App.NETWORK_AVAILABLE
+            ) ?: return@launch
+
+            App.ui {
+                details.apply {
+                    textViewDesc.text = description
+                    textViewCensorAge.text = "${censorAge.age}+"
+                    if (imagesUrl == null) {
+                        return@apply
+                    }
+                    recyclerViewImages.adapter = TVShowImagesAdapter(
+                        imagesUrl,
+                        (measureUnit * 324.normalWidth())
+                            .toInt(),
+                        recyclerViewImages.heightParams()
+
+                    )
+                }
+            }
+        }
+
         return layout
     }
 
@@ -745,10 +764,7 @@ class TVShowPageFragment
             return
         }
 
-        mBlurView?.apply {
-            startRenderLoop()
-            onResume()
-        }
+        mBlurView?.resume()
     }
 
     override fun onPause() {
@@ -758,10 +774,7 @@ class TVShowPageFragment
             return
         }
 
-        mBlurView?.apply {
-            stopRenderLoop()
-            onPause()
-        }
+        mBlurView?.pause()
     }
 
     override fun onDestroy() {
@@ -777,17 +790,11 @@ class TVShowPageFragment
         )
 
         if (isFragmentFocused) {
-            mBlurView?.apply {
-                onResume()
-                startRenderLoop()
-            }
+            mBlurView?.resume()
             return
         }
 
-        mBlurView?.apply {
-            onPause()
-            stopRenderLoop()
-        }
+        mBlurView?.pause()
 
     }
 

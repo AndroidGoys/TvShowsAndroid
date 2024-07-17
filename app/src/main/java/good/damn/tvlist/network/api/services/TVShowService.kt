@@ -11,6 +11,7 @@ import good.damn.tvlist.network.api.models.TVSearchResult
 import good.damn.tvlist.network.api.models.TVSearchResultShows
 import good.damn.tvlist.network.api.models.TVShow
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
+import good.damn.tvlist.network.api.models.show.TVShowDetails
 import good.damn.tvlist.network.api.models.show.TVShowImage
 import good.damn.tvlist.network.api.models.show.TVShowUserReview
 import kotlinx.coroutines.launch
@@ -30,18 +31,46 @@ class TVShowService(
     }
 
     @WorkerThread
+    fun getShowDetails(
+        id: Int,
+        fromCache: Boolean = false
+    ): TVShowDetails? {
+
+        val url = "${URL_SHOWS}/$id"
+        val response = if (fromCache)
+            getCachedJson(url)
+        else getNetworkJSON(url)
+
+        if (response == null) {
+            return null
+        }
+
+        return TVShowDetails.createFromJSON(
+            response
+        )
+    }
+
+    @WorkerThread
     fun getShows(
         name: String,
         offset: Int,
         limit: Int,
         fromCache: Boolean = false
     ): ArrayList<TVShow>? {
-        val json = searchRequest(
+        val encodedName = URLEncoder.encode(
             name,
-            URL_SHOWS,
-            offset,
-            limit,
-            fromCache
+            StandardCharsets.UTF_8.name()
+        )
+
+        val url = "${URL_SHOWS}?" +
+            "limit=$limit&" +
+            "offset=$offset&" +
+            "name=$encodedName"
+
+        val json = if (fromCache)
+            getCachedJson(url)
+        else getNetworkJSON(
+            url
         )
 
         if (json == null || json.length() == 0) {
@@ -173,27 +202,5 @@ class TVShowService(
         return data
     }
 
-
-    private fun searchRequest(
-        name: String,
-        url: String,
-        offset: Int,
-        limit: Int,
-        fromCache: Boolean
-    ): JSONObject? {
-        val encodedName = URLEncoder.encode(
-            name,
-            StandardCharsets.UTF_8.name()
-        )
-
-        val url = "$url?limit=$limit&offset=$offset&name=$encodedName"
-
-        return if (fromCache)
-            getCachedJson(
-                url
-            ) else getNetworkJSON(
-            url
-        )
-    }
 
 }

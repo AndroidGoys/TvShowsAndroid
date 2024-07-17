@@ -116,15 +116,34 @@ class NetworkBitmap {
                         false
                     )
 
-                    val x = (dstWidth - viewWidth) / 2
-                    val y = (dstHeight - viewHeight) / 2
+                    var x = (dstWidth - viewWidth) / 2
+                    var y = (dstHeight - viewHeight) / 2
+
+                    var finalWidth = viewWidth
+                    var finalHeight = viewHeight
+
+                    if (x < 0) {
+                        x = 0
+                    }
+
+                    if (y < 0) {
+                        y = 0
+                    }
+
+                    if (finalWidth > dstWidth) {
+                        finalWidth = dstWidth
+                    }
+
+                    if (finalHeight > dstHeight) {
+                        finalHeight = dstHeight
+                    }
 
                     correctedBitmap = Bitmap.createBitmap(
                         scaledUpBitmap,
                         x,
                         y,
-                        viewWidth,
-                        viewHeight
+                        finalWidth,
+                        finalHeight
                     )
                 }
 
