@@ -1,27 +1,27 @@
 package good.damn.tvlist.network.api.models.auth
 
-import android.graphics.ColorSpace.Model
 import good.damn.tvlist.extensions.extract
 import org.json.JSONObject
 
-data class ModelRegister(
+data class TokenAuth(
     val accessToken: String,
     val refreshToken: String
 ) {
     companion object {
+        const val KEY_ACCESS = "accessToken"
         fun createFromJSON(
             json: JSONObject
-        ): ModelRegister? {
+        ): TokenAuth? {
 
             val accessToken = json.extract(
-                "accessToken"
+                KEY_ACCESS
             ) as? String ?: return null
 
             val refreshToken = json.extract(
                 "refreshToken"
             ) as? String ?: return null
 
-            return ModelRegister(
+            return TokenAuth(
                 accessToken,
                 refreshToken
             )
