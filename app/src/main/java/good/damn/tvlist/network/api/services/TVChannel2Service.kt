@@ -8,6 +8,7 @@ import good.damn.tvlist.interfaces.Typeable
 import good.damn.tvlist.models.TVSearchResultTitle
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.TVChannelDetails
 import good.damn.tvlist.network.api.models.TVSearchResult
 import good.damn.tvlist.network.api.models.TVSearchResultChannels
 import org.json.JSONObject
@@ -21,6 +22,25 @@ class TVChannel2Service
 
     companion object {
         private const val URL_CHANNELS = "${App.URL}/api/channels"
+    }
+
+    @WorkerThread
+    fun getChannelDetails(
+        id: Int,
+        fromCache: Boolean = false
+    ): TVChannelDetails? {
+        val url = "$URL_CHANNELS/$id"
+        val response = if (fromCache)
+            getCachedJson(url)
+        else getNetworkJSON(url)
+
+        if (response == null) {
+            return null
+        }
+
+        return TVChannelDetails.createFromJSON(
+            response
+        )
     }
 
     @WorkerThread

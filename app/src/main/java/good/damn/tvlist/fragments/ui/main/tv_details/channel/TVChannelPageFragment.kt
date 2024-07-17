@@ -38,6 +38,7 @@ import good.damn.tvlist.fragments.ui.main.tv_details.TVShowReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ShareUtils
@@ -78,7 +79,7 @@ OnRateClickListener {
         measureUnit: Int
     ): View {
 
-        val showService = TVShowService()
+        val channelService = TVChannel2Service()
 
         val marginHorizontal = measureUnit * 0.07004f
 
@@ -360,7 +361,23 @@ OnRateClickListener {
                 measureUnit * 0.036231f
             )
 
-            //text = channel?.description
+            App.IO.launch {
+                val id = channel?.id
+                    ?: return@launch
+
+                val details = channelService.getChannelDetails(
+                    id,
+                    fromCache = !App.NETWORK_AVAILABLE
+                )
+
+                if (details == null) {
+                    return@launch
+                }
+
+                App.ui {
+                    text = details.description
+                }
+            }
 
             boundsLinear(
                 gravity = Gravity.START or Gravity.TOP,
