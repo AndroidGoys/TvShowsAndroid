@@ -10,8 +10,9 @@ data class TokenAuth(
     companion object {
         const val KEY_ACCESS = "accessToken"
         fun createFromJSON(
-            json: JSONObject
+            json: JSONObject?
         ): TokenAuth? {
+            json ?: return null
 
             val accessToken = json.extract(
                 KEY_ACCESS

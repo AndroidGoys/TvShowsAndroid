@@ -42,4 +42,17 @@
     <string name="mask_password">Латинские символы, цифры, знак подчёркивания</string>
     <string name="sign_in">Зарегистрироваться</string>
     <string name="already_have_an_account">Уже есть аккаунт?</string>
+    <string name="email_empty">Email пуст</string>
+    <string name="password_empty">Пароль пуст</string>
+    <string name="username">Псевдоним</string>
+    <string name="username_empty">Псевдоним пуст</string>
+    <string name="checking">Проверка...</string>
+    <string name="invalid_response">Ошибка сервера</string>
+    <string name="invalid_response_object">Ошибка получения объекта</string>
+    <string name="invalid_object">Ошибка преобразования объекта</string>
+    <string name="some_error_happens">Произошла ошибка</string>
+    <string name="user_exists">Пользователь уже зарегистрирован</string>
+    <string name="invalid_credentials">Некорректные данные</string>
+    <string name="invalid_refresh_token">Для безопасности, нужно войти в аккаунт ещё раз</string>
+    <string name="invalid_body">Ошибка получения ответа</string>
 </resources>

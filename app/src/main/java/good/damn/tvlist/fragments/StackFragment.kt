@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.ColorInt
+import androidx.annotation.StringRes
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import good.damn.tvlist.App
@@ -106,6 +108,31 @@ abstract class StackFragment
         permission,
         this
     )
+
+    fun sharedStorage() = mainActivity()
+        .getPreferences(
+            Context.MODE_PRIVATE
+        )
+
+    fun toast(
+        @StringRes id: Int
+    ) {
+        Toast.makeText(
+            context,
+            id,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
+    fun toast(
+        msg: String
+    ) {
+        Toast.makeText(
+            context,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
+    }
 
     protected abstract fun onCreateView(
         context: Context,

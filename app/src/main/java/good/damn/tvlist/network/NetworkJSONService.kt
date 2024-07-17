@@ -1,9 +1,15 @@
 package good.damn.tvlist.network
 
 import android.util.Log
+import good.damn.tvlist.R
 import good.damn.tvlist.cache.CacheJSON
+import good.damn.tvlist.extensions.toJSONObject
+import good.damn.tvlist.models.Result
+import good.damn.tvlist.network.api.models.error.Error
+import good.damn.tvlist.network.api.services.AuthService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import java.io.File
@@ -15,35 +21,55 @@ open class NetworkJSONService(
     companion object {
         private const val TAG = "JSONService"
         private const val ACCEPT = "application/json"
+        private val MEDIA_TYPE_JSON = "application/json".toMediaType()
     }
 
-    protected fun postJSON(
+    protected fun requestPostJSON(
         url: String,
-        json: JSONObject,
-        mediaType: String
-    ): ResponseBody? {
-        val response = execute(
+        json: JSONObject
+    ): Result<JSONObject> {
+
+        val resp = execute(
             makeRequestPOST(
                 url,
                 ACCEPT,
                 json.toString().toRequestBody(
-                    mediaType.toMediaType()
+                    MEDIA_TYPE_JSON
                 )
             )
+        ) ?: return Result(
+            errorStringId = R.string.invalid_response
         )
 
-        if (response == null) {
-            return null
+        val body = resp.body
+            ?: return Result(
+                errorStringId = R.string.invalid_body
+            )
+        Log.d(TAG, "requestPostJSON: RESPONSE: $resp $body")
+
+        val jsonResponse = body.string().toJSONObject()
+            ?: return Result(
+                errorStringId = R.string.invalid_object
+            )
+
+        if (resp.code == 200) {
+            return Result(
+                jsonResponse
+            )
         }
 
-        val body = response.body
-        Log.d(TAG, "postJSON: RESPONSE $response $body")
-        if (body == null || response.code != 200) {
-            Log.d(TAG, "postJSON: INVALID RESPONSE")
-            return null
+        Error.createFromJSON(
+            jsonResponse
+        )?.let {
+            return Result(
+                errorStringId = it.msgId
+            )
         }
 
-        return body
+        return Result(
+            errorStringId = R.string.some_error_happens
+        )
+
     }
 
     protected fun getCachedJson(
