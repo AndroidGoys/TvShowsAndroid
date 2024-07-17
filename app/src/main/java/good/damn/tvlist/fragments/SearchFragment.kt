@@ -20,6 +20,8 @@ import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.leftParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.pause
+import good.damn.tvlist.extensions.resume
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
@@ -321,16 +323,14 @@ Runnable {
 
         mBlurView?.apply {
             if (isFragmentFocused) {
-                startRenderLoop()
-                onResume()
+                resume()
                 return@apply
             }
 
             mHandlerSearch.removeCallbacks(
                 this@SearchFragment
             )
-            stopRenderLoop()
-            onPause()
+            pause()
         }
     }
 
@@ -341,10 +341,7 @@ Runnable {
             return
         }
 
-        mBlurView?.apply {
-            startRenderLoop()
-            onResume()
-        }
+        mBlurView?.resume()
     }
 
     override fun onPause() {
@@ -358,10 +355,7 @@ Runnable {
             this@SearchFragment
         )
 
-        mBlurView?.apply {
-            stopRenderLoop()
-            onPause()
-        }
+        mBlurView?.pause()
     }
 
     override fun onDestroy() {

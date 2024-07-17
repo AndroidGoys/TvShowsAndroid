@@ -82,7 +82,9 @@ class NetworkBitmap {
 
                 val correctedBitmap: Bitmap
 
-                if (bitmapWidth == bitmapHeight) {
+                if (bitmapWidth == bitmapHeight
+                    && viewWidth == viewHeight
+                ) {
                     correctedBitmap = Bitmap.createScaledBitmap(
                         it,
                         viewWidth,
@@ -116,12 +118,6 @@ class NetworkBitmap {
 
                     val x = (dstWidth - viewWidth) / 2
                     val y = (dstHeight - viewHeight) / 2
-
-                    Log.d(TAG, "loadFromNetwork: ____________")
-                    Log.d(TAG, "loadFromNetwork: BITMAP: $bitmapWidth $bitmapHeight")
-                    Log.d(TAG, "loadFromNetwork: DST: $dstWidth $dstHeight")
-                    Log.d(TAG, "loadFromNetwork: VIEW: $viewWidth $viewHeight")
-                    Log.d(TAG, "loadFromNetwork: XY: $x $y")
 
                     correctedBitmap = Bitmap.createBitmap(
                         scaledUpBitmap,
