@@ -12,6 +12,7 @@ import androidx.annotation.StringRes
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
@@ -22,6 +23,36 @@ import good.damn.tvlist.views.buttons.ButtonBack
 class ViewUtils {
     companion object {
         private const val TAG = "ViewUtils"
+
+        fun chapterTextView(
+            context: Context,
+            measureUnit: Int,
+            @StringRes textId: Int
+        ) = TextView(
+            context
+        ).apply {
+            setText(
+                textId
+            )
+
+            typeface = App.font(
+                R.font.open_sans_bold,
+                context
+            )
+
+            setTextSizePx(
+                measureUnit * 0.05314f
+            )
+
+            setTextColorId(
+                R.color.text
+            )
+
+            boundsLinear(
+                left = measureUnit * 0.07004f,
+                top = measureUnit * 0.08816f
+            )
+        }
 
         fun topBarStyleTitle(
             y: Int,

@@ -1,10 +1,6 @@
-package good.damn.tvlist.fragments.ui.main.tv_show_details
+package good.damn.tvlist.fragments.ui.main.tv_details.channel
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
-import java.util.Calendar
 import android.net.Uri
 import android.util.Log
 import android.view.Gravity
@@ -12,8 +8,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,8 +20,6 @@ import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowImagesAdapter
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
-import good.damn.tvlist.extensions.getDayString
-import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.rgba
@@ -40,40 +32,44 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPostReviewFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.TVShowReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
+import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
-import good.damn.tvlist.utils.BuildUtils
-import good.damn.tvlist.utils.NotificationUtils
-import good.damn.tvlist.utils.PermissionUtils
+import good.damn.tvlist.utils.ShareUtils
 import good.damn.tvlist.utils.ViewUtils
-import good.damn.tvlist.views.rate.RateView
-import good.damn.tvlist.views.statistic.StatisticsView
+import good.damn.tvlist.utils.ViewUtils.Companion.chapterTextView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.rate.OnRateClickListener
+import good.damn.tvlist.views.rate.RateView
 import good.damn.tvlist.views.round.RoundedImageView
 import good.damn.tvlist.views.statistic.ProgressTitleDraw
+import good.damn.tvlist.views.statistic.StatisticsView
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 import kotlinx.coroutines.launch
 
-class TVShowPageFragment
-: StackFragment(), OnRateClickListener {
+class TVChannelPageFragment
+: StackFragment(),
+OnRateClickListener {
 
     companion object {
-        private const val TAG = "TVShowDetailsFragment"
-        const val DIR_PREVIEW = "bitmapProgramPreview"
+        private const val TAG = "TVChannelPageFragment"
+        const val DIR_PREVIEW = "bitmapChannelPreview"
 
         fun newInstance(
-            program: TVProgram?
-        ) = TVShowPageFragment().apply {
-            this.program = program
+            channel: TVChannel2?
+        ) = TVChannelPageFragment().apply {
+            this.channel = channel
         }
 
     }
 
-    var program: TVProgram? = null
+    var channel: TVChannel2? = null
 
     private var mBlurView: BlurShaderView? = null
 
@@ -82,9 +78,7 @@ class TVShowPageFragment
         measureUnit: Int
     ): View {
 
-        val showService = TVShowService(
-            App.CACHE_DIR
-        )
+        val showService = TVShowService()
 
         val marginHorizontal = measureUnit * 0.07004f
 
@@ -138,7 +132,7 @@ class TVShowPageFragment
 
         topBar.textViewTitle.apply {
             alpha = 0f
-            text = program?.shortName ?: program?.name
+            text = channel?.shortName ?: channel?.name
         }
 
         scrollView.apply {
@@ -185,7 +179,7 @@ class TVShowPageFragment
 
             val originalTextSize = measureUnit * 0.08937f
 
-            program?.name?.let {
+            channel?.name?.let {
                 text = it
 
                 val downScaleFactor = when(it.length) {
@@ -260,8 +254,6 @@ class TVShowPageFragment
                 context
             )
 
-            text = "${program?.censorAge?.age}+"
-
             setTextSizePx(
                 measureUnit * 11.normalWidth()
             )
@@ -296,7 +288,7 @@ class TVShowPageFragment
                 height = (measureUnit * 38.normalWidth()).toInt()
             )
 
-            this.onRateClickListener = this@TVShowPageFragment
+            this.onRateClickListener = this@TVChannelPageFragment
 
             contentLayout.addView(
                 this
@@ -330,7 +322,7 @@ class TVShowPageFragment
             )
 
             setOnClickListener(
-                this@TVShowPageFragment::onClickPostReview
+                this@TVChannelPageFragment::onClickPostReview
             )
 
             contentLayout.addView(
@@ -368,7 +360,7 @@ class TVShowPageFragment
                 measureUnit * 0.036231f
             )
 
-            text = program?.description
+            //text = channel?.description
 
             boundsLinear(
                 gravity = Gravity.START or Gravity.TOP,
@@ -377,70 +369,6 @@ class TVShowPageFragment
                 left = marginHorizontal,
                 right = marginHorizontal
             )
-
-            contentLayout.addView(
-                this
-            )
-        }
-
-        // CHAPTER: Screenshots
-        contentLayout.addView(
-            chapterTextView(
-                context,
-                measureUnit,
-                R.string.tv_show_shots
-            )
-        )
-
-        RecyclerView(
-            context
-        ).apply {
-
-            boundsLinear(
-                width = measureUnit,
-                height = (measureUnit * 156.normalWidth()).toInt(),
-                top = measureUnit * 19.normalWidth()
-            )
-
-            layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-
-            clipToPadding = false
-
-            val margin = (measureUnit * 15.normalWidth()).toInt()
-            val pad = marginHorizontal - margin
-
-            setPadding(
-                marginHorizontal.toInt(),
-                0,
-                pad.toInt(),
-                0
-            )
-
-            addItemDecoration(
-                MarginItemDecoration(
-                    0,
-                    0,
-                    margin,
-                    0
-                )
-            )
-
-            App.IO.launch {
-                val images = showService.getImages()
-                App.ui {
-                    adapter = TVShowImagesAdapter(
-                        images,
-                        (heightParams() * 1.77777f).toInt(),
-                        heightParams()
-                    )
-                }
-            }
-
-
 
             contentLayout.addView(
                 this
@@ -503,7 +431,7 @@ class TVShowPageFragment
                 R.color.lime
             )
 
-            rating = program?.rating ?: 0.0f
+            rating = channel?.rating ?: 0.0f
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL,
@@ -513,69 +441,8 @@ class TVShowPageFragment
             )
 
             setOnClickListener(
-                this@TVShowPageFragment::onClickShowReviews
+                this@TVChannelPageFragment::onClickShowReviews
             )
-
-            contentLayout.addView(
-                this
-            )
-        }
-
-        contentLayout.addView(
-            chapterTextView(
-                context,
-                measureUnit,
-                R.string.channels
-            )
-        )
-
-        RecyclerView(
-            context
-        ).apply {
-
-            boundsLinear(
-                top = measureUnit * 20.normalWidth(),
-                width = measureUnit,
-                height = (measureUnit * 110.normalWidth()).toInt()
-            )
-
-            layoutManager = LinearLayoutManager(
-                context,
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-
-            clipToPadding = false
-
-            val margin = (measureUnit * 20.normalWidth()).toInt()
-            val pad = marginHorizontal - margin
-
-            setPadding(
-                marginHorizontal.toInt(),
-                0,
-                pad.toInt(),
-                0
-            )
-
-            addItemDecoration(
-                MarginItemDecoration(
-                    0,
-                    0,
-                    margin,
-                    0
-                )
-            )
-
-            App.IO.launch {
-                val pointers = showService.getChannelPointers()
-                App.ui {
-                    adapter = TVShowChannelsAdapter(
-                        pointers,
-                        heightParams(),
-                        heightParams()
-                    )
-                }
-            }
 
             contentLayout.addView(
                 this
@@ -605,11 +472,11 @@ class TVShowPageFragment
                 0xffc4c4c4.toInt()
             )
 
-            program?.imageUrl?.let { url ->
+            channel?.imageUrl?.let { url ->
                 NetworkBitmap.loadFromNetwork(
                     url,
                     App.CACHE_DIR,
-                    DIR_PREVIEW,
+                    TVShowPageFragment.DIR_PREVIEW,
                     widthParams(),
                     heightParams()
                 ) {
@@ -623,33 +490,6 @@ class TVShowPageFragment
             )
         }
 
-        // Add notification
-        RoundedImageView(
-            context
-        ).apply {
-            val s = (measureUnit * 24.normalWidth()).toInt()
-            drawable = App.drawable(
-                R.drawable.ic_alarm
-            )
-
-            val preview = layoutRootContent.getChildAt(1)
-
-            boundsFrame(
-                gravity = Gravity.END or Gravity.TOP,
-                width = s,
-                height = s,
-                right = marginHorizontal + s * 0.75f,
-                top = preview.topHeightParams() - s * 0.5f
-            )
-
-            setOnClickListener(
-                this@TVShowPageFragment::onClickScheduleAlarm
-            )
-
-            layoutRootContent.addView(
-                this
-            )
-        }
 
         // Share option
         RoundedImageView(
@@ -671,7 +511,7 @@ class TVShowPageFragment
             )
 
             setOnClickListener(
-                this@TVShowPageFragment::onClickShare
+                this@TVChannelPageFragment::onClickShare
             )
 
             layoutRootContent.addView(
@@ -800,66 +640,15 @@ class TVShowPageFragment
     }
 }
 
-private fun TVShowPageFragment.onClickPostReview(
+private fun TVChannelPageFragment.onClickShowReviews(
     v: View
 ) {
-    createReview(
-        grade = 0
-    )
-}
-
-// Manifest.permission.POST_NOTIFICATIONS 33
-@SuppressLint("InlinedApi")
-private fun TVShowPageFragment.onClickScheduleAlarm(
-    v: View
-) {
-
-    val program = program
-        ?: return
-
-    val context = v.context
-        ?: return
-
-    if (BuildUtils.isTiramisu33() and (
-            !PermissionUtils.checkNotifications(context)
-            )
-    ) {
-        requestPermission(
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-        return
-    }
-
-    NotificationUtils.scheduleNotification(
-        context,
-        "${program.name}${program.startTime}${program.channelName}".hashCode(),
-        getString(R.string.time_for_watch),
-        program.name +
-            " - " +
-            "${program.startTimeString} " +
-            "${getString(R.string.on_channel)} " +
-            "\"${program.channelName}\"",
-        (program.startTime - 900) * 1000L, // 900 - 15 minutes
-        dirName = TVShowPageFragment.DIR_PREVIEW,
-        imageUrl = program.imageUrl
-    )
-
-    Toast.makeText(
-        context,
-        "Set",
-        Toast.LENGTH_SHORT
-    ).show()
-}
-
-private fun TVShowPageFragment.onClickShowReviews(
-    v: View
-) {
-    val program = program ?: return
+    val channel = channel ?: return
     pushFragment(
         TVShowReviewsFragment.newInstance(
             TVShowReview(
-                program.id,
-                program.shortName ?: program.name
+                channel.id.toLong(),
+                channel.shortName ?: channel.name
             )
         ),
         FragmentAnimation { f, fragment ->
@@ -868,7 +657,7 @@ private fun TVShowPageFragment.onClickShowReviews(
     )
 }
 
-private fun TVShowPageFragment.onClickBtnBack(
+private fun TVChannelPageFragment.onClickBtnBack(
     v: View
 ) {
     popFragment(
@@ -878,22 +667,24 @@ private fun TVShowPageFragment.onClickBtnBack(
     )
 }
 
-private fun TVShowPageFragment.onClickShare(
+private fun TVChannelPageFragment.onClickShare(
     v: View
 ) {
 
-    val program = program
+    val channel = channel
         ?: return
 
-    if (program.imageUrl == null) {
-        shareTVShow(program)
+    if (channel.imageUrl == null) {
+        shareChannel(
+            channel
+        )
         return
     }
 
     val file = CacheFile.cacheFile(
         App.CACHE_DIR,
         TVShowPageFragment.DIR_PREVIEW,
-        program.imageUrl.hashCode().toString()
+        channel.imageUrl.hashCode().toString()
     )
 
     val context = v.context
@@ -903,8 +694,8 @@ private fun TVShowPageFragment.onClickShare(
         context.packageName + ".provider",
         file
     )
-    shareTVShow(
-        program,
+    shareChannel(
+        channel,
         uri
     )
 
@@ -914,17 +705,17 @@ private fun TVShowPageFragment.onClickShare(
     )
 }
 
-private fun TVShowPageFragment.createReview(
+private fun TVChannelPageFragment.createReview(
     grade: Byte
 ) {
-    val program = program
+    val channel = channel
         ?: return
 
     pushFragment(
         TVShowPostReviewFragment.newInstance(
             TVShowReview(
-                program.id,
-                program.shortName ?: program.name,
+                channel.id.toLong(),
+                channel.shortName ?: channel.name,
             ),
             grade
         ),
@@ -935,65 +726,23 @@ private fun TVShowPageFragment.createReview(
     )
 }
 
-private fun TVShowPageFragment.shareTVShow(
-    program: TVProgram,
-    data: Uri? = null
+private fun TVChannelPageFragment.onClickPostReview(
+    v: View
 ) {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = program.startTime * 1000L
-
-    val channel = program.channelName ?: ""
-
-    val text = "${getString(R.string.lets_see)} " +
-        "\"${program.name}\" " +
-        "${calendar.getDayString()}.${calendar.getMonthString()} " +
-        "${getString(R.string.at_time)} " +
-        "${program.startTimeString} " +
-        "${getString(R.string.on_channel)} $channel " +
-        "${getString(R.string.in_app)} ${getString(R.string.app_name)}?"
-
-    val intent = Intent().apply {
-        action = Intent.ACTION_SEND
-        type = "image/*"
-        putExtra(Intent.EXTRA_TEXT, text)
-        putExtra(Intent.EXTRA_STREAM, data)
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-    }
-
-    startActivity(
-        Intent.createChooser(
-            intent,
-            null
-        )
+    createReview(
+        grade = 0
     )
 }
 
-private fun TVShowPageFragment.chapterTextView(
-    context: Context,
-    measureUnit: Int,
-    @StringRes textId: Int
-) = TextView(
-    context
-).apply {
-    setText(
-        textId
-    )
-
-    typeface = App.font(
-        R.font.open_sans_bold,
-        context
-    )
-
-    setTextSizePx(
-        measureUnit * 0.05314f
-    )
-
-    setTextColorId(
-        R.color.text
-    )
-
-    boundsLinear(
-        left = measureUnit * 0.07004f,
-        top = measureUnit * 0.08816f
+private fun TVChannelPageFragment.shareChannel(
+    channel: TVChannel2,
+    imageUri: Uri? = null
+) {
+    val context = context
+        ?: return
+    ShareUtils.shareWithImage(
+        context,
+        channel.name,
+        imageUri
     )
 }

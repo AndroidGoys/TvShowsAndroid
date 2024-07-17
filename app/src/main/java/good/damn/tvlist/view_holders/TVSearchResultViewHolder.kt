@@ -1,7 +1,6 @@
 package good.damn.tvlist.view_holders
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
@@ -9,13 +8,11 @@ import good.damn.tvlist.Unicode
 import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
-import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
-import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
-import good.damn.tvlist.fragments.ui.main.tv_show_details.TVShowPageFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
+import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.models.TVSearchResult
-import good.damn.tvlist.network.api.models.TVShow
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.TVIconNameView
 
@@ -72,7 +69,7 @@ class TVSearchResultViewHolder(
             )
 
             iconNameView.onClickDataListener = { result ->
-                (result.model as? TVShow)?.let {
+                (result.model as? TVChannel2)?.let {
                     (context as? MainActivity)?.pushFragment(
                         TVShowPageFragment.newInstance(
                             TVProgram(
@@ -82,7 +79,7 @@ class TVSearchResultViewHolder(
                                 shortName = if (it.name.length > 20)
                                     it.name.substring(0,20) + Unicode.DOTS
                                 else null,
-                                imageUrl = it.previewUrl
+                                imageUrl = it.imageUrl
                             )
                         ),
                         FragmentAnimation {

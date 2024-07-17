@@ -13,6 +13,7 @@ import good.damn.tvlist.network.api.models.TVSearchResultChannels
 import good.damn.tvlist.network.api.models.TVSearchResultShows
 import good.damn.tvlist.network.api.models.TVShow
 import org.json.JSONObject
+import java.lang.reflect.Type
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -22,66 +23,50 @@ class TVSearchService
 ) {
     companion object {
         private const val TAG = "TVSearchService"
-        private const val URL_CHANNELS = "${App.URL}/api/channels"
-        private const val URL_SHOWS = "${App.URL}/api/shows"
     }
+
+    private val mChannelsService = TVChannel2Service()
+    private val mShowsService = TVShowService()
 
     @WorkerThread
     fun getShowsByName(
         name: String,
         fromCache: Boolean = false
     ): ArrayList<Typeable?>? {
-        val json = searchRequest(
+
+        val shows = mShowsService.getShows(
             name,
-            URL_SHOWS,
-            limit = 25,
+            0,
+            25,
             fromCache
         )
 
-        if (json == null || json.length() == 0) {
+        if (shows == null) {
             return null
         }
 
-        val showsJson = TVSearchResultShows.createFromJSON(
-            json
+        val types = ArrayList<Typeable?>(
+            shows.size + 1
         )
 
-        if (showsJson == null) {
-            return null
-        }
-
-        val len = showsJson.shows.length()
-
-        val shows = ArrayList<Typeable?>(
-            len + 1
-        )
-
-        shows.add(
+        types.add(
             TVSearchResultTitle(
                 "Шоу"
             )
         )
 
-        for (i in 0..<len) {
-            val show = TVShow.createFromJSON(
-                showsJson.shows.getJSONObject(i)
-            ) ?: continue
-
-            val showName = if (show.name.length >= 26)
-                show.name.substring(0,26) + Unicode.DOTS
-            else show.name
-
-            shows.add(
+        shows.forEach {
+            types.add(
                 TVSearchResult(
-                    showName,
-                    show.previewUrl,
+                    it.shortName ?: it.name,
+                    it.previewUrl,
                     SearchResultCategory.SHOW,
-                    show
+                    it
                 )
             )
         }
 
-        return shows
+        return types
     }
 
     @WorkerThread
@@ -89,78 +74,39 @@ class TVSearchService
         name: String,
         fromCache: Boolean = false
     ): ArrayList<Typeable?>? {
-        val json = searchRequest(
+        val channels = mChannelsService.getChannels(
+            offset = 0,
+            limit = 10,
             name,
-            URL_CHANNELS,
-            limit = 8,
             fromCache
         )
 
-        if (json == null || json.length() == 0) {
+        if (channels == null) {
             return null
         }
 
-        val chan = TVSearchResultChannels.createFromJSON(
-            json
+        val types = ArrayList<Typeable?>(
+            channels.size + 1
         )
 
-        if (chan == null) {
-            return null
-        }
-
-        val len = chan.channels.length()
-
-        val channels = ArrayList<Typeable?>(
-            len + 1
-        )
-
-        channels.add(
+        types.add(
             TVSearchResultTitle(
                 "Каналы"
             )
         )
 
-        for (i in 0..<len) {
-            val channel = TVChannel2.createFromJSON(
-                chan.channels.getJSONObject(i)
-            ) ?: continue
-
-            val channelName = if (channel.name.length >= 26)
-                channel.name.substring(0,26) + Unicode.DOTS
-            else channel.name
-
-            channels.add(
+        channels.forEach {
+            types.add(
                 TVSearchResult(
-                    channelName,
-                    channel.imageUrl,
+                    it.shortName ?: it.name,
+                    it.imageUrl,
                     SearchResultCategory.CHANNEL,
-                    channel
+                    it
                 )
             )
         }
 
-        return channels
-    }
-
-    private fun searchRequest(
-        name: String,
-        url: String,
-        limit: Int,
-        fromCache: Boolean
-    ): JSONObject? {
-        val encodedName = URLEncoder.encode(
-            name,
-            StandardCharsets.UTF_8.name()
-        )
-
-        val url = "$url?limit=$limit&offset=0&name=$encodedName"
-
-        return if (fromCache)
-            getCachedJson(
-                url
-        ) else getNetworkJSON(
-            url
-        )
+        return types
     }
 
 }

@@ -1,4 +1,4 @@
-package good.damn.tvlist.fragments.ui.main.tv_show_details
+package good.damn.tvlist.fragments.ui.main.tv_details
 
 import android.content.Context
 import android.text.Editable
@@ -6,8 +6,6 @@ import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R

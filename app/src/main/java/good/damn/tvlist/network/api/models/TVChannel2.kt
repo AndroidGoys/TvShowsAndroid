@@ -1,5 +1,6 @@
 package good.damn.tvlist.network.api.models
 
+import good.damn.tvlist.Unicode
 import good.damn.tvlist.extensions.extract
 import org.json.JSONObject
 
@@ -7,7 +8,8 @@ data class TVChannel2(
     val imageUrl: String? = null,
     val name: String,
     val id: Int,
-    val rating: Float
+    val rating: Float,
+    val shortName: String? = null
 ) {
     companion object {
         fun createFromJSON(
@@ -30,11 +32,16 @@ data class TVChannel2(
                 "imageUrl"
             ) as? String
 
+            val shortName = if (name.length >= 20)
+                name.substring(0,20) + Unicode.DOTS
+            else null
+
             return TVChannel2(
                 imageUrl,
                 name,
                 id,
-                rating
+                rating,
+                shortName
             )
 
         }

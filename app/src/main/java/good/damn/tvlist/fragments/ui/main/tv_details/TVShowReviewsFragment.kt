@@ -1,4 +1,4 @@
-package good.damn.tvlist.fragments.ui.main.tv_show_details
+package good.damn.tvlist.fragments.ui.main.tv_details
 
 import android.content.Context
 import android.view.Gravity
@@ -48,9 +48,7 @@ OnTabClickListener {
 
     private var mRecyclerView: RecyclerView? = null
 
-    private val mShowService = TVShowService(
-        App.CACHE_DIR
-    )
+    private val mShowService = TVShowService()
 
     override fun onCreateView(
         context: Context,
