@@ -2,6 +2,8 @@ package good.damn.tvlist.fragments.ui.auth
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -511,19 +513,39 @@ class SigninFragment
             onSignInSuccess?.invoke()
         }
     }
-}
 
-private fun SigninFragment.onClickTextViewHaveAccount(
-    v: View
-) {
-    pushFragment(
-        LoginFragment(),
-        FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = f
-        }
-    )
-}
+    private fun onClickTextViewHaveAccount(
+        v: View
+    ) {
+        pushFragment(
+            LoginFragment().apply {
+                onLoginSuccess = this@SigninFragment::onLoginSuccess
+            },
+            FragmentAnimation { f, fragment ->
+                fragment.view?.alpha = f
+            }
+        )
+    }
 
+    private fun onLoginSuccess() {
+        enableInteraction(false)
+        popFragment(
+            FragmentAnimation(
+                duration = 150
+            ) { f, fragment ->
+                fragment.view?.alpha = 1.0f - f
+            }
+        )
+
+        Handler(
+            Looper.getMainLooper()
+        ).postDelayed({
+            onSignInSuccess?.invoke()
+        }, 500
+        )
+    }
+
+}
 private fun SigninFragment.onClickBtnBack(
     v: View
 ) {

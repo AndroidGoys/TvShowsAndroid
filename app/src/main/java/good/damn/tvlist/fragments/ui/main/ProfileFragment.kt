@@ -180,7 +180,7 @@ class ProfileFragment
     ) {
         pushFragment(
             SigninFragment().apply {
-                onSignInSuccess = this@ProfileFragment::onSignInSuccess
+                onSignInSuccess = this@ProfileFragment::onAuthSuccess
             },
             FragmentAnimation { f, fragment ->
                 fragment.view?.alpha = f
@@ -188,13 +188,13 @@ class ProfileFragment
         )
     }
 
-    private fun onSignInSuccess() {
-        Handler(
-            Looper.getMainLooper()
-        ).postDelayed({
-                popFragment()
-            },
-            1500
+    private fun onAuthSuccess() {
+        popFragment(
+            FragmentAnimation(
+                150
+            ) { f, fragment ->
+                fragment.view?.alpha = 1.0f - f
+            }
         )
     }
 
