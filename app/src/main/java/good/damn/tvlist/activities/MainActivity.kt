@@ -27,12 +27,15 @@ import good.damn.tvlist.R
 import good.damn.tvlist.animators.FragmentAnimator
 import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver
 import good.damn.tvlist.broadcast_receivers.network.listeners.NetworkListener
+import good.damn.tvlist.extensions.accessToken
 import good.damn.tvlist.extensions.generateId
+import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
 import good.damn.tvlist.fragments.ui.main.MainContentFragment
 import good.damn.tvlist.navigators.MainFragmentNavigator
+import good.damn.tvlist.network.api.models.auth.TokenAuth
 
 class MainActivity
 : AppCompatActivity(),
@@ -76,6 +79,22 @@ ActivityResultCallback<Boolean> {
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
+
+        getPreferences(
+            Context.MODE_PRIVATE
+        ).apply {
+
+            val refreshToken = refreshToken()
+                ?: return@apply
+
+            val accessToken = accessToken()
+                ?: return@apply
+
+            App.TOKEN_AUTH = TokenAuth(
+                accessToken,
+                refreshToken
+            )
+        }
 
         mPermissionLauncher = registerForActivityResult(
             ActivityResultContracts.RequestPermission(),

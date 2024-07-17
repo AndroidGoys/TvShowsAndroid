@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import good.damn.tvlist.App
 import good.damn.tvlist.activities.MainActivity
@@ -132,6 +133,34 @@ abstract class StackFragment
             msg,
             Toast.LENGTH_SHORT
         ).show()
+    }
+
+    fun enableInteraction(
+        isIt: Boolean
+    ) {
+        val group = (view as? ViewGroup)
+            ?: return
+        isEnabledViewGroup(
+            group,
+            isIt
+        )
+    }
+
+    private fun isEnabledViewGroup(
+        group: ViewGroup,
+        isIt: Boolean
+    ) {
+        (group as? ViewGroup)?.children?.forEach {
+            if (it is ViewGroup) {
+                isEnabledViewGroup(
+                    it,
+                    isIt
+                )
+                return@forEach
+            }
+
+            it.isEnabled = isIt
+        }
     }
 
     protected abstract fun onCreateView(

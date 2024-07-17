@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import androidx.annotation.StringRes
+import androidx.annotation.WorkerThread
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.view.children
 import good.damn.tvlist.App
@@ -448,80 +449,66 @@ class SigninFragment
         }
 
         App.IO.launch {
-            val tokenAuthResult = mAuthService.registerUser(
+            processSignInRequest(
                 email,
                 password,
                 username
             )
-
-            val tokenAuth = tokenAuthResult.result
-
-            if (tokenAuth == null) {
-                App.ui {
-                    mBtnSignIn?.apply {
-                        text = getString(
-                            R.string.sign_in
-                        )
-                        enableInteraction(true)
-                        recalculateTextPosition()
-                        invalidate()
-                    }
-                    val errorId = tokenAuthResult
-                        .errorStringId
-
-                    if (errorId == -1) {
-                        return@ui
-                    }
-                    toast(errorId)
-                }
-                return@launch
-            }
-
-            mSharedPreferences?.edit()?.apply {
-                accessToken(tokenAuth.accessToken)
-                refreshToken(tokenAuth.refreshToken)
-                commit() // sync write
-            }
-
-            App.ui {
-                mBtnSignIn?.apply {
-                    text = getString(
-                        R.string.success
-                    )
-                    recalculateTextPosition()
-                    invalidate()
-                }
-
-                onSignInSuccess?.invoke()
-            }
         }
     }
 
-    private fun enableInteraction(
-        isIt: Boolean
+    @WorkerThread
+    private fun processSignInRequest(
+        email: String,
+        password: String,
+        username: String
     ) {
-        val group = (view as? ViewGroup)
-            ?: return
-        isEnabledViewGroup(
-            group,
-            isIt
+        val tokenAuthResult = mAuthService.registerUser(
+            email,
+            password,
+            username
         )
-    }
 
-    private fun isEnabledViewGroup(
-        group: ViewGroup,
-        isIt: Boolean
-    ) {
-        (group as? ViewGroup)?.children?.forEach {
-            if (it is ViewGroup) {
-                isEnabledViewGroup(
-                    it,
-                    isIt
+        val tokenAuth = tokenAuthResult.result
+
+        if (tokenAuth == null) {
+            App.ui {
+                mBtnSignIn?.apply {
+                    text = getString(
+                        R.string.sign_in
+                    )
+                    enableInteraction(true)
+                    recalculateTextPosition()
+                    invalidate()
+                }
+                val errorId = tokenAuthResult
+                    .errorStringId
+
+                if (errorId == -1) {
+                    toast(R.string.some_error_happens)
+                    return@ui
+                }
+                toast(errorId)
+            }
+            return
+        }
+
+        mSharedPreferences?.edit()?.apply {
+            accessToken(tokenAuth.accessToken)
+            refreshToken(tokenAuth.refreshToken)
+            commit() // sync write
+        }
+
+        App.ui {
+            mBtnSignIn?.apply {
+                text = getString(
+                    R.string.success
                 )
-                return@forEach
+                recalculateTextPosition()
+                invalidate()
             }
 
-            it.isEnabled = isIt
+            onSignInSuccess?.invoke()
         }
     }
 }

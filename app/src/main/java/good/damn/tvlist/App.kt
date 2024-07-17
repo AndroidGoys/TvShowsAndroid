@@ -15,6 +15,7 @@ import android.webkit.WebView
 import androidx.annotation.DrawableRes
 import good.damn.tvlist.extensions.getNotificationManager
 import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.models.auth.TokenAuth
 import good.damn.tvlist.utils.BuildUtils
 import good.damn.tvlist.utils.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,8 @@ class App
         private val HANDLER = Handler(
             Looper.getMainLooper()
         )
+
+        var TOKEN_AUTH: TokenAuth? = null
 
         lateinit var USER_AGENT: String
         lateinit var RESOURCES: Resources
