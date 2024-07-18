@@ -1,14 +1,18 @@
 package good.damn.tvlist.activities
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.Animation
 import android.widget.FrameLayout
 import android.widget.Toast
 import android.window.OnBackInvokedCallback
@@ -28,14 +32,19 @@ import good.damn.tvlist.animators.FragmentAnimator
 import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver
 import good.damn.tvlist.broadcast_receivers.network.listeners.NetworkListener
 import good.damn.tvlist.extensions.accessToken
+import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.generateId
+import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
 import good.damn.tvlist.fragments.ui.main.MainContentFragment
+import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.navigators.MainFragmentNavigator
 import good.damn.tvlist.network.api.models.auth.TokenAuth
+import good.damn.tvlist.views.toasts.ToastImage
 
 class MainActivity
 : AppCompatActivity(),
@@ -323,6 +332,41 @@ ActivityResultCallback<Boolean> {
         }
     }
 
+    fun toast(
+        drawable: Drawable? = null,
+        text: String?,
+        animation: AnimationConfig
+    ) {
+        ToastImage(
+            this
+        ).apply {
+            textView.text = text
+            imageView.setImageDrawable(
+                drawable
+            )
+
+            cardElevation = 0.0f
+
+            val bottom = App.HEIGHT * 0.1f
+
+            boundsFrame(
+                Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM,
+                width = (App.WIDTH * 337.normalWidth()).toInt(),
+                height = (App.WIDTH * 51.normalWidth()).toInt(),
+                bottom = bottom
+            )
+
+            radius = 0.19f * heightParams()
+
+            y = App.HEIGHT - bottom
+
+            mContainer.addView(
+                this
+            )
+
+            show(animation)
+        }
+    }
 
     override fun onNetworkConnected() {
         App.NETWORK_AVAILABLE = true

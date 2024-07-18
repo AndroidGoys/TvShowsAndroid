@@ -9,6 +9,7 @@ import android.net.Uri
 import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -42,6 +43,7 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
@@ -837,25 +839,33 @@ private fun TVShowPageFragment.onClickScheduleAlarm(
         return
     }
 
+    val startTime = program.startTimeString
+    val channelName = program.channelName
+
     NotificationUtils.scheduleNotification(
         context,
         "${program.name}${program.startTime}${program.channelName}".hashCode(),
         getString(R.string.time_for_watch),
         program.name +
             " - " +
-            "${program.startTimeString} " +
+            "$startTime " +
             "${getString(R.string.on_channel)} " +
-            "\"${program.channelName}\"",
+            "\"$channelName\"",
         (program.startTime - 900) * 1000L, // 900 - 15 minutes
         dirName = TVShowPageFragment.DIR_PREVIEW,
         imageUrl = program.imageUrl
     )
 
-    Toast.makeText(
-        context,
-        "Set",
-        Toast.LENGTH_SHORT
-    ).show()
+    toast(
+        "Уведомление установлено на $startTime $channelName",
+        App.drawable(
+            R.drawable.ic_alarm_white
+        ),
+        AnimationConfig(
+            300,
+            AccelerateDecelerateInterpolator()
+        )
+    )
 }
 
 private fun TVShowPageFragment.onClickShowReviews(

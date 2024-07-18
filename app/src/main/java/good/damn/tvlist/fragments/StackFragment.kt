@@ -1,6 +1,7 @@
 package good.damn.tvlist.fragments
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +16,7 @@ import good.damn.tvlist.App
 import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.mainActivity
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.models.AnimationConfig
 
 abstract class StackFragment
 : NetworkFragment() {
@@ -114,6 +116,16 @@ abstract class StackFragment
         .getPreferences(
             Context.MODE_PRIVATE
         )
+
+    fun toast(
+        text: String,
+        drawable: Drawable? = null,
+        animation: AnimationConfig
+    ) = mainActivity().toast(
+        drawable,
+        text,
+        animation
+    )
 
     fun toast(
         @StringRes id: Int

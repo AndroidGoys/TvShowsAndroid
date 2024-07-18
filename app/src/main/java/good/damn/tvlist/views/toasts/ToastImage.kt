@@ -1,8 +1,10 @@
 package good.damn.tvlist.views.toasts
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -12,14 +14,21 @@ import androidx.cardview.widget.CardView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.extensions.setTextSizePx
+import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.views.round.RoundView
 
 class ToastImage(
     context: Context
 ): CardView(
     context
-) {
+), ValueAnimator.AnimatorUpdateListener {
+
+    companion object {
+        private const val TAG = "ToastImage"
+    }
 
     val imageView = AppCompatImageView(
         context
@@ -40,9 +49,25 @@ class ToastImage(
         )
     }
 
+    private var mYPos = 0.0f
+    private var mBottom = 0.0f
+
+    private val mAnimator = ValueAnimator()
+
     init {
-        setBackgroundColorId(
-            R.color.background_toast
+
+        mAnimator.addUpdateListener(
+            this
+        )
+
+        mAnimator.setFloatValues(
+            1.0f,0.0f
+        )
+
+        setCardBackgroundColor(
+            App.color(
+                R.color.background_toast
+            )
         )
         addView(imageView)
         addView(textView)
@@ -62,18 +87,50 @@ class ToastImage(
         val s = (height * 0.4705f)
             .toInt()
 
+        val leftImage = width * 0.04f
+
+        val leftTextView = s + leftImage + leftImage
+
         imageView.boundsFrame(
-            Gravity.CENTER_VERTICAL or Gravity.TOP,
+            Gravity.CENTER_VERTICAL,
             width = s,
-            height = s
+            height = s,
+            left = leftImage
         )
 
         textView.boundsFrame(
-            width = width - s,
+            width = (width - leftTextView).toInt(),
             height = height,
-            left = s.toFloat()
+            left = leftTextView
         )
 
+        textView.setTextSizePx(
+            height * 0.2f
+        )
+
+    }
+
+    fun show(
+        animation: AnimationConfig
+    ) {
+        mAnimator.apply {
+            interpolator = animation.interpolator
+            duration = animation.duration
+            start()
+        }
+
+        y = App.HEIGHT.toFloat()
+
+        mYPos = App.HEIGHT * 0.9f - heightParams()
+        mBottom = App.HEIGHT * 0.1f
+    }
+
+    override fun onAnimationUpdate(
+        animation: ValueAnimator
+    ) {
+        y = mYPos + mBottom * (
+            animation.animatedValue as Float
+        )
     }
 
 }
