@@ -140,7 +140,7 @@ abstract class StackFragment
             durationShow = 3000L,
             textSizeFactor = 0.2f,
             App.drawable(
-                R.drawable.ic_info
+                R.drawable.ic_info_white
             ),
             getString(id),
             AnimationConfig(
