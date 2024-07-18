@@ -14,4 +14,5 @@
     <color name="text">#18191f</color>
     <color name="btnText">#ffffff</color>
     <color name="btnBack">#18191f</color>
+    <color name="background_toast">#ab3F3F3F</color>
 </resources>
