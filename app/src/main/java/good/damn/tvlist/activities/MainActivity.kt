@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract.Profile
 import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
@@ -45,7 +46,9 @@ import good.damn.tvlist.fragments.ui.main.MainContentFragment
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.navigators.MainFragmentNavigator
 import good.damn.tvlist.network.api.models.auth.TokenAuth
+import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.views.toasts.ToastImage
+import kotlinx.coroutines.launch
 
 class MainActivity
 : AppCompatActivity(),
@@ -104,6 +107,7 @@ ActivityResultCallback<Boolean> {
                 accessToken,
                 refreshToken
             )
+
         }
 
         mPermissionLauncher = registerForActivityResult(

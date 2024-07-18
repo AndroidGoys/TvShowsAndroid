@@ -1,4 +1,4 @@
-package good.damn.tvlist.network.api.services
+package good.damn.tvlist.network.api.services.lime
 
 import android.util.Log
 import androidx.annotation.WorkerThread

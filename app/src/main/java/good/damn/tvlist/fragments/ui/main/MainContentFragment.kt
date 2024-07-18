@@ -26,6 +26,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
+import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.views.navigation.NavigationView
 import good.damn.tvlist.views.SearchView
 import good.damn.tvlist.views.animatable.vectors.MediaVector
@@ -33,6 +34,7 @@ import good.damn.tvlist.views.animatable.vectors.PlayVector
 import good.damn.tvlist.views.navigation.NavigationItem
 import good.damn.tvlist.views.navigation.interfaces.OnItemClickNavigationListener
 import good.damn.tvlist.views.round.RoundedImageView
+import kotlinx.coroutines.launch
 
 class MainContentFragment
 : StackFragment(),
@@ -54,6 +56,11 @@ OnItemClickNavigationListener {
         context: Context,
         measureUnit: Int
     ): View {
+
+        App.IO.launch {
+            val profile = UserService().getProfile()
+        }
+
         val layout = FrameLayout(
             context
         )

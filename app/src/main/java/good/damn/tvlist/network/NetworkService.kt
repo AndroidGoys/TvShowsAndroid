@@ -3,11 +3,13 @@ package good.damn.tvlist.network
 import android.util.Log
 import good.damn.tvlist.App
 import kotlinx.coroutines.launch
+import okhttp3.Cache
 import okhttp3.CacheControl
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import java.io.File
 
 open class NetworkService {
 
@@ -17,7 +19,7 @@ open class NetworkService {
 
     private val mRequestBuilder = Request.Builder()
         .addHeader("User-Agent", App.USER_AGENT)
-        .cacheControl(CacheControl.FORCE_NETWORK)
+        .addHeader("Authorization", "Bearer ${App.TOKEN_AUTH?.accessToken}")
 
     private val mClient = OkHttpClient()
 
@@ -50,13 +52,15 @@ open class NetworkService {
             return null
         }
 
+        Log.d(TAG, "execute: HEADERS: ${request.headers}")
+        
         return try {
             mClient.newCall(
                 request
             ).execute()
         } catch (e: Exception) {
             Log.d(TAG, "execute: ERROR CONNECTION: ${e.message}")
-            return null
+            null
         }
     }
 
