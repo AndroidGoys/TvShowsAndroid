@@ -102,23 +102,35 @@ class TVProgramFragment
             return
         }
         App.IO.launch {
-            val channels = mChannelService.getChannels(
+
+            val cachedProgram = mChannelService.getChannels(
                 from = 1,
-                limit = UPDATE_COUNT
+                limit = UPDATE_COUNT,
+                fromCache = true
             )
 
-            if (channels == null) {
-                return@launch
-            }
-
-            Log.d(TAG, "onCreateView: CHANNELS: ${channels.size}")
-            App.ui {
-                mRecyclerView?.adapterChannels = TVChannelAdapter(
-                    App.WIDTH,
-                    App.HEIGHT,
-                    channels
+            App.IO.launch {
+                mChannelService.getChannels(
+                    from = 1,
+                    limit = UPDATE_COUNT
                 )
             }
+
+            if (cachedProgram != null) {
+                Log.d(
+                    TAG,
+                    "onCreateView: CACHED_PROGRAM:" +
+                        "${cachedProgram.size}"
+                )
+                App.ui {
+                    mRecyclerView?.adapterChannels = TVChannelAdapter(
+                        App.WIDTH,
+                        App.HEIGHT,
+                        cachedProgram
+                    )
+                }
+            }
+
         }
     }
 }

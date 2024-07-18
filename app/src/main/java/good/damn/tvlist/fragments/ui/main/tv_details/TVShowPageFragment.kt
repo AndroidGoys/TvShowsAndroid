@@ -857,7 +857,9 @@ private fun TVShowPageFragment.onClickScheduleAlarm(
     )
 
     toast(
-        "Уведомление установлено на $startTime $channelName",
+        durationShow = 3500,
+        textSizeFactor = 0.26f,
+        "${getString(R.string.notification_set)} $startTime $channelName",
         App.drawable(
             R.drawable.ic_alarm_white
         ),

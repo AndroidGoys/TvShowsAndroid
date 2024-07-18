@@ -1,9 +1,12 @@
 package good.damn.tvlist.views.toasts
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -21,14 +24,19 @@ import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.views.round.RoundView
 
 class ToastImage(
-    context: Context
+    context: Context,
+    private val mRootLayout: ViewGroup
 ): CardView(
     context
-), ValueAnimator.AnimatorUpdateListener {
+), ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
     companion object {
         private const val TAG = "ToastImage"
     }
+
+    var durationShow: Long = 3000
+
+    var textSizeFactor: Float = 0.2f
 
     val imageView = AppCompatImageView(
         context
@@ -54,9 +62,15 @@ class ToastImage(
 
     private val mAnimator = ValueAnimator()
 
+    private var mIsEndAnimation = false
+
     init {
 
         mAnimator.addUpdateListener(
+            this
+        )
+
+        mAnimator.addListener(
             this
         )
 
@@ -105,7 +119,7 @@ class ToastImage(
         )
 
         textView.setTextSizePx(
-            height * 0.2f
+            height * textSizeFactor
         )
 
     }
@@ -121,8 +135,8 @@ class ToastImage(
 
         y = App.HEIGHT.toFloat()
 
-        mYPos = App.HEIGHT * 0.9f - heightParams()
-        mBottom = App.HEIGHT * 0.1f
+        mYPos = App.HEIGHT * 0.85f
+        mBottom = App.HEIGHT - mYPos
     }
 
     override fun onAnimationUpdate(
@@ -132,5 +146,39 @@ class ToastImage(
             animation.animatedValue as Float
         )
     }
+
+    override fun onAnimationEnd(
+        animation: Animator
+    ) {
+        if (mIsEndAnimation) {
+            mRootLayout.removeView(
+                this
+            )
+            return
+        }
+        mIsEndAnimation = true
+        mAnimator.setFloatValues(
+            0.0f,1.0f
+        )
+        Handler(
+            Looper.getMainLooper()
+        ).postDelayed({
+            mAnimator.start()
+            },
+            durationShow
+        )
+    }
+
+    override fun onAnimationStart(
+        animation: Animator
+    ) = Unit
+
+    override fun onAnimationCancel(
+        animation: Animator
+    ) = onAnimationEnd(animation)
+
+    override fun onAnimationRepeat(
+        animation: Animator
+    ) = Unit
 
 }

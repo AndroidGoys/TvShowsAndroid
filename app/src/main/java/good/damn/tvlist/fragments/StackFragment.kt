@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
@@ -13,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import good.damn.tvlist.App
+import good.damn.tvlist.R
 import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.mainActivity
 import good.damn.tvlist.fragments.animation.FragmentAnimation
@@ -118,10 +120,14 @@ abstract class StackFragment
         )
 
     fun toast(
+        durationShow: Long,
+        textSizeFactor: Float,
         text: String,
         drawable: Drawable? = null,
         animation: AnimationConfig
     ) = mainActivity().toast(
+        durationShow,
+        textSizeFactor,
         drawable,
         text,
         animation
@@ -130,21 +136,18 @@ abstract class StackFragment
     fun toast(
         @StringRes id: Int
     ) {
-        Toast.makeText(
-            context,
-            id,
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    fun toast(
-        msg: String
-    ) {
-        Toast.makeText(
-            context,
-            msg,
-            Toast.LENGTH_SHORT
-        ).show()
+        mainActivity().toast(
+            durationShow = 3000L,
+            textSizeFactor = 0.2f,
+            App.drawable(
+                R.drawable.ic_info
+            ),
+            getString(id),
+            AnimationConfig(
+                300,
+                AccelerateDecelerateInterpolator()
+            )
+        )
     }
 
     fun enableInteraction(

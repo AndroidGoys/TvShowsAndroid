@@ -333,17 +333,29 @@ ActivityResultCallback<Boolean> {
     }
 
     fun toast(
+        durationShow: Long,
+        textSizeFactor: Float,
         drawable: Drawable? = null,
         text: String?,
         animation: AnimationConfig
     ) {
+        Log.d(TAG, "toast: ${mContainer.childCount} ${mNavigator.size}")
+        if (mContainer.childCount > mNavigator.size) {
+            return
+        }
+
         ToastImage(
-            this
+            this,
+            mContainer
         ).apply {
             textView.text = text
             imageView.setImageDrawable(
                 drawable
             )
+
+            this.textSizeFactor = textSizeFactor
+
+            this.durationShow = durationShow
 
             cardElevation = 0.0f
 
