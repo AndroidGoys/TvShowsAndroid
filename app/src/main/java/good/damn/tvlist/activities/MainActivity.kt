@@ -13,6 +13,7 @@ import android.view.Gravity
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.Animation
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.Toast
 import android.window.OnBackInvokedCallback
@@ -389,11 +390,20 @@ ActivityResultCallback<Boolean> {
 
     override fun onNetworkDisconnected() {
         App.NETWORK_AVAILABLE = false
-        Toast.makeText(
-            this,
-            R.string.no_internet_connection,
-            Toast.LENGTH_SHORT
-        ).show()
+        toast(
+            2500L,
+            0.28f,
+            App.drawable(
+                R.drawable.ic_info_white
+            ),
+            getString(
+                R.string.no_internet_connection
+            ),
+            AnimationConfig(
+                500,
+                OvershootInterpolator()
+            )
+        )
     }
 
     override fun onActivityResult(

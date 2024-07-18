@@ -138,7 +138,7 @@ abstract class StackFragment
     ) {
         mainActivity().toast(
             durationShow = 3000L,
-            textSizeFactor = 0.2f,
+            textSizeFactor = 0.28f,
             App.drawable(
                 R.drawable.ic_info_white
             ),
