@@ -100,11 +100,11 @@ class RoundedImageView(
                 mBitmapY,
                 mPaint
             )
+        } else {
+            drawable?.draw(
+                canvas
+            )
         }
-
-        drawable?.draw(
-            canvas
-        )
 
         if (mPaint.color == 0xff000000.toInt()) {
             return

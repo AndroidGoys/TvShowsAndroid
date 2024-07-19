@@ -27,6 +27,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
 import good.damn.tvlist.network.api.services.UserService
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.navigation.NavigationView
 import good.damn.tvlist.views.SearchView
 import good.damn.tvlist.views.animatable.vectors.MediaVector
@@ -51,6 +52,8 @@ OnItemClickNavigationListener {
         TVProgramFragment(),
         MediaListFragment()
     )
+
+    private val mUserService = UserService()
 
     override fun onCreateView(
         context: Context,
@@ -335,6 +338,28 @@ OnItemClickNavigationListener {
         imageViewLikes.setOnClickListener(
             this::onClickImageViewLikes
         )
+
+        App.IO.launch {
+            val profile = mUserService.getProfile(
+                fromCache = true
+            ) ?: return@launch
+
+            App.ui {
+                val s = imageViewProfile.heightParams()
+                profile.avatarUrl ?: return@ui
+                NetworkBitmap.loadFromNetwork(
+                    profile.avatarUrl,
+                    App.CACHE_DIR,
+                    UserService.DIR_AVATAR,
+                    s,
+                    s
+                ) {
+                    imageViewProfile.bitmap = it
+                    imageViewProfile.invalidate()
+                }
+
+            }
+        }
 
         return layout
     }

@@ -17,6 +17,7 @@ class UserService
     companion object {
         private const val TAG = "UserService"
         private const val URL_PROFILE = "${App.URL}/api/users/@me"
+        const val DIR_AVATAR = "bitmapAvatars"
     }
 
     fun getProfile(
