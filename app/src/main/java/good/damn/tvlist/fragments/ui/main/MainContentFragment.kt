@@ -57,10 +57,6 @@ OnItemClickNavigationListener {
         measureUnit: Int
     ): View {
 
-        App.IO.launch {
-            val profile = UserService().getProfile()
-        }
-
         val layout = FrameLayout(
             context
         )

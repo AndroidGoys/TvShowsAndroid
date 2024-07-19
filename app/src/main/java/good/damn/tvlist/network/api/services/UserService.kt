@@ -5,6 +5,7 @@ import android.util.Log
 import good.damn.tvlist.App
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.auth.TokenAuth
+import good.damn.tvlist.network.api.models.user.UserProfile
 import org.json.JSONObject
 import java.net.URL
 
@@ -18,12 +19,22 @@ class UserService
         private const val URL_PROFILE = "${App.URL}/api/users/@me"
     }
 
-    fun getProfile() {
-        val response = getNetworkJSON(
+    fun getProfile(
+        fromCache: Boolean = false
+    ): UserProfile? {
+        val response = if (fromCache)
+            getCachedJson(URL_PROFILE)
+        else getNetworkJSON(
             URL_PROFILE
         )
 
-        Log.d(TAG, "getProfile: ${response} ")
+        if (response == null) {
+            return null
+        }
+
+        return UserProfile.createFromJSON(
+            response
+        )
     }
 
 }

@@ -4,14 +4,17 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.removeAccessToken
 import good.damn.tvlist.extensions.removeRefreshToken
 import good.damn.tvlist.extensions.setTextColorId
@@ -20,6 +23,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
 import good.damn.tvlist.utils.ViewUtils
+import good.damn.tvlist.views.UserProfileView
 import good.damn.tvlist.views.buttons.BigButtonView
 import good.damn.tvlist.views.buttons.ButtonBack
 
@@ -28,6 +32,9 @@ class ProfileFragment
 
     private var mBtnLogout: BigButtonView? = null
     private var mBtnLogin: BigButtonView? = null
+
+    private var mTextViewProfile: AppCompatTextView? = null
+    private var mProfileView: UserProfileView? = null
 
     private var mLayout: LinearLayout? = null
 
@@ -61,7 +68,7 @@ class ProfileFragment
             )
         }
 
-        TextView(
+        mTextViewProfile = AppCompatTextView(
             context
         ).apply {
 
@@ -87,10 +94,31 @@ class ProfileFragment
                 top = measureUnit * 0.08057f
             )
 
-            mLayout?.addView(
-                this
-            )
+            if (App.TOKEN_AUTH == null) {
+                mLayout?.addView(
+                    this
+                )
+            }
         }
+
+        mProfileView = UserProfileView(
+            context
+        ).apply {
+
+            boundsLinear(
+                gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP,
+                top = measureUnit * 0.08057f,
+                width = (measureUnit * 336.normalWidth()).toInt(),
+                height = (measureUnit * 70.normalWidth()).toInt()
+            )
+
+            if (App.TOKEN_AUTH != null) {
+                mLayout?.addView(
+                    this
+                )
+            }
+        }
+
 
         BigButtonView(
             context
