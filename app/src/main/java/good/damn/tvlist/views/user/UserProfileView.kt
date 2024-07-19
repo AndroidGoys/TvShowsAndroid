@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.toGregorianDateString
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.user.UserProfile
 import good.damn.tvlist.views.round.RoundedImageView
@@ -70,7 +71,8 @@ class UserProfileView(
         mUserInfoView.apply {
             nickname = profile.username
             email = profile.email
-            date = profile.registrationDateSeconds.toString()
+            date = profile.registrationDateSeconds
+                .toGregorianDateString()
             invalidate()
         }
     }
