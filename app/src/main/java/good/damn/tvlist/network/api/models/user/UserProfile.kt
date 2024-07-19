@@ -32,7 +32,7 @@ data class UserProfile(
 
             val avatarUrl = json.extract(
                 "avatarUrl"
-            ) as? String
+            ) as? String ?: "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"
 
             return UserProfile(
                 id,

@@ -19,10 +19,12 @@ import good.damn.tvlist.extensions.removeAccessToken
 import good.damn.tvlist.extensions.removeRefreshToken
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
 import good.damn.tvlist.network.api.services.UserService
+import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.user.UserProfileView
 import good.damn.tvlist.views.buttons.BigButtonView
@@ -307,9 +309,28 @@ class ProfileFragment
             ) ?: return@launch
 
             App.ui {
-                mProfileView?.setUserInfo(
+
+                val profileView = mProfileView
+                    ?: return@ui
+
+                profileView.setUserInfo(
                     profile
                 )
+
+                profile.avatarUrl ?: return@ui
+
+                val s = profileView.heightParams()
+
+                NetworkBitmap.loadFromNetwork(
+                    profile.avatarUrl,
+                    App.CACHE_DIR,
+                    "bitmapProfile",
+                    s,
+                    s
+                ) {
+                    profileView.setAvatar(it)
+                }
+
             }
         }
     }
