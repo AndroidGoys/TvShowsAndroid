@@ -37,9 +37,10 @@ import good.damn.tvlist.views.text_fields.TextFieldRound
 import kotlinx.coroutines.launch
 
 class SigninFragment
-: StackFragment() {
+: StackFragment(),
+OnAuthListener {
 
-    var onSignInSuccess: (()->Unit)? = null
+    var onAuthListener: OnAuthListener? = null
 
     private val mAuthService = AuthService()
 
@@ -511,7 +512,7 @@ class SigninFragment
                 recalculateTextPosition()
                 invalidate()
             }
-            onSignInSuccess?.invoke()
+            onAuthListener?.onAuthSuccess()
         }
     }
 
@@ -520,7 +521,7 @@ class SigninFragment
     ) {
         pushFragment(
             LoginFragment().apply {
-                onLoginSuccess = this@SigninFragment::onLoginSuccess
+                onAuthListener = this@SigninFragment
             },
             FragmentAnimation { f, fragment ->
                 fragment.view?.alpha = f
@@ -528,7 +529,7 @@ class SigninFragment
         )
     }
 
-    private fun onLoginSuccess() {
+    override fun onAuthSuccess() {
         enableInteraction(false)
         popFragment(
             FragmentAnimation(
@@ -538,10 +539,11 @@ class SigninFragment
             }
         )
 
+        // Fix this stick in wheel with onAnimationEnd
         Handler(
             Looper.getMainLooper()
         ).postDelayed({
-            onSignInSuccess?.invoke()
+            onAuthListener?.onAuthSuccess()
         }, 500)
     }
 

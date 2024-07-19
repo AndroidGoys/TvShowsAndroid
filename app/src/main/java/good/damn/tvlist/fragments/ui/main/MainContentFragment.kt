@@ -4,12 +4,9 @@ import android.content.Context
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import androidx.core.view.updateLayoutParams
-import androidx.fragment.app.Fragment
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
@@ -24,6 +21,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.SearchFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
 import good.damn.tvlist.network.api.services.UserService
@@ -39,13 +37,15 @@ import kotlinx.coroutines.launch
 
 class MainContentFragment
 : StackFragment(),
-OnItemClickNavigationListener {
+OnItemClickNavigationListener,
+OnAuthListener {
 
     companion object {
         private const val TAG = "MainContentFragment"
     }
 
     private var mBlurView: BlurShaderView? = null
+    private var mImageViewProfile: RoundedImageView? = null
     private lateinit var mViewPager: ViewPager2
 
     private val mFragments: Array<StackFragment> = arrayOf(
@@ -85,9 +85,20 @@ OnItemClickNavigationListener {
         val layoutTopBarContent = LinearLayout(
             context
         )
-        val imageViewProfile = RoundedImageView(
+        mImageViewProfile = RoundedImageView(
             context
-        )
+        ).apply {
+            setStrokeColorId(
+                R.color.lime
+            )
+            drawable = App.drawable(
+                R.drawable.ic
+            )
+            setOnClickListener(
+                this@MainContentFragment
+                ::onClickImageViewProfile
+            )
+        }
         val searchView = SearchView(
             context
         )
@@ -122,9 +133,6 @@ OnItemClickNavigationListener {
             R.color.background
         )
         // Stroke colors
-        imageViewProfile.setStrokeColorId(
-            R.color.lime
-        )
         imageViewLikes.strokeColor = 0x3318191F
         // Text color
         App.color(
@@ -191,9 +199,6 @@ OnItemClickNavigationListener {
 
 
         // Drawables
-        imageViewProfile.drawable = App.drawable(
-            R.drawable.ic
-        )
         App.drawable(
             R.drawable.ic_lens
         )?.let {
@@ -232,17 +237,17 @@ OnItemClickNavigationListener {
                 )
             }
 
-            imageViewProfile.boundsLinear(
+            mImageViewProfile?.boundsLinear(
                 width = it,
                 height = it,
             )
 
             (it * 0.04878f).let { strokeWidth ->
-                imageViewProfile.strokeWidth = strokeWidth
+                mImageViewProfile?.strokeWidth = strokeWidth
                 imageViewLikes.strokeWidth = strokeWidth
             }
 
-            imageViewProfile.cornerRadius = it * 0.5f
+            mImageViewProfile?.cornerRadius = it * 0.5f
             imageViewLikes.cornerRadius = it * 0.5f
             searchView.cornerRadius = it * 0.2317f
 
@@ -308,7 +313,7 @@ OnItemClickNavigationListener {
         }
 
         layoutTopBarContent.apply {
-            addView(imageViewProfile)
+            addView(mImageViewProfile)
             addView(searchView)
             addView(imageViewLikes)
         }
@@ -331,35 +336,11 @@ OnItemClickNavigationListener {
         navigationView.currentItem = 0
 
 
-        imageViewProfile.setOnClickListener(
-            this::onClickImageViewProfile
-        )
-
         imageViewLikes.setOnClickListener(
             this::onClickImageViewLikes
         )
 
-        App.IO.launch {
-            val profile = mUserService.getProfile(
-                fromCache = true
-            ) ?: return@launch
-
-            App.ui {
-                val s = imageViewProfile.heightParams()
-                profile.avatarUrl ?: return@ui
-                NetworkBitmap.loadFromNetwork(
-                    profile.avatarUrl,
-                    App.CACHE_DIR,
-                    UserService.DIR_AVATAR,
-                    s,
-                    s
-                ) {
-                    imageViewProfile.bitmap = it
-                    imageViewProfile.invalidate()
-                }
-
-            }
-        }
+        setUserAvatar()
 
         return layout
     }
@@ -425,6 +406,86 @@ OnItemClickNavigationListener {
     override fun onNetworkDisconnected() {
         mFragments[0].onNetworkDisconnected()
     }
+
+
+    override fun onAuthSuccess() {
+        Log.d(TAG, "onAuthSuccess: ")
+        setUserAvatar()
+    }
+
+    private fun setUserAvatar() {
+        Log.d(TAG, "setUserAvatar: $mImageViewProfile")
+        val imageViewProfile = mImageViewProfile
+            ?: return
+
+        App.IO.launch {
+            Log.d(TAG, "setUserAvatar: ACCESS_TOKEN: ${App.TOKEN_AUTH?.accessToken}")
+            mUserService.updateAccessToken(
+                App.TOKEN_AUTH?.accessToken ?: ""
+            )
+            val profile = mUserService.getProfile(
+                fromCache = true
+            )
+            Log.d(TAG, "setUserAvatar: PROFILE: ${profile?.avatarUrl}")
+
+            if (profile == null) {
+                return@launch
+            }
+
+            App.ui {
+                val s = imageViewProfile.heightParams()
+                profile.avatarUrl ?: return@ui
+                NetworkBitmap.loadFromNetwork(
+                    profile.avatarUrl,
+                    App.CACHE_DIR,
+                    UserService.DIR_AVATAR,
+                    s,
+                    s
+                ) {
+                    imageViewProfile.bitmap = it
+                    imageViewProfile.invalidate()
+                }
+
+            }
+        }
+    }
+
+    private fun onClickImageViewProfile(
+        v: View
+    ) {
+        val location = IntArray(2)
+        v.getLocationOnScreen(location)
+        val right = location[0] + v.width
+        val bottom = location[1] + v.height
+
+        val dx = App.WIDTH - right
+        val dy = App.HEIGHT - bottom
+
+        pushFragment(
+            ProfileFragment().apply {
+                onAuthListener = this@MainContentFragment
+            },
+            FragmentAnimation(
+                duration = 350
+            ) { f, fragment ->
+                fragment.view?.apply {
+                    alpha = f
+                }
+                /*(fragment
+                    .view
+                    ?.layoutParams as? ViewGroup.MarginLayoutParams
+                    )?.apply {
+                        val i = 1.0f - f
+                        topMargin = (location[1] * f).toInt()
+                        leftMargin = (location[0] * f).toInt()
+                        rightMargin = (right + dx * i).toInt()
+                        bottomMargin = (bottom + dy * i).toInt()
+                        fragment.view?.layoutParams = this
+                    }*/
+            }
+        )
+    }
+
 }
 
 private fun MainContentFragment.onClickSearch(
@@ -447,40 +508,6 @@ private fun MainContentFragment.onClickImageViewLikes(
             fragment.view?.apply {
                 x = App.WIDTH * (1.0f-f)
             }
-        }
-    )
-}
-
-private fun MainContentFragment.onClickImageViewProfile(
-    v: View
-) {
-    val location = IntArray(2)
-    v.getLocationOnScreen(location)
-    val right = location[0] + v.width
-    val bottom = location[1] + v.height
-
-    val dx = App.WIDTH - right
-    val dy = App.HEIGHT - bottom
-
-    pushFragment(
-        ProfileFragment(),
-        FragmentAnimation(
-            duration = 350
-        ) { f, fragment ->
-            fragment.view?.apply {
-                alpha = f
-            }
-            /*(fragment
-                .view
-                ?.layoutParams as? ViewGroup.MarginLayoutParams
-                )?.apply {
-                    val i = 1.0f - f
-                    topMargin = (location[1] * f).toInt()
-                    leftMargin = (location[0] * f).toInt()
-                    rightMargin = (right + dx * i).toInt()
-                    bottomMargin = (bottom + dy * i).toInt()
-                    fragment.view?.layoutParams = this
-                }*/
         }
     )
 }

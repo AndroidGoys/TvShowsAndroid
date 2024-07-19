@@ -22,6 +22,7 @@ import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -32,11 +33,14 @@ import good.damn.tvlist.views.buttons.ButtonBack
 import kotlinx.coroutines.launch
 
 class ProfileFragment
-: StackFragment() {
+: StackFragment(),
+OnAuthListener {
 
     companion object {
         private const val TAG = "ProfileFragment"
     }
+
+    var onAuthListener: OnAuthListener? = null
 
     private var mBtnLogout: BigButtonView? = null
     private var mBtnLogin: BigButtonView? = null
@@ -273,24 +277,12 @@ class ProfileFragment
     ) {
         pushFragment(
             SigninFragment().apply {
-                onSignInSuccess = this@ProfileFragment::onAuthSuccess
+                onAuthListener = this@ProfileFragment
             },
             FragmentAnimation { f, fragment ->
                 fragment.view?.alpha = f
             }
         )
-    }
-
-    private fun onAuthSuccess() {
-        popFragment(
-            FragmentAnimation(
-                150
-            ) { f, fragment ->
-                fragment.view?.alpha = 1.0f - f
-            }
-        )
-
-        updateLayoutAuthState()
     }
 
     private fun updateProfile() {
@@ -331,6 +323,7 @@ class ProfileFragment
                     profileView.setAvatar(it)
                 }
 
+                onAuthListener?.onAuthSuccess()
             }
         }
     }
@@ -366,6 +359,18 @@ class ProfileFragment
 
             updateProfile()
         }
+    }
+
+    override fun onAuthSuccess() {
+        popFragment(
+            FragmentAnimation(
+                150
+            ) { f, fragment ->
+                fragment.view?.alpha = 1.0f - f
+            }
+        )
+
+        updateLayoutAuthState()
     }
 
 }

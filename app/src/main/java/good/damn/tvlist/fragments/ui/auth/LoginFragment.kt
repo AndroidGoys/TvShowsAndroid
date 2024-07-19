@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 class LoginFragment
 : StackFragment() {
 
-    var onLoginSuccess: (()->Unit)? = null
+    var onAuthListener: OnAuthListener? = null
 
     private var mTextFieldEmail: TextFieldRound? = null
     private var mTextFieldPassword: TextFieldRound? = null
@@ -354,7 +354,7 @@ class LoginFragment
                 invalidate()
             }
 
-            onLoginSuccess?.invoke()
+            onAuthListener?.onAuthSuccess()
         }
     }
 
