@@ -23,14 +23,14 @@ import java.util.Calendar
 
 class TVProgramView(
     context: Context
-): RoundView(
+) : RoundView(
     context
 ) {
 
     companion object {
         private const val TAG = "TVProgramView"
     }
-    
+
     var title = "Кухня"
     var timeString: String = "12:30"
     var age: String = "18+"

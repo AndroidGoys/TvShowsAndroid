@@ -1,6 +1,8 @@
 package good.damn.kamchatka.views.interactions
 
 import android.animation.ValueAnimator
+import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -8,15 +10,30 @@ import android.view.animation.Interpolator
 import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
 import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
 import good.damn.tvlist.extensions.checkBounds
+import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 
 class AnimatedTouchInteraction
 : BaseTouchInteraction(),
 ValueAnimator.AnimatorUpdateListener,
-OnActionListener {
+OnActionListener,
+Runnable {
+
+    companion object {
+        private const val TICK_DOUBLE_MS = 500L
+    }
 
     var minValue: Float = 0.75f
     var maxValue: Float = 1.0f
 
+    var isDoubleTapEnabled = false
+
+    private val mHandlerDouble = Handler(
+        Looper.getMainLooper()
+    )
+
+    private var mIsTapped = false
+
+    var onTapListener: OnTapListener? = null
     private var mOnUpdateListener: OnUpdateAnimationListener? = null
     private var mOnActionListener: OnActionListener? = null
 
@@ -59,9 +76,6 @@ OnActionListener {
         )
         mAnimator.start()
 
-        if (event.action == MotionEvent.ACTION_CANCEL) {
-            return
-        }
         mOnActionListener?.onDown(
             v,
             event
@@ -72,6 +86,7 @@ OnActionListener {
         v: View,
         event: MotionEvent
     ) {
+        disableDoubleTapCallback()
         mAnimator.setFloatValues(
             mCurrentValue, maxValue
         )
@@ -91,7 +106,33 @@ OnActionListener {
             mOnActionListener?.onUp(
                 v,  event
             )
+            if (isDoubleTapEnabled) {
+                if (mIsTapped) {
+                    disableDoubleTapCallback()
+                    onTapListener?.onDoubleTap(
+                        v,
+                        event
+                    )
+                } else {
+                    mHandlerDouble.apply {
+                        removeCallbacks(
+                            this@AnimatedTouchInteraction
+                        )
+                        postDelayed(
+                            this@AnimatedTouchInteraction,
+                            TICK_DOUBLE_MS
+                        )
+                    }
+                }
+            } else {
+                onTapListener?.onSingleTap()
+            }
         }
+    }
+
+    override fun run() {
+        disableDoubleTapCallback()
+        onTapListener?.onSingleTap()
     }
 
     fun setDuration(
@@ -112,6 +153,11 @@ OnActionListener {
         l: OnUpdateAnimationListener?
     ) {
         mOnUpdateListener = l
+    }
+
+    private fun disableDoubleTapCallback() {
+        mIsTapped = false
+        mHandlerDouble.removeCallbacks(this)
     }
 
 }

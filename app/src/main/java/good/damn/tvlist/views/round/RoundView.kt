@@ -12,6 +12,7 @@ import android.view.animation.AccelerateInterpolator
 import good.damn.kamchatka.views.interactions.AnimatedTouchInteraction
 import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
 import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
+import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 
 open class RoundView(
     context: Context
@@ -139,5 +140,6 @@ OnUpdateAnimationListener {
     ) {
         super.setBackground(null)
     }
+
 
 }
