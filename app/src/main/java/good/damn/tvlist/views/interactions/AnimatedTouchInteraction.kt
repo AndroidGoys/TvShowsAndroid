@@ -68,7 +68,7 @@ OnActionListener {
         )
     }
 
-    override fun onUp(
+    override fun onCancel(
         v: View,
         event: MotionEvent
     ) {
@@ -76,6 +76,13 @@ OnActionListener {
             mCurrentValue, maxValue
         )
         mAnimator.start()
+    }
+
+    override fun onUp(
+        v: View,
+        event: MotionEvent
+    ) {
+        onCancel(v, event)
 
         if (v.checkBounds(
             event.x,

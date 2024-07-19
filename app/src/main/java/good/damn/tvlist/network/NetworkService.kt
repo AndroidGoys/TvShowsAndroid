@@ -2,6 +2,7 @@ package good.damn.tvlist.network
 
 import android.util.Log
 import good.damn.tvlist.App
+import good.damn.tvlist.extensions.toAuthToken
 import kotlinx.coroutines.launch
 import okhttp3.Cache
 import okhttp3.CacheControl
@@ -15,13 +16,24 @@ open class NetworkService {
 
     companion object {
         private const val TAG = "NetworkService"
+        private const val KEY_AUTH = "Authorization"
     }
 
     private val mRequestBuilder = Request.Builder()
         .addHeader("User-Agent", App.USER_AGENT)
-        .addHeader("Authorization", "Bearer ${App.TOKEN_AUTH?.accessToken}")
+        .addHeader(KEY_AUTH, App
+            .TOKEN_AUTH
+            ?.accessToken
+            ?.toAuthToken() ?: ""
+        )
 
     private val mClient = OkHttpClient()
+
+    fun updateAccessToken(
+        accessToken: String
+    ) = mRequestBuilder
+        .removeHeader(KEY_AUTH)
+        .addHeader(KEY_AUTH, accessToken.toAuthToken())
 
     protected fun makeRequestPOST(
         url: String,
@@ -52,8 +64,6 @@ open class NetworkService {
             return null
         }
 
-        Log.d(TAG, "execute: HEADERS: ${request.headers}")
-        
         return try {
             mClient.newCall(
                 request

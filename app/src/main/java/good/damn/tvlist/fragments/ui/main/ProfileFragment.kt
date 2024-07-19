@@ -263,14 +263,12 @@ class ProfileFragment
             apply()
         }
         App.TOKEN_AUTH = null
-        Log.d(TAG, "onClickLogout: ")
         updateLayoutAuthState()
     }
 
     private fun onClickLogIn(
         v: View
     ) {
-        Log.d(TAG, "onClickLogIn: ")
         pushFragment(
             SigninFragment().apply {
                 onSignInSuccess = this@ProfileFragment::onAuthSuccess
@@ -294,6 +292,11 @@ class ProfileFragment
     }
 
     private fun updateProfile() {
+
+        mUserService.updateAccessToken(
+            App.TOKEN_AUTH?.accessToken ?: ""
+        )
+
         if (App.TOKEN_AUTH == null) {
             return
         }
@@ -328,9 +331,6 @@ class ProfileFragment
             if (App.TOKEN_AUTH == null) {
                 removeView(btnLogout)
                 addView(btnLogin)
-
-                val parent = textViewProfile.parent
-                Log.d(TAG, "updateLayoutAuthState: ${parent as? ViewGroup}")
 
                 removeView(profileView)
                 addView(textViewProfile,1)

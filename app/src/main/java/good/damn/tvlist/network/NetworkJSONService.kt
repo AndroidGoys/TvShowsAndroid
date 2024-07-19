@@ -41,14 +41,16 @@ open class NetworkJSONService(
             errorStringId = R.string.invalid_response
         )
 
-        Log.d(TAG, "requestPostJSON: RESPONSE: $resp ${resp.body}")
+        val body = resp.body?.string()
+        Log.d(TAG, "requestPostJSON: RESPONSE: $resp $body")
 
-        val body = resp.body
-            ?: return Result(
+        if (body == null) {
+            return Result(
                 errorStringId = R.string.invalid_body
             )
+        }
 
-        val jsonResponse = body.string().toJSONObject()
+        val jsonResponse = body.toJSONObject()
             ?: return Result(
                 errorStringId = R.string.invalid_object
             )

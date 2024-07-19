@@ -33,7 +33,7 @@ data class Error(
         private fun msgId(
             error: Int
         ) = when (error) {
-            4 -> R.string.invalid_credentials
+            1,4 -> R.string.invalid_credentials
             5 -> R.string.invalid_refresh_token
             9 -> R.string.user_exists
             else -> R.string.some_error_happens

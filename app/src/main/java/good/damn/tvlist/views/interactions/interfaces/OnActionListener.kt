@@ -15,4 +15,9 @@ interface OnActionListener {
         event: MotionEvent
     )
 
+    fun onCancel(
+        v: View,
+        event: MotionEvent
+    ) {}
+
 }
