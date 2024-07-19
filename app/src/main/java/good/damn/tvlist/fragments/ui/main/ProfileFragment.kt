@@ -4,9 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
@@ -22,10 +20,12 @@ import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
+import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.utils.ViewUtils
-import good.damn.tvlist.views.UserProfileView
+import good.damn.tvlist.views.user.UserProfileView
 import good.damn.tvlist.views.buttons.BigButtonView
 import good.damn.tvlist.views.buttons.ButtonBack
+import kotlinx.coroutines.launch
 
 class ProfileFragment
 : StackFragment() {
@@ -37,6 +37,8 @@ class ProfileFragment
     private var mProfileView: UserProfileView? = null
 
     private var mLayout: LinearLayout? = null
+
+    private val mUserService = UserService()
 
     override fun onCreateView(
         context: Context,
@@ -241,6 +243,19 @@ class ProfileFragment
             }
         }
 
+        if (App.TOKEN_AUTH != null) {
+            App.IO.launch {
+                val profile = mUserService.getProfile(
+                    fromCache = !App.NETWORK_AVAILABLE
+                ) ?: return@launch
+
+                App.ui {
+                    mProfileView?.setUserInfo(
+                        profile
+                    )
+                }
+            }
+        }
 
         return mLayout ?: View(context)
     }

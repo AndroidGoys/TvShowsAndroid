@@ -1,4 +1,4 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.views.user
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -10,7 +10,6 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.view.View
 import androidx.annotation.ColorInt
-import androidx.core.view.marginStart
 import good.damn.tvlist.views.rate.RateView
 
 class UserHeaderView(

@@ -1,8 +1,6 @@
 package good.damn.tvlist.view_holders.tv_show
 
 import android.content.Context
-import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
@@ -10,14 +8,13 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.network.api.models.show.TVShowUserReview
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
-import good.damn.tvlist.views.UserHeaderView
+import good.damn.tvlist.views.user.UserHeaderView
 
 class TVShowUserReviewViewHolder(
     private val mUserHeader: UserHeaderView,

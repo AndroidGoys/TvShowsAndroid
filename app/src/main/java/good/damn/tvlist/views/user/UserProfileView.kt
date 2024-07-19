@@ -1,11 +1,12 @@
-package good.damn.tvlist.views
+package good.damn.tvlist.views.user
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import good.damn.tvlist.extensions.boundsFrame
-import good.damn.tvlist.extensions.setBackgroundColorId
+import good.damn.tvlist.extensions.widthParams
+import good.damn.tvlist.network.api.models.user.UserProfile
 import good.damn.tvlist.views.round.RoundedImageView
 
 class UserProfileView(
@@ -15,6 +16,14 @@ class UserProfileView(
 ) {
 
     private val mImageViewProfile = RoundedImageView(
+        context
+    ).apply {
+        addView(
+            this
+        )
+    }
+
+    private val mUserInfoView = UserInfoView(
         context
     ).apply {
         addView(
@@ -45,6 +54,24 @@ class UserProfileView(
             setBackgroundColor(
                 0xaaaaaaaa.toInt()
             )
+        }
+
+        mUserInfoView.boundsFrame(
+            width = (width * 0.7173f).toInt(),
+            height = height,
+            left = mImageViewProfile.widthParams()
+                + (width * 0.0893f)
+        )
+    }
+
+    fun setUserInfo(
+        profile: UserProfile
+    ) {
+        mUserInfoView.apply {
+            nickname = profile.username
+            email = profile.email
+            date = profile.registrationDateSeconds.toString()
+            invalidate()
         }
     }
 
