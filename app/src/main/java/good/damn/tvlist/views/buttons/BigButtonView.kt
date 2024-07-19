@@ -13,12 +13,13 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import good.damn.kamchatka.views.interactions.AnimatedTouchInteraction
 import good.damn.kamchatka.views.interactions.interfaces.OnActionListener
 import good.damn.kamchatka.views.interactions.interfaces.OnUpdateAnimationListener
+import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 
 class BigButtonView(
     context: Context
 ): CardView(
     context
-), OnActionListener, OnUpdateAnimationListener {
+), OnUpdateAnimationListener, OnTapListener {
 
     var text = ""
     var imageStart: Drawable? = null
@@ -63,9 +64,7 @@ class BigButtonView(
             LinearOutSlowInInterpolator()
         )
 
-        mTouchInteraction.setOnActionListener(
-            this
-        )
+        mTouchInteraction.onTapListener = this
 
         mTouchInteraction.setOnUpdateAnimationListener(
             this
@@ -177,23 +176,21 @@ class BigButtonView(
         )
     }
 
-    override fun onUp(
-        v: View,
-        event: MotionEvent
-    ) {
-        mOnClickListener?.onClick(
-            v
-        )
-    }
-
     override fun onUpdateAnimation(
         animatedValue: Float
     ) {
         alpha = animatedValue
     }
 
-    override fun onDown(
-        v: View,
-        event: MotionEvent
-    ) = Unit
+    override fun onLongTap() {
+
+    }
+
+    override fun onSingleTap() {
+        mOnClickListener?.onClick(
+            this
+        )
+
+    }
+
 }

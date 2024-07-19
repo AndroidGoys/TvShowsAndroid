@@ -21,7 +21,7 @@ OnActionListener {
     companion object {
         private const val TAG = "AnimatedTouchInteractio"
         private const val TICK_DOUBLE_MS = 1500L
-        private const val TICK_LONG_PRESS_MS = 900L
+        private const val TICK_LONG_PRESS_MS = 300L
     }
 
     var minValue: Float = 0.75f
