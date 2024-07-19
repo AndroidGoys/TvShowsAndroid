@@ -24,8 +24,7 @@ import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.views.round.RoundView
 
 class ToastImage(
-    context: Context,
-    private val mRootLayout: ViewGroup
+    context: Context
 ): CardView(
     context
 ), ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
@@ -151,7 +150,7 @@ class ToastImage(
         animation: Animator
     ) {
         if (mIsEndAnimation) {
-            mRootLayout.removeView(
+            (parent as? ViewGroup)?.removeView(
                 this
             )
             return

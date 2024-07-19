@@ -88,7 +88,9 @@ class BigButtonView(
         l: OnClickListener?
     ) {
         mOnClickListener = l
-        super.setOnClickListener(l)
+        super.setOnClickListener(
+            null
+        )
     }
 
     final override fun setOnTouchListener(

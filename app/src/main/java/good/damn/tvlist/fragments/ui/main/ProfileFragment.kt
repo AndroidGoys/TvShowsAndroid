@@ -2,8 +2,10 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -29,6 +31,10 @@ import kotlinx.coroutines.launch
 
 class ProfileFragment
 : StackFragment() {
+
+    companion object {
+        private const val TAG = "ProfileFragment"
+    }
 
     private var mBtnLogout: BigButtonView? = null
     private var mBtnLogin: BigButtonView? = null
@@ -243,19 +249,7 @@ class ProfileFragment
             }
         }
 
-        if (App.TOKEN_AUTH != null) {
-            App.IO.launch {
-                val profile = mUserService.getProfile(
-                    fromCache = !App.NETWORK_AVAILABLE
-                ) ?: return@launch
-
-                App.ui {
-                    mProfileView?.setUserInfo(
-                        profile
-                    )
-                }
-            }
-        }
+        updateProfile()
 
         return mLayout ?: View(context)
     }
@@ -269,12 +263,14 @@ class ProfileFragment
             apply()
         }
         App.TOKEN_AUTH = null
+        Log.d(TAG, "onClickLogout: ")
         updateLayoutAuthState()
     }
 
     private fun onClickLogIn(
         v: View
     ) {
+        Log.d(TAG, "onClickLogIn: ")
         pushFragment(
             SigninFragment().apply {
                 onSignInSuccess = this@ProfileFragment::onAuthSuccess
@@ -297,6 +293,24 @@ class ProfileFragment
         updateLayoutAuthState()
     }
 
+    private fun updateProfile() {
+        if (App.TOKEN_AUTH == null) {
+            return
+        }
+
+        App.IO.launch {
+            val profile = mUserService.getProfile(
+                fromCache = !App.NETWORK_AVAILABLE
+            ) ?: return@launch
+
+            App.ui {
+                mProfileView?.setUserInfo(
+                    profile
+                )
+            }
+        }
+    }
+
     private fun updateLayoutAuthState() {
         val btnLogin = mBtnLogin
             ?: return
@@ -304,15 +318,32 @@ class ProfileFragment
         val btnLogout = mBtnLogout
             ?: return
 
+        val textViewProfile = mTextViewProfile
+            ?: return
+
+        val profileView = mProfileView
+            ?: return
+
         mLayout?.apply {
             if (App.TOKEN_AUTH == null) {
                 removeView(btnLogout)
                 addView(btnLogin)
+
+                val parent = textViewProfile.parent
+                Log.d(TAG, "updateLayoutAuthState: ${parent as? ViewGroup}")
+
+                removeView(profileView)
+                addView(textViewProfile,1)
                 return
             }
 
             removeView(btnLogin)
             addView(btnLogout)
+
+            removeView(textViewProfile)
+            addView(profileView,1)
+
+            updateProfile()
         }
     }
 

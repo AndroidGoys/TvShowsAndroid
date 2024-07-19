@@ -350,8 +350,7 @@ ActivityResultCallback<Boolean> {
         }
 
         ToastImage(
-            this,
-            mContainer
+            this
         ).apply {
             textView.text = text
             imageView.setImageDrawable(
