@@ -14,6 +14,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
+import good.damn.tvlist.App
+import good.damn.tvlist.R
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
@@ -37,6 +39,8 @@ class TVProgramView(
     var age: String = "18+"
 
     var previewImage: Bitmap? = null
+
+    var isFavourite: Boolean = false
 
     var typeface = Typeface.DEFAULT
         set(v) {
@@ -105,6 +109,10 @@ class TVProgramView(
 
     private val mRectProgress = RectF()
 
+    private val mDrawableFavourites = App.drawable(
+        R.drawable.ic_star_fill_lime
+    )
+
     private val mRating = RatingCanvas()
 
     private var mProgressRadius = 0f
@@ -162,8 +170,8 @@ class TVProgramView(
             width * 0.15094f,
             ratingHeight
         )
-
         mRating.cornerRadius = ratingHeight * 0.3125f
+
 
         super.setLayoutParams(params)
     }
@@ -189,6 +197,17 @@ class TVProgramView(
             mTimeX = startPadding
             mAgeX = startPadding + width * 0.04031f + mPaintTime.measureText(timeString)
         }
+
+        val favSize = (width * 0.18f).toInt()
+
+        val drawX = width - favSize - paddingStart
+        val drawY = (height * 0.03902f).toInt()
+        mDrawableFavourites?.setBounds(
+            drawX,
+            drawY,
+            drawX + favSize,
+            drawY + favSize
+        )
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -236,6 +255,12 @@ class TVProgramView(
                 mProgressRadius,
                 mProgressRadius,
                 mPaintProgress
+            )
+        }
+
+        if (isFavourite) {
+            mDrawableFavourites?.draw(
+                canvas
             )
         }
 

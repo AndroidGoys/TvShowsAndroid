@@ -33,6 +33,9 @@ class TVProgramViewHolder(
         mProgramView.title = p.shortName ?: p.name
         mProgramView.timeString = p.startTimeString
         mProgramView.rating = p.rating
+        mProgramView.isFavourite = App.FAVOURITE_TV_SHOWS
+            .containsKey(p.id)
+
         if (next != null) {
             val t = mCalendar.timeInMillis / 1000
             val dt = t - p.startTime
@@ -94,12 +97,19 @@ class TVProgramViewHolder(
                         return
                     }
 
+                    val v = view as? TVProgramView
+                        ?: return
+
                     App.FAVOURITE_TV_SHOWS.apply {
-                        if (containsKey(program.id)) {
+                        if (v.isFavourite) {
                             remove(program.id)
-                            return@apply
+                            v.isFavourite = false
+                        } else {
+                            put(program.id, program)
+                            v.isFavourite = true
                         }
-                        put(program.id, program)
+
+                        v.invalidate()
                     }
                 }
             }
