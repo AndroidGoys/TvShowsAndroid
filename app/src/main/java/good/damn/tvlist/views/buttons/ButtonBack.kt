@@ -28,7 +28,7 @@ class ButtonBack(
     context: Context
 ): RoundView(
     context
-), OnUpdateAnimationListener, OnActionListener {
+), OnUpdateAnimationListener {
 
     private val mPaint = run {
         val p = Paint()
@@ -58,9 +58,6 @@ class ButtonBack(
         )
 
         mTouchInteraction.apply {
-            setOnActionListener(
-                this@ButtonBack
-            )
             setOnUpdateAnimationListener(
                 this@ButtonBack
             )
@@ -108,12 +105,6 @@ class ButtonBack(
         scaleX = animatedValue
         scaleY = animatedValue
     }
-
-    override fun onDown(
-        v: View,
-        event: MotionEvent
-    ) = Unit
-
 
     companion object {
 

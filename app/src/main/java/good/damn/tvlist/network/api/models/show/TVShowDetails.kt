@@ -30,7 +30,9 @@ data class TVShowDetails(
                 "assessment"
             ) as? Double)?.toFloat() ?: 0.0f
 
-            val censorAge = CensorAge.TEEN
+            val censorAge = json.extract(
+                "ageLimit"
+            ) as? Int ?: 4
 
             val description = json.extract(
                 "description"
@@ -52,7 +54,9 @@ data class TVShowDetails(
                 id,
                 name,
                 rating,
-                censorAge,
+                CensorAge.find(
+                    censorAge.toByte()
+                ),
                 imagesArr,
                 description
             )

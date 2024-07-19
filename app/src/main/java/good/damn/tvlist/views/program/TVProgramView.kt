@@ -18,6 +18,7 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.views.RatingCanvas
+import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 import good.damn.tvlist.views.round.RoundView
 import java.util.Calendar
 
@@ -25,7 +26,7 @@ class TVProgramView(
     context: Context
 ) : RoundView(
     context
-) {
+), OnTapListener {
 
     companion object {
         private const val TAG = "TVProgramView"
@@ -89,6 +90,7 @@ class TVProgramView(
 
     var cacheProgram: TVProgram? = null
 
+    var onLongClickProgramListener: OnClickProgramListener? = null
     var onClickProgramListener: OnClickProgramListener? = null
 
     var sizeTitleFactor: Float = 0.01f
@@ -119,7 +121,7 @@ class TVProgramView(
     init {
         mPaintGradientGray.isDither = true
     }
-
+    
     override fun setLayoutParams(
         params: ViewGroup.LayoutParams?
     ) {
@@ -242,15 +244,18 @@ class TVProgramView(
         )
     }
 
-    override fun onUp(
-        v: View,
-        event: MotionEvent
-    ) {
-        onClickProgramListener?.onClickProgram(
-            v,
+    override fun onLongTap() {
+        onLongClickProgramListener?.onClickProgram(
+            this,
             cacheProgram
         )
     }
 
+    override fun onSingleTap() {
+        onClickProgramListener?.onClickProgram(
+            this,
+            cacheProgram
+        )
+    }
 
 }

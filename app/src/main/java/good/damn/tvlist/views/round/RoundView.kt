@@ -18,8 +18,7 @@ open class RoundView(
     context: Context
 ): View(
     context
-),OnActionListener,
-OnUpdateAnimationListener {
+), OnUpdateAnimationListener, OnTapListener {
 
     var cornerRadius = 2f
     protected val mRectViewRound = RectF()
@@ -27,8 +26,7 @@ OnUpdateAnimationListener {
     private val mPaintBack = Paint()
     private val mClipPath = Path()
 
-    private var mOnClickListener: OnClickListener? = null
-
+    protected var mOnClickListener: OnClickListener? = null
     protected val mTouchInteraction = AnimatedTouchInteraction()
 
     init {
@@ -47,13 +45,11 @@ OnUpdateAnimationListener {
             AccelerateInterpolator()
         )
 
-        mTouchInteraction.setOnActionListener(
-            this
-        )
-
         mTouchInteraction.setOnUpdateAnimationListener(
             this
         )
+
+        mTouchInteraction.onTapListener = this
 
     }
 
@@ -90,24 +86,12 @@ OnUpdateAnimationListener {
         )
     }
 
-    override fun onUp(
-        v: View,
-        event: MotionEvent
-    ) {
-        mOnClickListener?.onClick(
-            v
-        )
-    }
     override fun onUpdateAnimation(
         animatedValue: Float
     ) {
         alpha = animatedValue
     }
 
-    override fun onDown(
-        v: View,
-        event: MotionEvent
-    ) = Unit
 
     final override fun setOnClickListener(
         l: OnClickListener?
@@ -126,8 +110,6 @@ OnUpdateAnimationListener {
         )
     }
 
-
-
     final override fun setBackgroundColor(
         color: Int
     ) {
@@ -139,6 +121,14 @@ OnUpdateAnimationListener {
         background: Drawable?
     ) {
         super.setBackground(null)
+    }
+
+    override fun onLongTap() {}
+
+    override fun onSingleTap() {
+        mOnClickListener?.onClick(
+            this
+        )
     }
 
 

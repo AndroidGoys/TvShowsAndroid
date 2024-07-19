@@ -5,10 +5,7 @@ import android.view.View
 
 interface OnTapListener {
 
-    fun onDoubleTap(
-        v: View,
-        event: MotionEvent
-    )
+    fun onLongTap()
 
     fun onSingleTap()
 }
