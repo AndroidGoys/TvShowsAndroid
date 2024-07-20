@@ -22,6 +22,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.services.TVShowService
+import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.tab_bars.OnTabClickListener
 import good.damn.tvlist.views.tab_bars.TabBar
@@ -49,6 +50,7 @@ OnTabClickListener {
     private var mRecyclerView: RecyclerView? = null
 
     private val mShowService = TVShowService()
+    private val mUserService = UserService()
 
     override fun onCreateView(
         context: Context,
@@ -182,7 +184,8 @@ OnTabClickListener {
                 App.ui {
                     mRecyclerView?.adapter = TVShowUserReviewsAdapter(
                         (measureUnit * 0.90811f).toInt(),
-                        reviews
+                        reviews,
+                        mUserService
                     )
                 }
             }

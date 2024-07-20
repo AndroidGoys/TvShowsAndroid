@@ -2,6 +2,7 @@ package good.damn.tvlist.network.api.services
 
 import android.media.MediaRouter.UserRouteInfo
 import android.util.Log
+import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.auth.TokenAuth
@@ -17,9 +18,31 @@ class UserService
     companion object {
         private const val TAG = "UserService"
         private const val URL_PROFILE = "${App.URL}/api/users/@me"
+        private const val URL_PROFILE_ID = "${App.URL}/api/users"
         const val DIR_AVATAR = "bitmapAvatars"
     }
 
+    @WorkerThread
+    fun getProfile(
+        userId: Long,
+        fromCache: Boolean = false
+    ): UserProfile? {
+        val url = "$URL_PROFILE_ID/$userId"
+
+        val result = if (fromCache)
+            getCachedJson(url)
+        else getNetworkJSON(url)
+
+        if (result == null) {
+            return null
+        }
+
+        return UserProfile.createFromJSON(
+            result
+        )
+    }
+
+    @WorkerThread
     fun getProfile(
         fromCache: Boolean = false
     ): UserProfile? {

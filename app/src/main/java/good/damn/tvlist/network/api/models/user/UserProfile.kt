@@ -6,7 +6,7 @@ import org.json.JSONObject
 data class UserProfile(
     val id: Int,
     val username: String,
-    val email: String,
+    val email: String?,
     val avatarUrl: String?,
     val registrationDateSeconds: Int
 ) {
@@ -24,11 +24,11 @@ data class UserProfile(
 
             val email = json.extract(
                 "email"
-            ) as? String ?: return null
+            ) as? String
 
             val registrationDateSeconds = json.extract(
                 "registrationDateSeconds"
-            ) as? Int ?: return null
+            ) as? Int ?: 0
 
             val avatarUrl = json.extract(
                 "avatarUrl"

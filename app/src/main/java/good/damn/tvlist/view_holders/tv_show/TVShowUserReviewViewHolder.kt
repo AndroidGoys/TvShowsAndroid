@@ -1,6 +1,7 @@
 package good.damn.tvlist.view_holders.tv_show
 
 import android.content.Context
+import android.util.Log
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
@@ -12,9 +13,11 @@ import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.network.api.models.show.TVShowUserReview
+import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.user.UserHeaderView
+import kotlinx.coroutines.launch
 
 class TVShowUserReviewViewHolder(
     private val mUserHeader: UserHeaderView,
@@ -25,32 +28,52 @@ class TVShowUserReviewViewHolder(
 ) {
 
     fun onBindViewHolder(
-        userReview: TVShowUserReview
+        userReview: TVShowUserReview,
+        userService: UserService
     ) {
-        //mUserHeader.textUsername = userReview.username
         mUserHeader.textDate = userReview.dateString
         mUserHeader.grade = userReview.rating
         mUserHeader.invalidate()
 
         mTextViewUserReview.text = userReview.textReview
 
-        /*if (userReview.usernameImageUrl == null) {
-            return
-        }
+        App.IO.launch {
+            val profile = userService.getProfile(
+                userReview.userId,
+                fromCache = !App.NETWORK_AVAILABLE
+            )
 
-        NetworkBitmap.loadFromNetwork(
-            userReview.usernameImageUrl,
-            App.CACHE_DIR,
-            "userlogo",
-            mUserHeader.heightParams(),
-            mUserHeader.heightParams()
-        ) {
-            mUserHeader.bitmap = it
-            mUserHeader.invalidate()
-        }*/
+            Log.d(TAG, "onBindViewHolder: ${profile?.username}")
+
+            if (profile == null) {
+                return@launch
+            }
+
+            App.ui {
+                mUserHeader.textUsername =
+                    profile.username
+                mUserHeader.invalidate()
+
+                if (profile.avatarUrl == null) {
+                    return@ui
+                }
+
+                NetworkBitmap.loadFromNetwork(
+                    profile.avatarUrl,
+                    App.CACHE_DIR,
+                    "userlogo",
+                    mUserHeader.heightParams(),
+                    mUserHeader.heightParams()
+                ) {
+                    mUserHeader.bitmap = it
+                    mUserHeader.invalidate()
+                }
+            }
+        }
     }
 
     companion object {
+        private const val TAG = "TVShowUserReviewViewHol"
         fun create(
             context: Context,
             holderWidth: Int
