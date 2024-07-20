@@ -112,6 +112,13 @@ abstract class StackFragment
             this
         )
 
+    fun requestContentBrowser(
+        mimeType: String
+    ) = mainActivity().requestContentBrowser(
+        mimeType,
+        this
+    )
+
     fun requestPermission(
         permission: String
     ) = mainActivity().requestPermission(

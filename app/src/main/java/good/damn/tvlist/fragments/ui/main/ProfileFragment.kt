@@ -2,6 +2,7 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -15,6 +16,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
+import good.damn.tvlist.extensions.readBytes
 import good.damn.tvlist.extensions.removeAccessToken
 import good.damn.tvlist.extensions.removeRefreshToken
 import good.damn.tvlist.extensions.setTextColorId
@@ -368,6 +370,36 @@ OnAuthListener {
     private fun onClickProfilePickAvatar(
         v: View
     ) {
+        requestContentBrowser(
+            "image/png"
+        )
+    }
+
+    override fun onGetContentUri(
+        uri: Uri?
+    ) {
+        if (uri == null) {
+            return
+        }
+
+        try {
+            val bytes  = context?.contentResolver?.openInputStream(
+                uri
+            )?.readBytes(4096)
+
+            if (bytes == null) {
+                return
+            }
+
+            App.IO.launch {
+                val response = mUserService.uploadAvatar(
+                    bytes
+                )
+            }
+
+        } catch (e: Exception) {
+            Log.d(TAG, "onGetContentUri: ERROR: ${e.message}")
+        }
 
     }
 
