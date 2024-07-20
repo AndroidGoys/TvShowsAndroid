@@ -126,6 +126,10 @@ OnAuthListener {
                 height = (measureUnit * 70.normalWidth()).toInt()
             )
 
+            mImageViewProfile.setOnClickListener(
+                this@ProfileFragment::onClickProfilePickAvatar
+            )
+
             if (App.TOKEN_AUTH != null) {
                 mLayout?.addView(
                     this
@@ -359,6 +363,12 @@ OnAuthListener {
 
             updateProfile()
         }
+    }
+
+    private fun onClickProfilePickAvatar(
+        v: View
+    ) {
+
     }
 
     override fun onAuthSuccess() {

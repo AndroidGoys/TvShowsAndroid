@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract.Profile
@@ -77,6 +78,7 @@ ActivityResultCallback<Boolean> {
     private lateinit var mContainer: FrameLayout
 
     private var mPermissionLauncher: ActivityResultLauncher<String>? = null
+    private var mContentBrowser: ActivityResultLauncher<String>? = null
 
     private var mWindowController: WindowInsetsControllerCompat? = null
 
@@ -85,6 +87,7 @@ ActivityResultCallback<Boolean> {
     private val mNetworkReceiver = NetworkReceiver()
 
     private var mPermissionFragment: StackFragment? = null
+    private var mBrowserFragment: StackFragment? = null
 
     private var mTopInset = 0
 
@@ -114,6 +117,15 @@ ActivityResultCallback<Boolean> {
             ActivityResultContracts.RequestPermission(),
             this
         )
+
+        mContentBrowser = registerForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) {
+            mBrowserFragment?.onGetContentUri(
+                it
+            )
+            mBrowserFragment = null
+        }
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
@@ -324,6 +336,16 @@ ActivityResultCallback<Boolean> {
     fun hideStatusBar() {
         mWindowController?.show(
             WindowInsetsCompat.Type.statusBars()
+        )
+    }
+
+    fun requestContentBrowser(
+        mimeType: String,
+        fragment: StackFragment
+    ) {
+        mBrowserFragment = fragment
+        mContentBrowser?.launch(
+            mimeType
         )
     }
 

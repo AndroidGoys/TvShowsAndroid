@@ -16,7 +16,7 @@ class UserProfileView(
     context
 ) {
 
-    private val mImageViewProfile = RoundedImageView(
+    val mImageViewProfile = RoundedImageView(
         context
     ).apply {
         addView(

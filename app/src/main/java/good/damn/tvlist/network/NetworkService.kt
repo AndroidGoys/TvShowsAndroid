@@ -35,6 +35,16 @@ open class NetworkService {
         .removeHeader(KEY_AUTH)
         .addHeader(KEY_AUTH, accessToken.toAuthToken())
 
+    protected fun makeRequestPOST2(
+        url: String,
+        accept: String,
+        body: RequestBody
+    ) = mRequestBuilder
+        .url(url)
+        .addHeader(
+            "Accept", accept
+        ).post(body)
+
     protected fun makeRequestPOST(
         url: String,
         accept: String,

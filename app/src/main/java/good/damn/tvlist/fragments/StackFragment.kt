@@ -2,6 +2,7 @@ package good.damn.tvlist.fragments
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -61,6 +62,10 @@ abstract class StackFragment
 
     open fun onGrantPermission(
         isGranted: Boolean
+    ) {}
+
+    open fun onGetContentUri(
+        uri: Uri?
     ) {}
 
     fun pushFragment(
