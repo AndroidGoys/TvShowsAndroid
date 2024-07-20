@@ -1,5 +1,6 @@
 package good.damn.tvlist.network.api.models.user
 
+import good.damn.tvlist.App
 import good.damn.tvlist.extensions.extract
 import org.json.JSONObject
 
@@ -30,7 +31,7 @@ data class UserProfile(
                 "registrationDateSeconds"
             ) as? Int ?: 0
 
-            val avatarUrl = json.extract(
+            val localAvatarUrl = json.extract(
                 "avatarUrl"
             ) as? String ?: "https://w7.pngwing.com/pngs/205/731/png-transparent-default-avatar-thumbnail.png"
 
@@ -38,7 +39,7 @@ data class UserProfile(
                 id,
                 username,
                 email,
-                avatarUrl,
+                "${App.URL}/api/$localAvatarUrl",
                 registrationDateSeconds
             )
         }
