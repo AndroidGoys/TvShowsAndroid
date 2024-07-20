@@ -135,6 +135,8 @@ class RateView(
         mY = y
     }
 
+    fun getRating() = mRate
+
     fun setStarsRate(
         grade: Byte
     ) {

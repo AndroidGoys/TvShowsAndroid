@@ -233,7 +233,7 @@ OnTabClickListener {
         App.IO.launch {
             val reviews = mShowService.getReviews(
                 id
-            )
+            ) ?: return@launch
             val ad = (recyclerView.adapter as? TVShowUserReviewsAdapter)
                 ?: return@launch
             val s = ad.itemCount

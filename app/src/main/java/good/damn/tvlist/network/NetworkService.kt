@@ -69,7 +69,7 @@ open class NetworkService {
                 request
             ).execute()
         } catch (e: Exception) {
-            Log.d(TAG, "execute: ERROR CONNECTION: ${e.message}")
+            Log.d(TAG, "execute: ERROR CONNECTION: ${e.localizedMessage}")
             null
         }
     }

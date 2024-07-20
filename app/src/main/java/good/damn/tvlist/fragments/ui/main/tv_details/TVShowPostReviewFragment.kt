@@ -1,6 +1,7 @@
 package good.damn.tvlist.fragments.ui.main.tv_details
 
 import android.content.Context
+import android.provider.Telephony.Mms.Rate
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -20,12 +21,14 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
+import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.RoundButton
 import good.damn.tvlist.views.rate.RateView
 import good.damn.tvlist.views.text_fields.TextFieldRound
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
+import kotlinx.coroutines.launch
 
 class TVShowPostReviewFragment
 : StackFragment(),
@@ -47,6 +50,10 @@ TextWatcher {
     var grade: Byte = 0
 
     private var mTextViewCounter: AppCompatTextView? = null
+    private var mTextFieldComment: TextFieldRound? = null
+    private var mRateView: RateView? = null
+
+    private val mShowService = TVShowService()
 
     override fun onCreateView(
         context: Context,
@@ -107,7 +114,7 @@ TextWatcher {
             )
         }
 
-        RateView(
+        mRateView = RateView(
             context
         ).apply {
 
@@ -127,7 +134,7 @@ TextWatcher {
             )
         }
 
-        TextFieldRound(
+        mTextFieldComment = TextFieldRound(
             context
         ).apply {
 
@@ -258,6 +265,10 @@ TextWatcher {
                 R.color.btnBack
             )
 
+            setOnClickListener(
+                this@TVShowPostReviewFragment::onClickPostReview
+            )
+
             layout.addView(
                 this
             )
@@ -286,6 +297,39 @@ TextWatcher {
     override fun afterTextChanged(
         s: Editable?
     ) = Unit
+
+
+    private fun onClickPostReview(
+        v: View
+    ) {
+        val rateView = mRateView
+            ?: return
+
+        val rating = rateView.getRating()
+
+        if (rating <= 0) {
+            toast(R.string.please_rate_show)
+            return
+        }
+
+        val showId = review?.id
+
+        if (showId == null) {
+            toast(R.string.some_error_happens)
+            return
+        }
+
+        val text = mTextFieldComment?.text?.toString() ?: ""
+        App.IO.launch {
+            mShowService.postReview(
+                showId,
+                rating,
+                text
+            )
+        }
+
+    }
+
 }
 
 private fun TVShowPostReviewFragment.onClickBtnBack(

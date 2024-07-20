@@ -27,14 +27,14 @@ class TVShowUserReviewViewHolder(
     fun onBindViewHolder(
         userReview: TVShowUserReview
     ) {
-        mUserHeader.textUsername = userReview.username
+        //mUserHeader.textUsername = userReview.username
         mUserHeader.textDate = userReview.dateString
         mUserHeader.grade = userReview.rating
         mUserHeader.invalidate()
 
         mTextViewUserReview.text = userReview.textReview
 
-        if (userReview.usernameImageUrl == null) {
+        /*if (userReview.usernameImageUrl == null) {
             return
         }
 
@@ -47,7 +47,7 @@ class TVShowUserReviewViewHolder(
         ) {
             mUserHeader.bitmap = it
             mUserHeader.invalidate()
-        }
+        }*/
     }
 
     companion object {
