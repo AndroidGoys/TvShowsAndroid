@@ -10,24 +10,28 @@ import good.damn.tvlist.R
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
-import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
-import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
+import good.damn.tvlist.views.recycler_views.TVShowsRecyclerView
+import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,
-    private val mRecyclerViewPrograms: TVProgramsRecyclerView,
+    private val mRecyclerViewReleases: TVShowsRecyclerView,
     private val mLayout: LinearLayout
 ): RecyclerView.ViewHolder(
     mLayout
 ) {
+    private val mCalendar = Calendar.getInstance()
 
     fun onBindViewHolder(
-        t: TVChannel2?
+        t: TVChannel2?,
+        releaseService: TVChannelReleasesService
     ) {
         mLayout.alpha = 0f
         if (t == null) {
@@ -41,6 +45,19 @@ class TVChannelViewHolder(
 
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
+
+        App.IO.launch {
+            val releases = releaseService.getReleases(
+                t.id,
+                (mCalendar.timeInMillis / 1000).toInt(),
+                8
+            ) ?: return@launch
+
+            App.ui {
+                mRecyclerViewReleases.releases = releases
+            }
+        }
+
         //mRecyclerViewPrograms.programs = t.programs
 
         t.imageUrl?.let { url ->
@@ -82,7 +99,7 @@ class TVChannelViewHolder(
             val channelView = TVChannelView(
                 context
             )
-            val recyclerView = TVProgramsRecyclerView(
+            val recyclerView = TVShowsRecyclerView(
                 context
             )
 

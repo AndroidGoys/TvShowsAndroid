@@ -1,15 +1,14 @@
 package good.damn.tvlist.adapters.recycler_view
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import good.damn.tvlist.network.api.models.TVProgram
-import good.damn.tvlist.view_holders.TVProgramViewHolder
+import good.damn.tvlist.network.api.models.TVChannelRelease
+import good.damn.tvlist.view_holders.TVChannelReleaseViewHolder
 
-class TVProgramsAdapter
-: RecyclerView.Adapter<TVProgramViewHolder>() {
+class TVChannelReleaseAdapter
+: RecyclerView.Adapter<TVChannelReleaseViewHolder>() {
 
-    var programs: Array<TVProgram>? = null
+    var releases: ArrayList<TVChannelRelease>? = null
 
     var recyclerViewHeight: Int = 0
     var recyclerViewWidth: Int = 0
@@ -17,27 +16,27 @@ class TVProgramsAdapter
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ) = TVProgramViewHolder.create(
+    ) = TVChannelReleaseViewHolder.create(
         parent.context,
         recyclerViewWidth,
         recyclerViewHeight
     )
 
     override fun getItemCount(): Int {
-        return programs?.size ?: 0
+        return releases?.size ?: 0
     }
 
     override fun onBindViewHolder(
-        holder: TVProgramViewHolder,
+        holder: TVChannelReleaseViewHolder,
         position: Int
     ) {
-        if (programs == null) {
+        if (releases == null) {
             return
         }
         holder.onBindViewHolder(
-            programs!![position],
+            releases!![position],
             if (position + 1 >= itemCount)
-                null else programs!![position+1]
+                null else releases!![position+1]
         )
     }
 }

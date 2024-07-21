@@ -10,12 +10,12 @@ import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.network.api.services.TVChannel2Service
-import good.damn.tvlist.network.api.services.lime.TVChannelsService
+import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.views.recycler_views.TVChannelsRecyclerView
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
 import kotlinx.coroutines.launch
 
-class TVProgramFragment
+class TVChannelReleaseFragment
 : StackFragment() {
 
     companion object {
@@ -24,6 +24,8 @@ class TVProgramFragment
     }
 
     private val mChannelService = TVChannel2Service()
+    private val mReleaseService = TVChannelReleasesService()
+
     private var mRecyclerView: TVChannelsRecyclerView? = null
 
     override fun onCreateView(
@@ -110,7 +112,8 @@ class TVProgramFragment
                         mRecyclerView?.adapterChannels = TVChannelAdapter(
                             App.WIDTH,
                             App.HEIGHT,
-                            program
+                            program,
+                            mReleaseService
                         )
                     }
                 }
@@ -126,7 +129,8 @@ class TVProgramFragment
                     mRecyclerView?.adapterChannels = TVChannelAdapter(
                         App.WIDTH,
                         App.HEIGHT,
-                        cachedProgram
+                        cachedProgram,
+                        mReleaseService
                     )
                 }
             }

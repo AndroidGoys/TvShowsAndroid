@@ -5,26 +5,19 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Paint
-import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
-import android.util.Log
-import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.widthParams
-import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.views.RatingCanvas
 import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 import good.damn.tvlist.views.round.RoundView
-import java.util.Calendar
 
-class TVProgramView(
+class TVChannelReleaseView(
     context: Context
 ) : RoundView(
     context
@@ -92,10 +85,10 @@ class TVProgramView(
             mRating.rating = v
         }
 
-    var cacheProgram: TVProgram? = null
+    var cacheRelease: TVChannelRelease? = null
 
-    var onLongClickProgramListener: OnClickProgramListener? = null
-    var onClickProgramListener: OnClickProgramListener? = null
+    var onLongClickProgramListener: OnClickChannelReleaseListener? = null
+    var onClickChannelReleaseListener: OnClickChannelReleaseListener? = null
 
     var sizeTitleFactor: Float = 0.01f
     var sizeAgeFactor: Float = 0.06f
@@ -270,16 +263,16 @@ class TVProgramView(
     }
 
     override fun onLongTap() {
-        onLongClickProgramListener?.onClickProgram(
+        onLongClickProgramListener?.onClickChannelRelease(
             this,
-            cacheProgram
+            cacheRelease
         )
     }
 
     override fun onSingleTap() {
-        onClickProgramListener?.onClickProgram(
+        onClickChannelReleaseListener?.onClickChannelRelease(
             this,
-            cacheProgram
+            cacheRelease
         )
     }
 

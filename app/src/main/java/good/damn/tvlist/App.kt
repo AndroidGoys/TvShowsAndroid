@@ -45,7 +45,6 @@ class App
 
         val FAVOURITE_TV_SHOWS = HashMap<Long, TVProgram>()
         val iconMap = HashMap<String, Bitmap>()
-        val mediumBitmaps = HashMap<String, Bitmap>()
 
         var WIDTH = 1
         var HEIGHT = 1

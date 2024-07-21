@@ -23,7 +23,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
-import good.damn.tvlist.fragments.ui.main.pages.TVProgramFragment
+import good.damn.tvlist.fragments.ui.main.pages.TVChannelReleaseFragment
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.navigation.NavigationView
@@ -49,7 +49,7 @@ OnAuthListener {
     private lateinit var mViewPager: ViewPager2
 
     private val mFragments: Array<StackFragment> = arrayOf(
-        TVProgramFragment(),
+        TVChannelReleaseFragment(),
         MediaListFragment()
     )
 

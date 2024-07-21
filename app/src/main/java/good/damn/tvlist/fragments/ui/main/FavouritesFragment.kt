@@ -2,16 +2,12 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
 import android.util.Log
-import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.adapters.recycler_view.TVProgramsAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
@@ -19,20 +15,15 @@ import good.damn.tvlist.extensions.pause
 import good.damn.tvlist.extensions.resume
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
-import good.damn.tvlist.extensions.setTextColorId
-import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
-import good.damn.tvlist.utils.ViewUtils
-import good.damn.tvlist.views.buttons.ButtonBack
 import good.damn.tvlist.views.decorations.MarginItemDecoration
-import good.damn.tvlist.views.recycler_views.TVProgramsRecyclerView
+import good.damn.tvlist.views.recycler_views.TVShowsRecyclerView
 import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 import kotlinx.coroutines.launch
-import java.io.Closeable
 
 class FavouritesFragment
 : StackFragment() {
@@ -51,7 +42,7 @@ class FavouritesFragment
             context
         )
 
-        val recyclerView = TVProgramsRecyclerView(
+        val recyclerView = TVShowsRecyclerView(
             context
         )
 
@@ -143,13 +134,13 @@ class FavouritesFragment
         }
 
 
-        App.IO.launch {
+        /*App.IO.launch {
             val arr = App.FAVOURITE_TV_SHOWS.values.toTypedArray()
             App.ui {
                 recyclerView.adapter = recyclerView.adapterPrograms
-                recyclerView.programs = arr
+                recyclerView.releases = arr
             }
-        }
+        }*/
 
 
         return layout

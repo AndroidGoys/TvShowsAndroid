@@ -5,7 +5,7 @@ import good.damn.tvlist.network.api.models.enums.CensorAge
 import org.json.JSONObject
 
 data class TVChannelRelease(
-    val showId: Int,
+    val showId: Long,
     val name: String,
     val censorAge: CensorAge,
     val rating: Float,
@@ -43,7 +43,7 @@ data class TVChannelRelease(
 
 
             return TVChannelRelease(
-                showId,
+                showId.toLong(),
                 name,
                 CensorAge.find(censorAge.toByte()),
                 rating,

@@ -6,12 +6,14 @@ import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.view_holders.TVChannelViewHolder
 
 class TVChannelAdapter(
     private val width: Int,
     private val height: Int,
-    private val data: ArrayList<TVChannel2>
+    private val data: ArrayList<TVChannel2>,
+    private val mReleaseService: TVChannelReleasesService
 ): RecyclerView.Adapter<TVChannelViewHolder>() {
 
     companion object {
@@ -33,7 +35,8 @@ class TVChannelAdapter(
         holder: TVChannelViewHolder,
         position: Int
     ) = holder.onBindViewHolder(
-       data[position]
+       data[position],
+        mReleaseService
     )
 
     @WorkerThread
