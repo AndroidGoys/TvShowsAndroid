@@ -10,12 +10,13 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.annotation.ColorInt
+import good.damn.tvlist.network.api.models.TVChannel2
 
 class TVChannelView(
     context: Context
 ): View(
     context
-) {
+), View.OnClickListener {
     var text: String? = null
         set(v) {
             field = v
@@ -24,6 +25,10 @@ class TVChannelView(
     var imagePreview: Bitmap? = null
     var imageIcon: Drawable? = null
     var cornerRadiusPreview = 15f
+
+    var onClickChannel: ((TVChannel2?) -> Unit)? = null
+
+    var channel: TVChannel2? = null
 
     @ColorInt
     var textColor: Int = 0
@@ -51,6 +56,12 @@ class TVChannelView(
     private var mTextY = 0f
 
     private val mRectPreview = RectF()
+
+    init {
+        setOnClickListener(
+            this
+        )
+    }
 
     override fun onLayout(
         changed: Boolean,
@@ -156,6 +167,14 @@ class TVChannelView(
                 topIcon + iconSize
             )
         }
+    }
+
+    override fun onClick(
+        v: View?
+    ) {
+        onClickChannel?.invoke(
+            channel
+        )
     }
 
 }

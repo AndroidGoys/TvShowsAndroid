@@ -7,9 +7,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
+import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.main.tv_details.channel.TVChannelPageFragment
 import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -42,6 +45,8 @@ class TVChannelViewHolder(
         mLayout.animate()
             .alpha(1.0f)
             .start()
+
+        mTvChannelView.channel = t
 
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
@@ -188,6 +193,20 @@ class TVChannelViewHolder(
                     left = channelView.paddingLeft
                 )
             )
+
+            channelView.onClickChannel = {
+                (context as? MainActivity)?.apply {
+                    pushFragment(
+                        TVChannelPageFragment.newInstance(
+                            it
+                        ),
+                        FragmentAnimation {
+                            f, fragment ->
+                            fragment.view?.x = App.WIDTH * (1.0f-f)
+                        }
+                    )
+                }
+            }
 
             return TVChannelViewHolder(
                 channelView,
