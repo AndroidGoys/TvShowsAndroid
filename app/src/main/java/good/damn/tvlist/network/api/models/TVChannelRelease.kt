@@ -53,8 +53,8 @@ data class TVChannelRelease(
                 rating,
                 previewUrl,
                 timeStart,
-                if (name.length >= 20)
-                    name.substring(0,19) + Unicode.DOTS
+                if (name.length >= 17)
+                    name.substring(0,17) + Unicode.DOTS
                 else null,
                 timeStart.toTimeString()
             )

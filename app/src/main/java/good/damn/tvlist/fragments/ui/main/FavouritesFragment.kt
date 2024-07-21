@@ -19,6 +19,7 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVShowsRecyclerView
 import good.damn.tvlist.views.top_bars.TopBarView
@@ -134,13 +135,17 @@ class FavouritesFragment
         }
 
 
-        /*App.IO.launch {
+        App.IO.launch {
             val arr = App.FAVOURITE_TV_SHOWS.values.toTypedArray()
+            val list = ArrayList<TVChannelRelease>(
+                arr.size
+            )
+            list.addAll(arr)
             App.ui {
                 recyclerView.adapter = recyclerView.adapterPrograms
-                recyclerView.releases = arr
+                recyclerView.releases = list
             }
-        }*/
+        }
 
 
         return layout
