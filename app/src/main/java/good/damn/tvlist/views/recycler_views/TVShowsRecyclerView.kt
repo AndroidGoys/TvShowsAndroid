@@ -22,8 +22,43 @@ class TVShowsRecyclerView(
     var releases: ArrayList<TVChannelRelease>? = null
         set(v) {
             field = v
+            val prevSize = adapterPrograms.itemCount
             adapterPrograms.releases = v
-            adapterPrograms.notifyDataSetChanged()
+            if (v == null) {
+                if (prevSize == 0) {
+                    return
+                }
+                adapterPrograms.notifyItemRangeRemoved(
+                    0,
+                    prevSize
+                )
+                return
+            }
+
+            val curSize = v.size
+
+            if (prevSize > curSize) {
+                val delta = prevSize - curSize
+                adapterPrograms.notifyItemRangeRemoved(
+                    curSize,
+                    delta
+                )
+                return
+            }
+
+            adapterPrograms.notifyItemRangeChanged(
+                0,
+                curSize
+            )
+
+            if (curSize > prevSize) {
+                val delta = curSize - prevSize
+                adapterPrograms.notifyItemRangeInserted(
+                    prevSize,
+                    delta
+                )
+            }
+
         }
 
     override fun setLayoutParams(

@@ -42,18 +42,18 @@ class TVChannelAdapter(
     @WorkerThread
     fun updateData(
         from: Int,
-        data: ArrayList<TVChannel?>
+        data: ArrayList<TVChannel2>
     ) {
-        /*for (i in 0..<data.size) {
+        for (i in 0..<data.size) {
             Log.d(TAG, "updateData: $from $i ${data.size} ${this.data.size}")
             this.data[from+i] = data[i]
-        }*/
+        }
     }
 
     @WorkerThread
     fun addChannels(
-        t: ArrayList<TVChannel?>
+        t: ArrayList<TVChannel2>
     ) {
-        //data.addAll(t)
+        data.addAll(t)
     }
 }

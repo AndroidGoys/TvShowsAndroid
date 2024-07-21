@@ -3,6 +3,7 @@ package good.damn.tvlist.views.recycler_views
 import android.content.Context
 import good.damn.tvlist.App
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
+import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.api.services.lime.TVChannelsService
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
 import kotlinx.coroutines.launch
@@ -15,9 +16,7 @@ class TVChannelsRecyclerView(
     streamScrollListener
 ) {
 
-    private val mChannelService = TVChannelsService(
-        context.cacheDir
-    )
+    private val mChannelService = TVChannel2Service()
 
     var adapterChannels: TVChannelAdapter? = null
         set(v) {
@@ -30,8 +29,7 @@ class TVChannelsRecyclerView(
     ) {
         App.IO.launch {
             val currentIndex = currentIndex
-            val adapterFrom = currentIndex / mStreamScrollListener.updateCount
-            val from = adapterFrom + 1
+            val from = currentIndex + 1
             val updateCount = mStreamScrollListener.updateCount
 
             val cachedChannels = mChannelService.getChannels(
