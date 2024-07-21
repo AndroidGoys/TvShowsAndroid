@@ -9,6 +9,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.api.services.lime.TVChannelsService
 import good.damn.tvlist.views.recycler_views.TVChannelsRecyclerView
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
@@ -19,20 +20,16 @@ class TVProgramFragment
 
     companion object {
         private const val TAG = "TVProgramFragment"
-        private const val UPDATE_COUNT = 8
+        private const val UPDATE_COUNT = 5
     }
 
-    private lateinit var mChannelService: TVChannelsService
+    private val mChannelService = TVChannel2Service()
     private var mRecyclerView: TVChannelsRecyclerView? = null
 
     override fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View {
-
-        mChannelService = TVChannelsService(
-            context.cacheDir
-        )
 
         val layoutManager = LinearLayoutManager(
             context,
@@ -92,14 +89,14 @@ class TVProgramFragment
         App.IO.launch {
 
             val cachedProgram = mChannelService.getChannels(
-                from = 1,
+                offset = 0,
                 limit = UPDATE_COUNT,
                 fromCache = true
             )
 
             App.IO.launch {
                 val program = mChannelService.getChannels(
-                    from = 1,
+                    offset = 0,
                     limit = UPDATE_COUNT
                 ) ?: return@launch
 

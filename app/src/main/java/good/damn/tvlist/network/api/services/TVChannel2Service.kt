@@ -47,15 +47,22 @@ class TVChannel2Service
     fun getChannels(
         offset: Int,
         limit: Int,
-        name: String,
+        name: String = "",
         fromCache: Boolean = false
     ): ArrayList<TVChannel2>? {
-        val json = searchRequest(
+
+        val encodedName = URLEncoder.encode(
             name,
-            URL_CHANNELS,
-            offset,
-            limit,
-            fromCache
+            StandardCharsets.UTF_8.name()
+        )
+
+        val url = "$URL_CHANNELS?limit=$limit&offset=$offset&name=$encodedName"
+
+        val json = if (fromCache)
+            getCachedJson(
+                url
+            ) else getNetworkJSON(
+            url
         )
 
         if (json == null || json.length() == 0) {
@@ -87,28 +94,6 @@ class TVChannel2Service
         }
 
         return channels
-    }
-
-    private fun searchRequest(
-        name: String,
-        url: String,
-        offset: Int,
-        limit: Int,
-        fromCache: Boolean
-    ): JSONObject? {
-        val encodedName = URLEncoder.encode(
-            name,
-            StandardCharsets.UTF_8.name()
-        )
-
-        val url = "$url?limit=$limit&offset=$offset&name=$encodedName"
-
-        return if (fromCache)
-            getCachedJson(
-                url
-            ) else getNetworkJSON(
-            url
-        )
     }
 
 }

@@ -11,6 +11,7 @@ import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.network.api.models.TVChannel
+import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
@@ -26,7 +27,7 @@ class TVChannelViewHolder(
 ) {
 
     fun onBindViewHolder(
-        t: TVChannel?
+        t: TVChannel2?
     ) {
         mLayout.alpha = 0f
         if (t == null) {
@@ -40,7 +41,7 @@ class TVChannelViewHolder(
 
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
-        mRecyclerViewPrograms.programs = t.programs
+        //mRecyclerViewPrograms.programs = t.programs
 
         t.imageUrl?.let { url ->
             if (App.iconMap.containsKey(url)) {
