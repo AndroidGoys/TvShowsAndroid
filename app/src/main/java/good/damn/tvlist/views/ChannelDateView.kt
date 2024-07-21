@@ -75,7 +75,7 @@ class ChannelDateView(
 
         dateString?.let {
             mDateX = (width - mPaintDate.measureText(
-                "00.00"
+                "00.00.0000"
             )) * 0.5f
 
             mDateY = mTimeY - mPaintTime.textSize - height * 0.00236f

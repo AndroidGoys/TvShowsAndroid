@@ -5,7 +5,11 @@ import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.Unicode
 import good.damn.tvlist.enums.SearchResultCategory
+import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.extractArray
+import good.damn.tvlist.extensions.extractObject
+import good.damn.tvlist.extensions.toGregorianDateString
+import good.damn.tvlist.extensions.toTimeString
 import good.damn.tvlist.interfaces.Typeable
 import good.damn.tvlist.models.Result
 import good.damn.tvlist.models.TVSearchResultTitle
@@ -176,30 +180,70 @@ class TVShowService(
     }
 
     @WorkerThread
-    fun getChannelPointers(): Array<TVShowChannelDate> {
-        val data = arrayOf(
-            TVShowChannelDate(
-                "13:10",
-                "26.07",
-                imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/126/logo_256_1655445109.png"
-            ),
-            TVShowChannelDate(
-                "18:10",
-                "28.07",
-                imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/67/logo_256_1692687479.png"
-            ),
-            TVShowChannelDate(
-                "22:10",
-                "29.07",
-                imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/109/logo_256_1655448739.png"
-            ),
-            TVShowChannelDate(
-                "23:40",
-                "01.08",
-                imageUrl = "https://assets-iptv2022.cdnvideo.ru/static/channel/105/logo_256_1655386697.png"
-            )
+    fun getChannelPointers(
+        showId: Long,
+        fromCache: Boolean = false
+    ): ArrayList<TVShowChannelDate>? {
+        val url = "$URL_SHOWS/$showId/channels?releases-limit=1"
+
+        val json = if (fromCache)
+            getCachedJson(url)
+        else getNetworkJSON(url)
+
+        Log.d(TAG, "getChannelPointers: $json")
+        
+        if (json == null) {
+            return null
+        }
+
+        val channels = json.extractArray(
+            "channels"
         )
-        return data
+
+        val len = channels?.length() ?: 0
+
+        if (len == 0) {
+            return null
+        }
+
+        val channelDates = ArrayList<TVShowChannelDate>(
+            len
+        )
+
+        for (i in 0..<len) {
+            val channel = channels
+                ?.getJSONObject(i)
+                ?: continue
+
+            val imageUrl = channel.extract(
+                "imageUrl"
+            ) as? String
+
+            val releases = channel.extractObject(
+                "releases"
+            )?.extractArray(
+                "releases"
+            )
+            if ((releases?.length() ?: 0) == 0) {
+                continue
+            }
+
+            val timeStart = releases!!
+                .getJSONObject(0)
+                .extract("timeStart")
+            as? Int ?: continue
+
+            channelDates.add(
+                TVShowChannelDate(
+                    timeStart.toTimeString(),
+                    timeStart.toGregorianDateString(),
+                    imageUrl
+                )
+            )
+
+        }
+
+        return channelDates
     }
 
 

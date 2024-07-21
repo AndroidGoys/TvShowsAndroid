@@ -1,7 +1,6 @@
 package good.damn.tvlist.fragments.ui.main.tv_details
 
 import android.content.Context
-import android.provider.Telephony.Mms.Rate
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
@@ -319,25 +318,48 @@ TextWatcher {
             return
         }
 
+        enableInteraction(
+            false
+        )
+
         val text = mTextFieldComment?.text?.toString() ?: ""
         App.IO.launch {
-            mShowService.postReview(
+            val result = mShowService.postReview(
                 showId,
                 rating,
                 text
             )
+
+            if (result.errorStringId == -1) {
+                App.ui {
+                    toast(
+                        R.string.review_posted
+                    )
+                    exitFragment()
+                }
+                return@launch
+            }
+
+            App.ui {
+                toast(result.errorStringId)
+                enableInteraction(true)
+            }
         }
 
     }
 
 }
 
-private fun TVShowPostReviewFragment.onClickBtnBack(
-    v: View
-) {
+private fun TVShowPostReviewFragment.exitFragment() {
     popFragment(
         FragmentAnimation { f, fragment ->
             fragment.view?.alpha = 1.0f - f
         }
     )
+}
+
+private fun TVShowPostReviewFragment.onClickBtnBack(
+    v: View
+) {
+    exitFragment()
 }

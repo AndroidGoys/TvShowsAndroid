@@ -3,6 +3,17 @@ package good.damn.tvlist.extensions
 import android.util.Log
 import org.json.JSONObject
 
+fun JSONObject.extractObject(
+    key: String
+) = try {
+    getJSONObject(key)
+} catch (e: Exception) {
+    Log.d("JSONObject",
+        "extractObject: ERROR_GET_OBJECT: ${e.message}"
+    )
+    null
+}
+
 fun JSONObject.extractArray(
     key: String
 ) = try {

@@ -517,7 +517,7 @@ class TVShowPageFragment
             )
         )
 
-        RecyclerView(
+        val recyclerViewChannels = RecyclerView(
             context
         ).apply {
 
@@ -553,17 +553,6 @@ class TVShowPageFragment
                     0
                 )
             )
-
-            App.IO.launch {
-                val pointers = showService.getChannelPointers()
-                App.ui {
-                    adapter = TVShowChannelsAdapter(
-                        pointers,
-                        heightParams(),
-                        heightParams()
-                    )
-                }
-            }
 
             contentLayout.addView(
                 this
@@ -747,6 +736,20 @@ class TVShowPageFragment
                             .toInt(),
                         recyclerViewImages.heightParams()
 
+                    )
+                }
+            }
+
+            val pointers = showService.getChannelPointers(
+                id
+            ) ?: return@launch
+
+            App.ui {
+                recyclerViewChannels.apply {
+                    adapter = TVShowChannelsAdapter(
+                        pointers,
+                        heightParams(),
+                        heightParams()
                     )
                 }
             }

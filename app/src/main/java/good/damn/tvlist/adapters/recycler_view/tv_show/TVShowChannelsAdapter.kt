@@ -6,7 +6,7 @@ import good.damn.tvlist.network.api.models.show.TVShowChannelDate
 import good.damn.tvlist.view_holders.tv_show.TVShowChannelsViewHolder
 
 class TVShowChannelsAdapter(
-    private val mData: Array<TVShowChannelDate>,
+    private val mData: ArrayList<TVShowChannelDate>,
     private val mHolderWidth: Int,
     private val mHolderHeight: Int
 ): RecyclerView.Adapter<TVShowChannelsViewHolder>() {
