@@ -10,13 +10,9 @@ import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowChannelsAdapter
-import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowImagesAdapter
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
@@ -33,18 +29,16 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
-import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPostReviewFragment
-import good.damn.tvlist.fragments.ui.main.tv_details.TVShowReviewsFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
-import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVChannel2Service
-import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ShareUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.utils.ViewUtils.Companion.chapterTextView
-import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.rate.OnRateClickListener
 import good.damn.tvlist.views.rate.RateView
 import good.damn.tvlist.views.round.RoundedImageView
@@ -73,6 +67,7 @@ OnRateClickListener {
     var channel: TVChannel2? = null
 
     private var mBlurView: BlurShaderView? = null
+    private var mReviewService: ReviewService? = null
 
     override fun onCreateView(
         context: Context,
@@ -592,6 +587,14 @@ OnRateClickListener {
             addView(topBar)
         }
 
+        val id = channel?.id?.toLong()
+            ?: return layout
+
+        mReviewService = ReviewService(
+            id,
+            "channels"
+        )
+
         return layout
     }
 
@@ -655,23 +658,59 @@ OnRateClickListener {
             grade = rate
         )
     }
-}
 
-private fun TVChannelPageFragment.onClickShowReviews(
-    v: View
-) {
-    val channel = channel ?: return
-    pushFragment(
-        TVShowReviewsFragment.newInstance(
-            TVShowReview(
-                channel.id.toLong(),
-                channel.shortName ?: channel.name
-            )
-        ),
-        FragmentAnimation { f, fragment ->
-            fragment.view?.x = App.WIDTH * (1.0f - f)
-        }
-    )
+    private fun createReview(
+        grade: Byte
+    ) {
+        val channel = channel
+            ?: return
+
+        val reviewService = mReviewService
+            ?: return
+
+        pushFragment(
+            TVPostReviewFragment.newInstance(
+                TVShowReview(
+                    channel.id.toLong(),
+                    channel.shortName ?: channel.name,
+                ),
+                grade,
+                reviewService
+            ),
+            FragmentAnimation {
+                    f, fragment ->
+                fragment.view?.alpha = f
+            }
+        )
+    }
+
+    private fun onClickPostReview(
+        v: View
+    ) {
+        createReview(
+            grade = 0
+        )
+    }
+
+    private fun onClickShowReviews(
+        v: View
+    ) {
+        val channel = channel ?: return
+        val reviewService = mReviewService ?: return
+        pushFragment(
+            TVReviewsFragment.newInstance(
+                TVShowReview(
+                    channel.id.toLong(),
+                    channel.shortName ?: channel.name
+                ),
+                reviewService
+            ),
+            FragmentAnimation { f, fragment ->
+                fragment.view?.x = App.WIDTH * (1.0f - f)
+            }
+        )
+    }
+
 }
 
 private fun TVChannelPageFragment.onClickBtnBack(
@@ -719,35 +758,6 @@ private fun TVChannelPageFragment.onClickShare(
     Log.d(
         "TVShowDetailsFragment",
         "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
-    )
-}
-
-private fun TVChannelPageFragment.createReview(
-    grade: Byte
-) {
-    val channel = channel
-        ?: return
-
-    pushFragment(
-        TVShowPostReviewFragment.newInstance(
-            TVShowReview(
-                channel.id.toLong(),
-                channel.shortName ?: channel.name,
-            ),
-            grade
-        ),
-        FragmentAnimation {
-                f, fragment ->
-            fragment.view?.alpha = f
-        }
-    )
-}
-
-private fun TVChannelPageFragment.onClickPostReview(
-    v: View
-) {
-    createReview(
-        grade = 0
     )
 }
 

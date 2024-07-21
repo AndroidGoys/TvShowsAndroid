@@ -1,6 +1,8 @@
 package good.damn.tvlist.fragments.ui.main
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
@@ -13,6 +15,7 @@ import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.cache.CacheBitmap
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
@@ -28,11 +31,14 @@ import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
+import good.damn.tvlist.utils.BitmapUtils
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.user.UserProfileView
 import good.damn.tvlist.views.buttons.BigButtonView
 import good.damn.tvlist.views.buttons.ButtonBack
 import kotlinx.coroutines.launch
+import okhttp3.Cache
+import java.io.ByteArrayOutputStream
 
 class ProfileFragment
 : StackFragment(),
@@ -40,6 +46,7 @@ OnAuthListener {
 
     companion object {
         private const val TAG = "ProfileFragment"
+        private const val BITMAP_PROFILE = "bitmapProfile"
     }
 
     var onAuthListener: OnAuthListener? = null
@@ -322,7 +329,7 @@ OnAuthListener {
                 NetworkBitmap.loadFromNetwork(
                     profile.avatarUrl,
                     App.CACHE_DIR,
-                    "bitmapProfile",
+                    BITMAP_PROFILE,
                     s,
                     s
                 ) {
@@ -370,6 +377,7 @@ OnAuthListener {
     private fun onClickProfilePickAvatar(
         v: View
     ) {
+        enableInteraction(false)
         requestContentBrowser(
             "image/png"
         )
@@ -379,26 +387,80 @@ OnAuthListener {
         uri: Uri?
     ) {
         if (uri == null) {
+            enableInteraction(true)
             return
         }
 
         try {
-            val bytes  = context?.contentResolver?.openInputStream(
+            val bytes = context?.contentResolver?.openInputStream(
                 uri
             )?.readBytes(4096)
 
             if (bytes == null) {
+                enableInteraction(true)
                 return
             }
 
             App.IO.launch {
-                val response = mUserService.uploadAvatar(
-                    bytes
+                val optimizedBitmap = BitmapUtils.aspectedBitmap(
+                    BitmapFactory.decodeByteArray(
+                        bytes,
+                        0,
+                        bytes.size
+                    ),
+                    512,
+                    512
                 )
+
+                val baos = ByteArrayOutputStream()
+                NetworkBitmap.cacheOriginal(
+                    optimizedBitmap,
+                    UserService.URL_USER_AVATAR,
+                    App.CACHE_DIR
+                )
+
+                optimizedBitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    80,
+                    baos
+                )
+
+                val avatar = baos.toByteArray()
+                baos.close()
+
+                val response = mUserService.uploadAvatar(
+                    avatar
+                )
+
+                App.ui {
+                    enableInteraction(true)
+                    if (response.errorStringId == -1) {
+                        mProfileView?.mImageViewProfile?.apply {
+                            val s = heightParams()
+                            NetworkBitmap.loadFromNetwork(
+                                UserService.URL_USER_AVATAR,
+                                App.CACHE_DIR,
+                                BITMAP_PROFILE,
+                                s,
+                                s
+                            ) {
+                                bitmap = it
+                                invalidate()
+                            }
+                        }
+
+                        toast(R.string.avatar_changed)
+                        return@ui
+                    }
+
+                    toast(response.errorStringId)
+                }
             }
 
         } catch (e: Exception) {
+            enableInteraction(true)
             Log.d(TAG, "onGetContentUri: ERROR: ${e.message}")
+            toast(R.string.some_error_happens)
         }
 
     }

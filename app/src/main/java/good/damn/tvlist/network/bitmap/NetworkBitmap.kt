@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import good.damn.tvlist.App
 import good.damn.tvlist.cache.CacheBitmap
+import good.damn.tvlist.utils.BitmapUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,6 +16,19 @@ class NetworkBitmap {
     companion object {
         private const val TAG = "NetworkBitmap"
         private const val DIR_ORIGINAL = "original/bitmap"
+
+        fun cacheOriginal(
+            bitmap: Bitmap,
+            url: String,
+            cacheDirApp: File
+        ) {
+            CacheBitmap.cache(
+                bitmap,
+                url,
+                DIR_ORIGINAL,
+                cacheDirApp
+            )
+        }
 
         fun loadFromNetwork(
             url: String,
@@ -46,7 +60,7 @@ class NetworkBitmap {
             )
 
             if (cachedOriginalBitmap != null) {
-                val aspectedBitmap = aspectedBitmap(
+                val aspectedBitmap = BitmapUtils.aspectedBitmap(
                     cachedOriginalBitmap,
                     viewWidth,
                     viewHeight
@@ -107,7 +121,7 @@ class NetworkBitmap {
                     cacheDirApp
                 )
 
-                val aspectedBitmap = aspectedBitmap(
+                val aspectedBitmap = BitmapUtils.aspectedBitmap(
                     it,
                     viewWidth,
                     viewHeight
@@ -125,81 +139,6 @@ class NetworkBitmap {
                 }
 
             }
-        }
-
-        private fun aspectedBitmap(
-            originBitmap: Bitmap,
-            viewWidth: Int,
-            viewHeight: Int
-        ): Bitmap {
-            val bitmapWidth = originBitmap.width
-            val bitmapHeight = originBitmap.height
-
-            if (bitmapWidth == bitmapHeight
-                && viewWidth == viewHeight
-            ) {
-                return Bitmap.createScaledBitmap(
-                    originBitmap,
-                    viewWidth,
-                    viewHeight,
-                    false
-                )
-            }
-
-            // !(dh < 0 & dw < 0)
-            val dh = viewHeight - bitmapHeight
-            val dw = viewWidth - bitmapWidth
-
-            val kw = bitmapWidth.toFloat() / bitmapHeight
-            val kh = bitmapHeight.toFloat() / bitmapWidth
-
-            val dstWidth: Int
-            val dstHeight: Int
-
-            if (dh > dw) {
-                dstWidth = (bitmapWidth + dh * kw).toInt()
-                dstHeight = viewHeight
-            } else {
-                dstWidth = viewWidth
-                dstHeight = (bitmapHeight + dw * kh).toInt()
-            }
-
-            val scaledUpBitmap = Bitmap.createScaledBitmap(
-                originBitmap,
-                dstWidth,
-                dstHeight,
-                false
-            )
-
-            var x = (dstWidth - viewWidth) / 2
-            var y = (dstHeight - viewHeight) / 2
-
-            var finalWidth = viewWidth
-            var finalHeight = viewHeight
-
-            if (x < 0) {
-                x = 0
-            }
-
-            if (y < 0) {
-                y = 0
-            }
-
-            if (finalWidth > dstWidth) {
-                finalWidth = dstWidth
-            }
-
-            if (finalHeight > dstHeight) {
-                finalHeight = dstHeight
-            }
-
-            return Bitmap.createBitmap(
-                scaledUpBitmap,
-                x,
-                y,
-                finalWidth,
-                finalHeight
-            )
         }
     }
 }

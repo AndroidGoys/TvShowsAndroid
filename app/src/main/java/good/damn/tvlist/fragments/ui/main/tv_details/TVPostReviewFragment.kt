@@ -20,7 +20,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
-import good.damn.tvlist.network.api.services.TVShowService
+import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.RoundButton
 import good.damn.tvlist.views.rate.RateView
@@ -29,7 +29,7 @@ import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 import kotlinx.coroutines.launch
 
-class TVShowPostReviewFragment
+class TVPostReviewFragment
 : StackFragment(),
 TextWatcher {
 
@@ -38,21 +38,22 @@ TextWatcher {
         private const val MAX_LENGTH_REVIEW = 700
         fun newInstance(
             tvShow: TVShowReview?,
-            grade: Byte
-        ) = TVShowPostReviewFragment().apply {
+            grade: Byte,
+            reviewService: ReviewService
+        ) = TVPostReviewFragment().apply {
             this.review = tvShow
             this.grade = grade
+            this.reviewService = reviewService
         }
     }
 
     var review: TVShowReview? = null
     var grade: Byte = 0
+    var reviewService: ReviewService? = null
 
     private var mTextViewCounter: AppCompatTextView? = null
     private var mTextFieldComment: TextFieldRound? = null
     private var mRateView: RateView? = null
-
-    private val mShowService = TVShowService()
 
     override fun onCreateView(
         context: Context,
@@ -74,7 +75,7 @@ TextWatcher {
             textViewTitle.text = review?.title
 
             btnBack.setOnClickListener(
-                this@TVShowPostReviewFragment::onClickBtnBack
+                this@TVPostReviewFragment::onClickBtnBack
             )
 
             layout.addView(
@@ -181,7 +182,7 @@ TextWatcher {
             }
 
             addTextChangedListener(
-                this@TVShowPostReviewFragment
+                this@TVPostReviewFragment
             )
 
             filters = arrayOf(
@@ -265,7 +266,7 @@ TextWatcher {
             )
 
             setOnClickListener(
-                this@TVShowPostReviewFragment::onClickPostReview
+                this@TVPostReviewFragment::onClickPostReview
             )
 
             layout.addView(
@@ -318,14 +319,16 @@ TextWatcher {
             return
         }
 
+        val reviewService = reviewService
+            ?: return
+
         enableInteraction(
             false
         )
 
         val text = mTextFieldComment?.text?.toString() ?: ""
         App.IO.launch {
-            val result = mShowService.postReview(
-                showId,
+            val result = reviewService.postReview(
                 rating,
                 text
             )
@@ -350,7 +353,7 @@ TextWatcher {
 
 }
 
-private fun TVShowPostReviewFragment.exitFragment() {
+private fun TVPostReviewFragment.exitFragment() {
     popFragment(
         FragmentAnimation { f, fragment ->
             fragment.view?.alpha = 1.0f - f
@@ -358,7 +361,7 @@ private fun TVShowPostReviewFragment.exitFragment() {
     )
 }
 
-private fun TVShowPostReviewFragment.onClickBtnBack(
+private fun TVPostReviewFragment.onClickBtnBack(
     v: View
 ) {
     exitFragment()

@@ -21,7 +21,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
-import good.damn.tvlist.network.api.services.TVShowService
+import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.tab_bars.OnTabClickListener
@@ -31,25 +31,27 @@ import good.damn.tvlist.views.top_bars.TopBarView
 import good.damn.tvlist.views.top_bars.defaultTopBarStyle
 import kotlinx.coroutines.launch
 
-class TVShowReviewsFragment
+class TVReviewsFragment
 : StackFragment(),
 OnTabClickListener {
 
     companion object {
         fun newInstance(
-            review: TVShowReview?
-        ) = TVShowReviewsFragment().apply {
+            review: TVShowReview?,
+            reviewService: ReviewService
+        ) = TVReviewsFragment().apply {
             this.review = review
+            this.reviewService = reviewService
         }
     }
 
     var review: TVShowReview? = null
+    var reviewService: ReviewService? = null
 
     private var mBlurView: BlurShaderView? = null
 
     private var mRecyclerView: RecyclerView? = null
 
-    private val mShowService = TVShowService()
     private val mUserService = UserService()
 
     override fun onCreateView(
@@ -74,7 +76,7 @@ OnTabClickListener {
 
             interval = measureUnit * 14.normalWidth()
 
-            onTabClickListener = this@TVShowReviewsFragment
+            onTabClickListener = this@TVReviewsFragment
 
             setPadding(
                 0,
@@ -109,7 +111,7 @@ OnTabClickListener {
             textViewTitle.text = review?.title
 
             btnBack.setOnClickListener(
-                this@TVShowReviewsFragment::onClickBtnBack
+                this@TVReviewsFragment::onClickBtnBack
             )
 
             addView(tabBarFilter)
@@ -177,9 +179,9 @@ OnTabClickListener {
 
         review?.id?.let { showId ->
             App.IO.launch {
-                val reviews = mShowService.getReviews(
-                    showId
-                ) ?: return@launch
+                val reviews = reviewService
+                    ?.getReviews()
+                    ?: return@launch
 
                 App.ui {
                     mRecyclerView?.adapter = TVShowUserReviewsAdapter(
@@ -233,7 +235,7 @@ OnTabClickListener {
         val recyclerView = mRecyclerView
             ?: return
 
-        App.IO.launch {
+        /*App.IO.launch {
             val reviews = mShowService.getReviews(
                 id
             ) ?: return@launch
@@ -247,13 +249,13 @@ OnTabClickListener {
                     s,reviews.size
                 )
             }
-        }
+        }*/
 
     }
 
 }
 
-private fun TVShowReviewsFragment.onClickBtnBack(
+private fun TVReviewsFragment.onClickBtnBack(
     v: View
 ) {
     popFragment(

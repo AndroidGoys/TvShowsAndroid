@@ -88,6 +88,7 @@ class TVChannelReleaseFragment
         if (mRecyclerView == null) {
             return
         }
+
         App.IO.launch {
 
             val cachedProgram = mChannelService.getChannels(

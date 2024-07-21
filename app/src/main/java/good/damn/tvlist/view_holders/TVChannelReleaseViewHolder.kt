@@ -73,81 +73,78 @@ class TVChannelReleaseViewHolder(
         ): TVChannelReleaseViewHolder {
             val releaseView = TVChannelReleaseView(
                 context
-            )
+            ).apply {
+                textTintColor = 0xffffffff.toInt()
+                sizeAgeFactor = 0.05365f
+                sizeTimeFactor = 0.05365f
+                sizeTitleFactor = 0.07317f
+                progressColor = App.color(
+                    R.color.lime
+                )
 
-            releaseView.textTintColor = 0xffffffff.toInt()
+                size(
+                    (widthRecyclerView * 0.384057f).toInt(),
+                    heightRecyclerView
+                )
 
-            releaseView.sizeAgeFactor = 0.05365f
-            releaseView.sizeTimeFactor = 0.05365f
-            releaseView.sizeTitleFactor = 0.07317f
+                progressWidth = (
+                    heightRecyclerView * 0.02951f
+                    ).toInt()
 
-            releaseView.progressColor = App.color(
-                R.color.lime
-            )
+                setBackgroundColor(
+                    0xffaaaaaa.toInt()
+                )
 
-            releaseView.typeface = App.font(
-                R.font.open_sans_semi_bold,
-                context
-            )
-
-            releaseView.onLongClickProgramListener = object : OnClickChannelReleaseListener {
-                override fun onClickChannelRelease(
-                    view: View,
-                    release: TVChannelRelease?
-                ) {
-                    if (release == null) {
-                        return
-                    }
-
-                    val v = view as? TVChannelReleaseView
-                        ?: return
-
-                    App.FAVOURITE_TV_SHOWS.apply {
-                        if (v.isFavourite) {
-                            remove(release.showId)
-                            v.isFavourite = false
-                        } else {
-                            put(release.showId, release)
-                            v.isFavourite = true
+                typeface = App.font(
+                    R.font.open_sans_semi_bold,
+                    context
+                )
+                onLongClickProgramListener = object : OnClickChannelReleaseListener {
+                    override fun onClickChannelRelease(
+                        view: View,
+                        release: TVChannelRelease?
+                    ) {
+                        if (release == null) {
+                            return
                         }
 
-                        v.invalidate()
+                        val v = view as? TVChannelReleaseView
+                            ?: return
+
+                        App.FAVOURITE_TV_SHOWS.apply {
+                            if (v.isFavourite) {
+                                remove(release.showId)
+                                v.isFavourite = false
+                            } else {
+                                put(release.showId, release)
+                                v.isFavourite = true
+                            }
+
+                            v.invalidate()
+                        }
+                    }
+                }
+
+                onClickChannelReleaseListener = object : OnClickChannelReleaseListener {
+                    override fun onClickChannelRelease(
+                        view: View,
+                        release: TVChannelRelease?
+                    ) {
+                        if (release == null) {
+                            return
+                        }
+
+                        (view.context as? MainActivity)?.pushFragment(
+                            TVShowPageFragment.newInstance(
+                                release
+                            ), FragmentAnimation { f, fragment ->
+                                fragment.view?.scaleX = f
+                            }
+                        )
+
                     }
                 }
             }
-
-            releaseView.onClickChannelReleaseListener = object : OnClickChannelReleaseListener {
-                override fun onClickChannelRelease(
-                    view: View,
-                    release: TVChannelRelease?
-                ) {
-                    if (release == null) {
-                        return
-                    }
-
-                    (view.context as? MainActivity)?.pushFragment(
-                        TVShowPageFragment.newInstance(
-                            release
-                        ), FragmentAnimation { f, fragment ->
-                            fragment.view?.scaleX = f
-                        }
-                    )
-
-                }
-            }
-
-            releaseView.setBackgroundColor(
-                0xffaaaaaa.toInt()
-            )
-
-            releaseView.size(
-                (widthRecyclerView * 0.384057f).toInt(),
-                heightRecyclerView
-            )
-
-            releaseView.progressWidth = (
-                heightRecyclerView * 0.02951f
-            ).toInt()
 
             (releaseView.widthParams() * 0.05031f)
             .toInt().let { leftPadding ->

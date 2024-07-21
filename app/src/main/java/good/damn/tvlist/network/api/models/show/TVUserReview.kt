@@ -4,7 +4,7 @@ import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.toGregorianDateString
 import org.json.JSONObject
 
-data class TVShowUserReview(
+data class TVUserReview(
     val userId: Long,
     val rating: Byte,
     val dateString: String,
@@ -14,7 +14,7 @@ data class TVShowUserReview(
     companion object {
         fun createFromJSON(
             json: JSONObject
-        ): TVShowUserReview? {
+        ): TVUserReview? {
 
             val userId = json.extract(
                 "userId"
@@ -32,7 +32,7 @@ data class TVShowUserReview(
                 "text"
             ) as? String
 
-            return TVShowUserReview(
+            return TVUserReview(
                 userId.toLong(),
                 rating,
                 date.toGregorianDateString(),

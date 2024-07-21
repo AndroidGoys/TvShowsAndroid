@@ -43,7 +43,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannelRelease
-import good.damn.tvlist.network.api.models.TVProgram
+import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.BuildUtils
@@ -80,6 +80,8 @@ class TVShowPageFragment
     var data: TVChannelRelease? = null
 
     private var mBlurView: BlurShaderView? = null
+
+    private var mReviewService: ReviewService? = null
 
     override fun onCreateView(
         context: Context,
@@ -717,6 +719,11 @@ class TVShowPageFragment
         val id = data?.showId
             ?: return layout
 
+        mReviewService = ReviewService(
+            id,
+            "shows"
+        )
+
         App.IO.launch {
             val details = showService.getShowDetails(
                 id.toInt(),
@@ -806,14 +813,59 @@ class TVShowPageFragment
             grade = rate
         )
     }
-}
 
-private fun TVShowPageFragment.onClickPostReview(
-    v: View
-) {
-    createReview(
-        grade = 0
-    )
+    private fun onClickPostReview(
+        v: View
+    ) {
+        createReview(
+            grade = 0
+        )
+    }
+
+    private fun createReview(
+        grade: Byte
+    ) {
+        val program = data
+            ?: return
+
+        val reviewService = mReviewService
+            ?: return
+
+        pushFragment(
+            TVPostReviewFragment.newInstance(
+                TVShowReview(
+                    program.showId,
+                    program.shortName ?: program.name,
+                ),
+                grade,
+                reviewService
+            ),
+            FragmentAnimation {
+                    f, fragment ->
+                fragment.view?.alpha = f
+            }
+        )
+    }
+
+    private fun onClickShowReviews(
+        v: View
+    ) {
+        val program = data ?: return
+        val reviewService = mReviewService ?: return
+            pushFragment(
+                TVReviewsFragment.newInstance(
+                    TVShowReview(
+                        program.showId,
+                        program.shortName ?: program.name
+                    ),
+                    reviewService
+                ),
+                FragmentAnimation { f, fragment ->
+                    fragment.view?.x = App.WIDTH * (1.0f - f)
+                }
+            )
+    }
+
 }
 
 // Manifest.permission.POST_NOTIFICATIONS 33
@@ -821,7 +873,6 @@ private fun TVShowPageFragment.onClickPostReview(
 private fun TVShowPageFragment.onClickScheduleAlarm(
     v: View
 ) {
-
     val release = data
         ?: return
 
@@ -869,23 +920,6 @@ private fun TVShowPageFragment.onClickScheduleAlarm(
     )
 }
 
-private fun TVShowPageFragment.onClickShowReviews(
-    v: View
-) {
-    val program = data ?: return
-    pushFragment(
-        TVShowReviewsFragment.newInstance(
-            TVShowReview(
-                program.showId,
-                program.shortName ?: program.name
-            )
-        ),
-        FragmentAnimation { f, fragment ->
-            fragment.view?.x = App.WIDTH * (1.0f - f)
-        }
-    )
-}
-
 private fun TVShowPageFragment.onClickBtnBack(
     v: View
 ) {
@@ -929,27 +963,6 @@ private fun TVShowPageFragment.onClickShare(
     Log.d(
         "TVShowDetailsFragment",
         "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
-    )
-}
-
-private fun TVShowPageFragment.createReview(
-    grade: Byte
-) {
-    val program = data
-        ?: return
-
-    pushFragment(
-        TVShowPostReviewFragment.newInstance(
-            TVShowReview(
-                program.showId,
-                program.shortName ?: program.name,
-            ),
-            grade
-        ),
-        FragmentAnimation {
-                f, fragment ->
-            fragment.view?.alpha = f
-        }
     )
 }
 

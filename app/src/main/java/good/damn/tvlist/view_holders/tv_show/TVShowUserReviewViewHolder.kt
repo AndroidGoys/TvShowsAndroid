@@ -12,7 +12,7 @@ import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.extensions.withAlpha
-import good.damn.tvlist.network.api.models.show.TVShowUserReview
+import good.damn.tvlist.network.api.models.show.TVUserReview
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
@@ -28,7 +28,7 @@ class TVShowUserReviewViewHolder(
 ) {
 
     fun onBindViewHolder(
-        userReview: TVShowUserReview,
+        userReview: TVUserReview,
         userService: UserService
     ) {
         mUserHeader.textDate = userReview.dateString

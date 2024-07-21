@@ -3,27 +3,17 @@ package good.damn.tvlist.network.api.services
 import android.util.Log
 import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
-import good.damn.tvlist.Unicode
-import good.damn.tvlist.enums.SearchResultCategory
 import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.extractArray
 import good.damn.tvlist.extensions.extractObject
 import good.damn.tvlist.extensions.toGregorianDateString
 import good.damn.tvlist.extensions.toTimeString
-import good.damn.tvlist.interfaces.Typeable
-import good.damn.tvlist.models.Result
-import good.damn.tvlist.models.TVSearchResultTitle
 import good.damn.tvlist.network.NetworkJSONService
-import good.damn.tvlist.network.api.models.TVSearchResult
 import good.damn.tvlist.network.api.models.TVSearchResultShows
 import good.damn.tvlist.network.api.models.TVShow
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
 import good.damn.tvlist.network.api.models.show.TVShowDetails
-import good.damn.tvlist.network.api.models.show.TVShowImage
-import good.damn.tvlist.network.api.models.show.TVShowUserReview
-import kotlinx.coroutines.launch
-import org.json.JSONObject
-import java.io.File
+import good.damn.tvlist.network.api.models.show.TVUserReview
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -113,73 +103,6 @@ class TVShowService(
 
 
     @WorkerThread
-    fun postReview(
-        showId: Long,
-        grade: Byte,
-        comment: String = ""
-    ): Result<TVShowUserReview> {
-        val url = "$URL_SHOWS/$showId/reviews"
-
-        val response = requestPostJSON(
-            url,
-            JSONObject().apply {
-                put("assessment", grade.toInt())
-                put("text", comment)
-            }
-        )
-
-        Log.d(TAG, "postReview: ${response.result}")
-
-        if (response.errorStringId != -1) {
-            return Result(
-                errorStringId = response.errorStringId
-            )
-        }
-
-        return Result()
-    }
-
-
-    @WorkerThread
-    fun getReviews(
-        showId: Long,
-        fromCache: Boolean = false
-    ): ArrayList<TVShowUserReview>? {
-
-        val url = "$URL_SHOWS/$showId/reviews"
-
-        val response = if (fromCache)
-            getCachedJson(url)
-        else getNetworkJSON(url)
-
-        Log.d(TAG, "getReviews: RESPONSE: $response")
-
-        if (response == null) {
-            return null
-        }
-
-        val comments = response.extractArray(
-            "comments"
-        ) ?: return null
-
-        val reviews = ArrayList<TVShowUserReview>(
-            comments.length()
-        )
-
-        for (i in 0..<comments.length()) {
-            val comment = TVShowUserReview.createFromJSON(
-                comments.getJSONObject(i)
-            ) ?: return null
-
-            reviews.add(
-                comment
-            )
-        }
-
-        return reviews
-    }
-
-    @WorkerThread
     fun getChannelPointers(
         showId: Long,
         fromCache: Boolean = false
@@ -224,12 +147,15 @@ class TVShowService(
             )?.extractArray(
                 "releases"
             )
-            if ((releases?.length() ?: 0) == 0) {
+
+            val len = releases?.length() ?: 0
+
+            if (len == 0) {
                 continue
             }
 
             val timeStart = releases!!
-                .getJSONObject(0)
+                .getJSONObject(len-1)
                 .extract("timeStart")
             as? Int ?: continue
 

@@ -59,4 +59,5 @@
     <string name="notification_set">Уведомление установлено</string>
     <string name="please_rate_show">Нужна оценка</string>
     <string name="review_posted">Опубликовано</string>
+    <string name="avatar_changed">Фото профиля изменено</string>
 </resources>
