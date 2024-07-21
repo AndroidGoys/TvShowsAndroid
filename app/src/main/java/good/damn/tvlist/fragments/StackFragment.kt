@@ -58,7 +58,11 @@ abstract class StackFragment
 
     open fun onFocusChanged(
         isFragmentFocused: Boolean
-    ) {}
+    ) {
+        enableInteraction(
+            isFragmentFocused
+        )
+    }
 
     open fun onGrantPermission(
         isGranted: Boolean

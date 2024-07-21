@@ -24,6 +24,7 @@ import good.damn.tvlist.adapters.recycler_view.tv_show.TVShowImagesAdapter
 import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
+import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.getDayString
 import good.damn.tvlist.extensions.getMonthString
 import good.damn.tvlist.extensions.heightParams
@@ -43,6 +44,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannelRelease
+import good.damn.tvlist.network.api.models.show.TVShowChannelDate
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -82,6 +84,8 @@ class TVShowPageFragment
     private var mBlurView: BlurShaderView? = null
 
     private var mReviewService: ReviewService? = null
+
+    private var mChannelPointers: ArrayList<TVShowChannelDate>? = null
 
     override fun onCreateView(
         context: Context,
@@ -747,9 +751,12 @@ class TVShowPageFragment
                 }
             }
 
-            val pointers = showService.getChannelPointers(
+            mChannelPointers = showService.getChannelPointers(
                 id
             ) ?: return@launch
+
+            val pointers = mChannelPointers
+                ?: return@launch
 
             App.ui {
                 recyclerViewChannels.apply {
@@ -866,128 +873,143 @@ class TVShowPageFragment
             )
     }
 
-}
-
-// Manifest.permission.POST_NOTIFICATIONS 33
-@SuppressLint("InlinedApi")
-private fun TVShowPageFragment.onClickScheduleAlarm(
-    v: View
-) {
-    val release = data
-        ?: return
-
-    val context = v.context
-        ?: return
-
-    if (BuildUtils.isTiramisu33() and (
-            !PermissionUtils.checkNotifications(context)
-            )
+    // Manifest.permission.POST_NOTIFICATIONS 33
+    @SuppressLint("InlinedApi")
+    private fun onClickScheduleAlarm(
+        v: View
     ) {
-        requestPermission(
-            Manifest.permission.POST_NOTIFICATIONS
+        val release = data
+            ?: return
+
+        val context = v.context
+            ?: return
+
+        enableInteraction(false)
+
+        if (BuildUtils.isTiramisu33() and (
+                !PermissionUtils.checkNotifications(context)
+                )
+        ) {
+            requestPermission(
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+            enableInteraction(true)
+            return
+        }
+
+        val startTime = release.startTimeString
+        val channelName = mChannelPointers?.run {
+            extract(size-1)?.name
+        } ?: ""
+
+        NotificationUtils.scheduleNotification(
+            context,
+            "${release.name}${release.timeStart}${channelName}".hashCode(),
+            getString(R.string.time_for_watch),
+            release.name +
+                " - " +
+                "$startTime " +
+                "${getString(R.string.on_channel)} " +
+                "\"$channelName\"",
+            (release.timeStart - 900) * 1000L, // 900 - 15 minutes
+            dirName = DIR_PREVIEW,
+            imageUrl = release.previewUrl
         )
-        return
+
+        toast(
+            durationShow = 3500,
+            textSizeFactor = 0.26f,
+            "${getString(R.string.notification_set)} $startTime $channelName",
+            App.drawable(
+                R.drawable.ic_alarm_white
+            ),
+            AnimationConfig(
+                300,
+                AccelerateDecelerateInterpolator()
+            )
+        )
+        enableInteraction(true)
     }
 
-    val startTime = release.startTimeString
-    val channelName = ""
+    private fun onClickShare(
+        v: View
+    ) {
+        val release = data
+            ?: return
 
-    NotificationUtils.scheduleNotification(
-        context,
-        "${release.name}${release.timeStart}${channelName}".hashCode(),
-        getString(R.string.time_for_watch),
-        release.name +
-            " - " +
-            "$startTime " +
-            "${getString(R.string.on_channel)} " +
-            "\"$channelName\"",
-        (release.timeStart - 900) * 1000L, // 900 - 15 minutes
-        dirName = TVShowPageFragment.DIR_PREVIEW,
-        imageUrl = release.previewUrl
-    )
+        enableInteraction(false)
 
-    toast(
-        durationShow = 3500,
-        textSizeFactor = 0.26f,
-        "${getString(R.string.notification_set)} $startTime $channelName",
-        App.drawable(
-            R.drawable.ic_alarm_white
-        ),
-        AnimationConfig(
-            300,
-            AccelerateDecelerateInterpolator()
+        if (release.previewUrl == null) {
+            shareTVShow(release)
+            enableInteraction(true)
+            return
+        }
+
+        val file = CacheFile.cacheFile(
+            App.CACHE_DIR,
+            DIR_PREVIEW,
+            release.previewUrl.hashCode().toString()
         )
-    )
+
+        val context = v.context
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            context.packageName + ".provider",
+            file
+        )
+        shareTVShow(
+            release,
+            uri
+        )
+
+        enableInteraction(true)
+        Log.d(
+            "TVShowDetailsFragment",
+            "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
+        )
+    }
+
+    private fun shareTVShow(
+        release: TVChannelRelease,
+        data: Uri? = null
+    ) {
+        val context = context ?: return
+
+        enableInteraction(false)
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = release.timeStart * 1000L
+
+        val channel = mChannelPointers?.run {
+            extract(size-1)?.name
+        } ?: ""
+
+        val text = "${getString(R.string.lets_see)}:\n\n" +
+            "\"${release.name}\" " +
+            "${calendar.getDayString()}.${calendar.getMonthString()} " +
+            "${getString(R.string.at_time)} " +
+            "${release.startTimeString} " +
+            "${getString(R.string.on_channel)} \"$channel\" " +
+            "${getString(R.string.in_app)} ${getString(R.string.app_name)}?"
+
+        ShareUtils.shareWithImage(
+            context,
+            text,
+            data
+        )
+
+        enableInteraction(true)
+    }
+
 }
 
 private fun TVShowPageFragment.onClickBtnBack(
     v: View
 ) {
+    enableInteraction(false)
     popFragment(
         FragmentAnimation { f, fragment ->
             fragment.view?.alpha = 1.0f - f
         }
-    )
-}
-
-private fun TVShowPageFragment.onClickShare(
-    v: View
-) {
-
-    val release = data
-        ?: return
-
-    if (release.previewUrl == null) {
-        shareTVShow(release)
-        return
-    }
-
-    val file = CacheFile.cacheFile(
-        App.CACHE_DIR,
-        TVShowPageFragment.DIR_PREVIEW,
-        release.previewUrl.hashCode().toString()
-    )
-
-    val context = v.context
-
-    val uri = FileProvider.getUriForFile(
-        context,
-        context.packageName + ".provider",
-        file
-    )
-    shareTVShow(
-        release,
-        uri
-    )
-
-    Log.d(
-        "TVShowDetailsFragment",
-        "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
-    )
-}
-
-private fun TVShowPageFragment.shareTVShow(
-    program: TVChannelRelease,
-    data: Uri? = null
-) {
-    val context = context ?: return
-
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = program.timeStart * 1000L
-
-    val channel = ""
-
-    val text = "${getString(R.string.lets_see)} " +
-        "\"${program.name}\" " +
-        "${calendar.getDayString()}.${calendar.getMonthString()} " +
-        "${getString(R.string.at_time)} " +
-        "${program.startTimeString} " +
-        "${getString(R.string.on_channel)} $channel " +
-        "${getString(R.string.in_app)} ${getString(R.string.app_name)}?"
-
-    ShareUtils.shareWithImage(
-        context,
-        text,
-        data
     )
 }

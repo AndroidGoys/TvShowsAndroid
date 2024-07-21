@@ -22,9 +22,7 @@ class TVChannelReleaseAdapter
         recyclerViewHeight
     )
 
-    override fun getItemCount(): Int {
-        return releases?.size ?: 0
-    }
+    override fun getItemCount() = releases?.size ?: 0
 
     override fun onBindViewHolder(
         holder: TVChannelReleaseViewHolder,

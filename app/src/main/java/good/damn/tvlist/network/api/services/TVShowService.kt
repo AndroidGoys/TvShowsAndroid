@@ -142,6 +142,10 @@ class TVShowService(
                 "imageUrl"
             ) as? String
 
+            val name = channel.extract(
+                "name"
+            ) as? String
+
             val releases = channel.extractObject(
                 "releases"
             )?.extractArray(
@@ -163,7 +167,8 @@ class TVShowService(
                 TVShowChannelDate(
                     timeStart.toTimeString(),
                     timeStart.toGregorianDateString(),
-                    imageUrl
+                    imageUrl,
+                    name
                 )
             )
 

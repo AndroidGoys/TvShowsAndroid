@@ -42,26 +42,55 @@ class TVChannelViewHolder(
         }
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
 
-        mLayout.animate()
-            .alpha(1.0f)
-            .start()
-
         mTvChannelView.channel = t
 
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
 
         App.IO.launch {
+
+            val hashedReleases = App.RELEASES[t.id]
+
+            if (hashedReleases != null) {
+                App.ui {
+                    mRecyclerViewReleases.releases = hashedReleases
+                }
+                return@launch
+            }
+
+            val timeSec = (mCalendar.timeInMillis / 1000).toInt()
+            val cachedReleases = releaseService.getReleases(
+                t.id,
+                timeSec,
+                8,
+                fromCache = true
+            )
+
+            if (cachedReleases != null) {
+                App.ui {
+                    mRecyclerViewReleases.releases = cachedReleases
+                }
+            }
+
             val releases = releaseService.getReleases(
                 t.id,
-                (mCalendar.timeInMillis / 1000).toInt(),
-                8
+                timeSec,
+                8,
+                fromCache = false
             ) ?: return@launch
 
-            App.ui {
-                mRecyclerViewReleases.releases = releases
+            if (cachedReleases == null) {
+                App.RELEASES[t.id] = releases
+                App.ui {
+                    mRecyclerViewReleases.releases = releases
+                }
             }
+
         }
+
+        mLayout.animate()
+            .alpha(1.0f)
+            .start()
 
         t.imageUrl?.let { url ->
             if (App.iconMap.containsKey(url)) {
