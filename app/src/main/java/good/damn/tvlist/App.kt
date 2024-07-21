@@ -14,6 +14,7 @@ import android.util.Log
 import android.webkit.WebView
 import androidx.annotation.DrawableRes
 import good.damn.tvlist.extensions.getNotificationManager
+import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.models.auth.TokenAuth
 import good.damn.tvlist.utils.BuildUtils
@@ -43,7 +44,7 @@ class App
             Dispatchers.IO
         )
 
-        val FAVOURITE_TV_SHOWS = HashMap<Long, TVProgram>()
+        val FAVOURITE_TV_SHOWS = HashMap<Long, TVChannelRelease>()
         val iconMap = HashMap<String, Bitmap>()
 
         var WIDTH = 1

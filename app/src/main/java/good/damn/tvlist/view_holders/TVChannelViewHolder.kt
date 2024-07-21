@@ -58,8 +58,6 @@ class TVChannelViewHolder(
             }
         }
 
-        //mRecyclerViewPrograms.programs = t.programs
-
         t.imageUrl?.let { url ->
             if (App.iconMap.containsKey(url)) {
                 Log.d(TAG, "setChannel: CONTAINS IN MAP $url")

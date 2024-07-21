@@ -13,9 +13,11 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.channel.TVChannelPageFragment
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.models.TVSearchResult
 import good.damn.tvlist.network.api.models.TVShow
+import good.damn.tvlist.network.api.models.enums.CensorAge
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.TVIconNameView
 
@@ -76,12 +78,15 @@ class TVSearchResultViewHolder(
                     (result.model as? TVShow)?.let {
                         (context as? MainActivity)?.pushFragment(
                             TVShowPageFragment.newInstance(
-                                TVProgram(
+                                TVChannelRelease(
                                     it.id.toLong(),
                                     it.name,
                                     rating = it.rating,
                                     shortName = it.shortName,
-                                    imageUrl = it.previewUrl
+                                    previewUrl = it.previewUrl,
+                                    startTimeString = "00:00",
+                                    timeStart = 0,
+                                    censorAge = CensorAge.ADULT
                                 )
                             ),
                             FragmentAnimation {

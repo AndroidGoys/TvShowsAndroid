@@ -107,7 +107,7 @@ class TVChannelReleaseViewHolder(
                             remove(release.showId)
                             v.isFavourite = false
                         } else {
-                            //put(release.showId, release)
+                            put(release.showId, release)
                             v.isFavourite = true
                         }
 
@@ -125,13 +125,13 @@ class TVChannelReleaseViewHolder(
                         return
                     }
 
-                    /*(view.context as? MainActivity)?.pushFragment(
+                    (view.context as? MainActivity)?.pushFragment(
                         TVShowPageFragment.newInstance(
                             release
                         ), FragmentAnimation { f, fragment ->
                             fragment.view?.scaleX = f
                         }
-                    )*/
+                    )
 
                 }
             }

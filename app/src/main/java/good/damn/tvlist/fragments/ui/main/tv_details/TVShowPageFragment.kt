@@ -3,7 +3,6 @@ package good.damn.tvlist.fragments.ui.main.tv_details
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Intent
 import java.util.Calendar
 import android.net.Uri
 import android.util.Log
@@ -13,8 +12,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -45,6 +42,7 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
+import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -72,14 +70,14 @@ class TVShowPageFragment
         const val DIR_PREVIEW = "bitmapProgramPreview"
 
         fun newInstance(
-            program: TVProgram?
+            release: TVChannelRelease?
         ) = TVShowPageFragment().apply {
-            this.data = program
+            this.data = release
         }
 
     }
 
-    var data: TVProgram? = null
+    var data: TVChannelRelease? = null
 
     private var mBlurView: BlurShaderView? = null
 
@@ -373,8 +371,6 @@ class TVShowPageFragment
                 measureUnit * 0.036231f
             )
 
-            text = data?.description
-
             boundsLinear(
                 gravity = Gravity.START or Gravity.TOP,
                 top = measureUnit * 0.043478f,
@@ -597,7 +593,7 @@ class TVShowPageFragment
                 0xffc4c4c4.toInt()
             )
 
-            data?.imageUrl?.let { url ->
+            data?.previewUrl?.let { url ->
                 NetworkBitmap.loadFromNetwork(
                     url,
                     App.CACHE_DIR,
@@ -729,7 +725,7 @@ class TVShowPageFragment
             addView(topBar)
         }
 
-        val id = data?.id
+        val id = data?.showId
             ?: return layout
 
         App.IO.launch {
@@ -823,7 +819,7 @@ private fun TVShowPageFragment.onClickScheduleAlarm(
     v: View
 ) {
 
-    val program = data
+    val release = data
         ?: return
 
     val context = v.context
@@ -839,21 +835,21 @@ private fun TVShowPageFragment.onClickScheduleAlarm(
         return
     }
 
-    val startTime = program.startTimeString
-    val channelName = program.channelName
+    val startTime = release.startTimeString
+    val channelName = ""
 
     NotificationUtils.scheduleNotification(
         context,
-        "${program.name}${program.startTime}${program.channelName}".hashCode(),
+        "${release.name}${release.timeStart}${channelName}".hashCode(),
         getString(R.string.time_for_watch),
-        program.name +
+        release.name +
             " - " +
             "$startTime " +
             "${getString(R.string.on_channel)} " +
             "\"$channelName\"",
-        (program.startTime - 900) * 1000L, // 900 - 15 minutes
+        (release.timeStart - 900) * 1000L, // 900 - 15 minutes
         dirName = TVShowPageFragment.DIR_PREVIEW,
-        imageUrl = program.imageUrl
+        imageUrl = release.previewUrl
     )
 
     toast(
@@ -877,7 +873,7 @@ private fun TVShowPageFragment.onClickShowReviews(
     pushFragment(
         TVShowReviewsFragment.newInstance(
             TVShowReview(
-                program.id,
+                program.showId,
                 program.shortName ?: program.name
             )
         ),
@@ -901,18 +897,18 @@ private fun TVShowPageFragment.onClickShare(
     v: View
 ) {
 
-    val program = data
+    val release = data
         ?: return
 
-    if (program.imageUrl == null) {
-        shareTVShow(program)
+    if (release.previewUrl == null) {
+        shareTVShow(release)
         return
     }
 
     val file = CacheFile.cacheFile(
         App.CACHE_DIR,
         TVShowPageFragment.DIR_PREVIEW,
-        program.imageUrl.hashCode().toString()
+        release.previewUrl.hashCode().toString()
     )
 
     val context = v.context
@@ -923,7 +919,7 @@ private fun TVShowPageFragment.onClickShare(
         file
     )
     shareTVShow(
-        program,
+        release,
         uri
     )
 
@@ -942,7 +938,7 @@ private fun TVShowPageFragment.createReview(
     pushFragment(
         TVShowPostReviewFragment.newInstance(
             TVShowReview(
-                program.id,
+                program.showId,
                 program.shortName ?: program.name,
             ),
             grade
@@ -955,15 +951,15 @@ private fun TVShowPageFragment.createReview(
 }
 
 private fun TVShowPageFragment.shareTVShow(
-    program: TVProgram,
+    program: TVChannelRelease,
     data: Uri? = null
 ) {
     val context = context ?: return
 
     val calendar = Calendar.getInstance()
-    calendar.timeInMillis = program.startTime * 1000L
+    calendar.timeInMillis = program.timeStart * 1000L
 
-    val channel = program.channelName ?: ""
+    val channel = ""
 
     val text = "${getString(R.string.lets_see)} " +
         "\"${program.name}\" " +
