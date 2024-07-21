@@ -26,7 +26,7 @@ class TVSearchTitleViewHolder(
             context: Context,
             holderWidth: Int,
             holderHeight: Int
-        ) : TVSearchTitleViewHolder {
+        ): TVSearchTitleViewHolder {
             val textView = AppCompatTextView(
                 context
             ).apply {

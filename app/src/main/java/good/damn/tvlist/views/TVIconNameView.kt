@@ -96,6 +96,12 @@ class TVIconNameView(
         }
 
         if (bitmap == null) {
+            canvas.drawRoundRect(
+                mRectBitmap,
+                cornerRadius,
+                cornerRadius,
+                mPaintText
+            )
             return
         }
 
