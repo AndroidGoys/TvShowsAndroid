@@ -1,6 +1,8 @@
 package good.damn.tvlist.network.api.models
 
+import good.damn.tvlist.Unicode
 import good.damn.tvlist.extensions.extract
+import good.damn.tvlist.extensions.toTimeString
 import good.damn.tvlist.network.api.models.enums.CensorAge
 import org.json.JSONObject
 
@@ -10,7 +12,9 @@ data class TVChannelRelease(
     val censorAge: CensorAge,
     val rating: Float,
     val previewUrl: String?,
-    val timeStart: Int
+    val timeStart: Int,
+    val shortName: String?,
+    val startTimeString: String
 ) {
 
     companion object {
@@ -48,7 +52,11 @@ data class TVChannelRelease(
                 CensorAge.find(censorAge.toByte()),
                 rating,
                 previewUrl,
-                timeStart
+                timeStart,
+                if (name.length >= 20)
+                    name.substring(0,19) + Unicode.DOTS
+                else null,
+                timeStart.toTimeString()
             )
         }
     }

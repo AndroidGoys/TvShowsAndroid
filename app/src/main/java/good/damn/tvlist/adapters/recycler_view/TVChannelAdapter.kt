@@ -35,7 +35,7 @@ class TVChannelAdapter(
         holder: TVChannelViewHolder,
         position: Int
     ) = holder.onBindViewHolder(
-       data[position],
+        data[position],
         mReleaseService
     )
 

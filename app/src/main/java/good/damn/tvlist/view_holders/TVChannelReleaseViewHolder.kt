@@ -30,17 +30,20 @@ class TVChannelReleaseViewHolder(
         next: TVChannelRelease?
     ) {
         mReleaseView.cacheRelease = p
-        mReleaseView.title = p.name //p.shortName ?: p.name
-        //mProgramView.timeString = p.startTimeString
+        mReleaseView.title = p.shortName ?: p.name
+        mReleaseView.timeString = p.startTimeString
         mReleaseView.rating = p.rating
         mReleaseView.isFavourite = App.FAVOURITE_TV_SHOWS
             .containsKey(p.showId)
+        mReleaseView.previewImage = null
 
         if (next != null) {
             val t = mCalendar.timeInMillis / 1000
             val dt = t - p.timeStart
             val dt2 = next.timeStart - p.timeStart
             mReleaseView.progress = dt / dt2.toFloat()
+        } else {
+            mReleaseView.progress = 0f
         }
         mReleaseView.invalidate()
 

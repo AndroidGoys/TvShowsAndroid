@@ -2,9 +2,28 @@ package good.damn.tvlist.extensions
 
 import androidx.annotation.ColorInt
 import java.util.Calendar
+import java.util.Date
 
 fun Int.normalWidth() = this / 414f
 fun Int.normalHeight() = this / 915f
+
+fun Int.toTimeString(): String {
+    val c = Calendar.getInstance()
+    c.time = Date(this * 1000L)
+
+    val hour = c.get(
+        Calendar.HOUR_OF_DAY
+    )
+
+    val mins = c.get(
+        Calendar.MINUTE
+    )
+
+    val hourString = "${hour / 10}${hour % 10}"
+    val minutesString = "${mins/10}${mins % 10}"
+
+    return "$hourString:$minutesString"
+}
 
 fun Int.toGregorianDateString(): String {
     val calendar = Calendar.getInstance()
