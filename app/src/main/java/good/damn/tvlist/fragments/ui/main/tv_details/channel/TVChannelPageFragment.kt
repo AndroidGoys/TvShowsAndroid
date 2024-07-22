@@ -635,6 +635,11 @@ OnRateClickListener {
     private fun createReview(
         grade: Byte
     ) {
+        if (App.TOKEN_AUTH == null) {
+            toast(R.string.need_sign_in_for_reviews)
+            return
+        }
+
         val channel = channel
             ?: return
 

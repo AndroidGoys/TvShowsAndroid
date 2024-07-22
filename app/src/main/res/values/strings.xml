@@ -63,4 +63,5 @@
     <string name="has_channel">имеет канал</string>
     <string name="with_rating">с рейтингом</string>
     <string name="lets_see_it">Давай посмотрим?</string>
+    <string name="need_sign_in_for_reviews">Нужен аккаунт для написания отзыва</string>
 </resources>
