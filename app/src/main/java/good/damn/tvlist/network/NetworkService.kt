@@ -10,6 +10,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.Response
+import okhttp3.internal.EMPTY_REQUEST
 import java.io.File
 
 open class NetworkService {
@@ -44,6 +45,14 @@ open class NetworkService {
         .addHeader(
             "Accept", accept
         ).post(body)
+
+    protected fun makeRequestDelete(
+        url: String,
+        body: RequestBody? = EMPTY_REQUEST
+    ) = mRequestBuilder
+        .url(url)
+        .delete(body)
+        .build()
 
     protected fun makeRequestPOST(
         url: String,

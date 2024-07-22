@@ -45,6 +45,7 @@ import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
+import good.damn.tvlist.network.api.models.show.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -80,10 +81,11 @@ class TVShowPageFragment
     }
 
     var data: TVChannelRelease? = null
-
-    private var mBlurView: BlurShaderView? = null
+    private var mUserReview: TVUserReview? = null
 
     private var mReviewService: ReviewService? = null
+
+    private var mBlurView: BlurShaderView? = null
 
     private var mChannelPointers: ArrayList<TVShowChannelDate>? = null
 
@@ -293,7 +295,7 @@ class TVShowPageFragment
             )
         )
 
-        RateView(
+        val rateView = RateView(
             context
         ).apply {
 
@@ -312,7 +314,7 @@ class TVShowPageFragment
             )
         }
 
-        AppCompatTextView(
+        val textViewPostReview = AppCompatTextView(
             context
         ).apply {
 
@@ -772,6 +774,36 @@ class TVShowPageFragment
                         heightParams()
                     )
                 }
+            }
+
+            if (App.TOKEN_AUTH == null) {
+                return@launch
+            }
+
+            val userReview = mReviewService?.getUserReview(
+                false
+            ) ?: return@launch
+
+            mUserReview = userReview.result
+
+            if (userReview.errorStringId != -1) {
+                App.ui {
+                    toast(userReview.errorStringId)
+                }
+                return@launch
+            }
+
+            val review = mUserReview
+                ?: return@launch
+
+            App.ui {
+                textViewPostReview.setText(
+                    R.string.update_review
+                )
+
+                rateView.setStarsRate(
+                    review.rating
+                )
             }
         }
 
