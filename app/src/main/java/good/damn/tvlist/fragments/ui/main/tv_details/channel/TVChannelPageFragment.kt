@@ -65,6 +65,7 @@ OnRateClickListener {
     }
 
     var channel: TVChannel2? = null
+    var channelDescription: String? = null
 
     private var mBlurView: BlurShaderView? = null
     private var mReviewService: ReviewService? = null
@@ -342,6 +343,7 @@ OnRateClickListener {
 
                 App.ui {
                     text = details.description
+                    channelDescription = details.description
                 }
             }
 
@@ -703,7 +705,8 @@ private fun TVChannelPageFragment.onClickShare(
 
     if (channel.imageUrl == null) {
         shareChannel(
-            channel
+            channel,
+            channelDescription
         )
         return
     }
@@ -723,6 +726,7 @@ private fun TVChannelPageFragment.onClickShare(
     )
     shareChannel(
         channel,
+        channelDescription,
         uri
     )
 
@@ -734,13 +738,19 @@ private fun TVChannelPageFragment.onClickShare(
 
 private fun TVChannelPageFragment.shareChannel(
     channel: TVChannel2,
+    channelDescription: String?,
     imageUri: Uri? = null
 ) {
     val context = context
         ?: return
     ShareUtils.shareWithImage(
         context,
-        channel.name,
+        "${getString(R.string.app_name)} " +
+            "${getString(R.string.has_channel)} " +
+            "\"${channel.name}\" " +
+            "${getString(R.string.with_rating)} " +
+            "${channel.rating}. ${channelDescription ?: ""} \n\n" +
+            getString(R.string.lets_see_it),
         imageUri
     )
 }
