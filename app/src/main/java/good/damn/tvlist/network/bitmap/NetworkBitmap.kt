@@ -37,7 +37,7 @@ class NetworkBitmap {
             viewWidth: Int,
             viewHeight: Int,
             completion: (Bitmap) -> Unit
-        ) = App.IO.launch {
+        ) = App.IMAGE_SCOPE.launch {
             val cachedNativeBitmap = CacheBitmap.loadFromCache(
                 url,
                 dirName,

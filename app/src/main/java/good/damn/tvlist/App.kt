@@ -40,6 +40,10 @@ class App
         const val URL = "http://176.109.106.211:8080"
         const val NOTIFICATION_ID = "tvShowSchedule"
 
+        val IMAGE_SCOPE = CoroutineScope(
+            Dispatchers.IO
+        )
+
         val IO = CoroutineScope(
             Dispatchers.IO
         )

@@ -73,6 +73,7 @@ class StatisticsView(
 
     private var mRatingTextX = 0f
     private var mRatingTextY = 0f
+    private var mRatingTextWidth = 0f
 
     private var mCountTextX = 0f
     private var mCountTextY = 0f
@@ -92,7 +93,7 @@ class StatisticsView(
         val width = params.width
         val height = params.height
 
-        val textWidth = mPaintRating.measureText(
+        mRatingTextWidth = mPaintRating.measureText(
             mRatingStr
         )
 
@@ -102,7 +103,7 @@ class StatisticsView(
 
         val w = width * 0.30747f
 
-        mRatingTextX = (w - textWidth) * 0.4f
+        mRatingTextX = (w - mRatingTextWidth) * 0.4f
         mRatingTextY = height * 0.09161f + mPaintRating.textSize
 
         mCountTextX = (w - mPaintCount.measureText(
@@ -146,27 +147,7 @@ class StatisticsView(
             )
         }
 
-        val gradient = LinearGradient(
-            mRatingTextX,
-            mRatingTextY,
-            mRatingTextX+textWidth,
-            mRatingTextY,
-            intArrayOf(
-                RatingCanvas.detectColor(
-                    rate = rating.toInt()
-                ),
-                RatingCanvas.detectColor(
-                    rate = ((rating - rating.toInt()) * 10f).toInt(),
-                    times = 2
-                )
-            ),
-            floatArrayOf(
-                0.0f,
-                1.0f
-            ),
-            Shader.TileMode.CLAMP
-        )
-        mPaintRating.shader = gradient
+        updateGradient()
     }
 
     override fun onDraw(
@@ -195,5 +176,28 @@ class StatisticsView(
         progressTitles?.forEach {
             it.draw(canvas)
         }
+    }
+
+    fun updateGradient() {
+        mPaintRating.shader = LinearGradient(
+            mRatingTextX,
+            mRatingTextY,
+            mRatingTextX+mRatingTextWidth,
+            mRatingTextY,
+            intArrayOf(
+                RatingCanvas.detectColor(
+                    rate = rating.toInt()
+                ),
+                RatingCanvas.detectColor(
+                    rate = ((rating - rating.toInt()) * 10f).toInt(),
+                    times = 2
+                )
+            ),
+            floatArrayOf(
+                0.0f,
+                1.0f
+            ),
+            Shader.TileMode.CLAMP
+        )
     }
 }

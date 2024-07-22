@@ -235,35 +235,6 @@ OnRateClickListener {
             )
         }
 
-        // Censor age
-        AppCompatTextView(
-            context
-        ).apply {
-            setTextColor(
-                App.color(
-                    R.color.text
-                ).withAlpha(0.49f)
-            )
-
-            typeface = App.font(
-                R.font.open_sans_bold,
-                context
-            )
-
-            setTextSizePx(
-                measureUnit * 11.normalWidth()
-            )
-
-            boundsLinear(
-                top = measureUnit * 7.normalWidth(),
-                left = marginHorizontal
-            )
-
-            contentLayout.addView(
-                this
-            )
-        }
-
         // CHAPTER: Rate tv show
         contentLayout.addView(
             chapterTextView(
@@ -474,11 +445,11 @@ OnRateClickListener {
             boundsFrame(
                 Gravity.CENTER_HORIZONTAL,
                 width = w.toInt(),
-                height = (w * 1.23882f).toInt(),
+                height = w.toInt(),
                 top = measureUnit * 0.03623f
             )
 
-            cornerRadius = heightParams() * 0.06331f
+            cornerRadius = heightParams() * 0.25f
 
             setBackgroundColor(
                 0xffc4c4c4.toInt()

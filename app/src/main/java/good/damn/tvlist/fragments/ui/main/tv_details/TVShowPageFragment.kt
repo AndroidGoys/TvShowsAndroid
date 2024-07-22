@@ -449,7 +449,7 @@ class TVShowPageFragment
             )
         )
 
-        StatisticsView(
+        val statisticsView = StatisticsView(
             context
         ).apply {
 
@@ -496,8 +496,6 @@ class TVShowPageFragment
             progressColor = App.color(
                 R.color.lime
             )
-
-            rating = data?.rating ?: 0.0f
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL,
@@ -729,6 +727,7 @@ class TVShowPageFragment
         )
 
         App.IO.launch {
+
             val details = showService.getShowDetails(
                 id.toInt(),
                 fromCache = !App.NETWORK_AVAILABLE
@@ -738,6 +737,14 @@ class TVShowPageFragment
                 details.apply {
                     textViewDesc.text = description
                     textViewCensorAge.text = "${censorAge.age}+"
+
+                    Log.d(TAG, "onCreateView: RATING: $rating")
+                    statisticsView.let { statView ->
+                        statView.rating = rating
+                        statView.updateGradient()
+                        statView.invalidate()
+                    }
+
                     if (imagesUrl == null) {
                         return@apply
                     }
@@ -746,7 +753,6 @@ class TVShowPageFragment
                         (measureUnit * 324.normalWidth())
                             .toInt(),
                         recyclerViewImages.heightParams()
-
                     )
                 }
             }
