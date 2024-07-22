@@ -108,6 +108,10 @@ Runnable {
                 R.color.lime
             )
 
+            layout.post {
+                focusOnTextField(this)
+            }
+
             cornerRadius = heightParams() * 0.25f
 
             addTextChangedListener(
@@ -258,7 +262,7 @@ Runnable {
         )
         mHandlerSearch.postDelayed(
             this,
-            1250
+            2000
         )
         mSearchRequest = s.toString()
     }

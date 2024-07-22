@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
@@ -20,23 +21,24 @@ import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.mainActivity
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.AnimationConfig
+import good.damn.tvlist.views.text_fields.TextFieldRound
 
 abstract class StackFragment
 : NetworkFragment() {
 
-    @ColorInt
-    var navigationBarColor: Int = 0
-        set(v) {
-            field = v
-            mainActivity().navigationBarColor = v
-        }
+    private var mInputManager: InputMethodManager? = null
 
-    @ColorInt
-    var statusBarColor: Int = 0
-        set(v) {
-            field = v
-            mainActivity().statusBarColor = v
-        }
+    override fun onCreate(
+        savedInstanceState: Bundle?
+    ) {
+        super.onCreate(
+            savedInstanceState
+        )
+
+        mInputManager = context?.getSystemService(
+            Context.INPUT_METHOD_SERVICE
+        ) as? InputMethodManager
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -105,12 +107,6 @@ abstract class StackFragment
     fun getTopInset() = mainActivity()
         .getTopInset()
 
-    fun showStatusBar() = mainActivity()
-        .showStatusBar()
-
-    fun hideStatusBar() = mainActivity()
-        .hideStatusBar()
-
     fun isFragmentFocused() = mainActivity()
         .isFragmentFocused(
             this
@@ -177,25 +173,36 @@ abstract class StackFragment
         )
     }
 
-    private fun isEnabledViewGroup(
-        group: ViewGroup,
-        isIt: Boolean
+    fun focusOnTextField(
+        it: TextFieldRound
     ) {
-        (group as? ViewGroup)?.children?.forEach {
-            if (it is ViewGroup) {
-                isEnabledViewGroup(
-                    it,
-                    isIt
-                )
-                return@forEach
-            }
-
-            it.isEnabled = isIt
-        }
+        it.requestFocus()
+        mInputManager?.showSoftInput(
+            it,
+            InputMethodManager.SHOW_IMPLICIT
+        )
     }
+
 
     protected abstract fun onCreateView(
         context: Context,
         measureUnit: Int
     ): View
+}
+
+private fun isEnabledViewGroup(
+    group: ViewGroup,
+    isIt: Boolean
+) {
+    (group as? ViewGroup)?.children?.forEach {
+        if (it is ViewGroup) {
+            isEnabledViewGroup(
+                it,
+                isIt
+            )
+            return@forEach
+        }
+
+        it.isEnabled = isIt
+    }
 }

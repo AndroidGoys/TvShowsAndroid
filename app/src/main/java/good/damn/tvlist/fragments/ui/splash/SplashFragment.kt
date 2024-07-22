@@ -91,8 +91,6 @@ class SplashFragment
             layout.setBackgroundColor(
                 it
             )
-            navigationBarColor = it
-            statusBarColor = it
         }
 
         App.color(

@@ -1015,7 +1015,7 @@ private fun TVShowPageFragment.onClickBtnBack(
     enableInteraction(false)
     popFragment(
         FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = 1.0f - f
+            fragment.view?.y = App.HEIGHT * f
         }
     )
 }

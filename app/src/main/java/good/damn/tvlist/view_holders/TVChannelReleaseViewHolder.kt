@@ -138,7 +138,7 @@ class TVChannelReleaseViewHolder(
                             TVShowPageFragment.newInstance(
                                 release
                             ), FragmentAnimation { f, fragment ->
-                                fragment.view?.scaleX = f
+                                fragment.view?.y = App.HEIGHT * (1.0f-f)
                             }
                         )
 

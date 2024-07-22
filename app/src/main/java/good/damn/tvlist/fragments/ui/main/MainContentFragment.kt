@@ -495,7 +495,7 @@ private fun MainContentFragment.onClickSearch(
     pushFragment(
         SearchFragment(),
         FragmentAnimation { f, fragment ->
-            fragment.view?.alpha = f
+            fragment.view?.y = App.HEIGHT * (1.0f-f)
         }
     )
 }
