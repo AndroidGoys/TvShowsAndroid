@@ -17,6 +17,8 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.cache.CacheBitmap
 import good.damn.tvlist.extensions.boundsLinear
+import good.damn.tvlist.extensions.hasAccessToken
+import good.damn.tvlist.extensions.hasRefreshToken
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.readBytes
@@ -308,10 +310,30 @@ OnAuthListener {
             return
         }
 
+        val storage = sharedStorage()
+
         App.IO.launch {
             val profile = mUserService.getProfile(
                 fromCache = !App.NETWORK_AVAILABLE
-            ) ?: return@launch
+            )
+
+            if (profile == null) {
+                storage.apply {
+                    val edit = edit()
+                    if (hasAccessToken()) {
+                        edit.removeAccessToken()
+                    }
+
+                    if (hasRefreshToken()) {
+                        edit.removeRefreshToken()
+                    }
+
+                    edit.commit() // sync write changes
+                }
+                App.TOKEN_AUTH = null
+                updateLayoutAuthState()
+                return@launch
+            }
 
             App.ui {
 

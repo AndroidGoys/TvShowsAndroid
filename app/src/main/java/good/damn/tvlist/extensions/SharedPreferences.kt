@@ -5,6 +5,12 @@ import android.content.SharedPreferences
 private const val keyAccess = "access_token"
 private const val keyRefresh = "refresh_token"
 
+fun SharedPreferences.hasAccessToken() =
+    contains(keyAccess)
+
+fun SharedPreferences.hasRefreshToken() =
+    contains(keyRefresh)
+
 fun SharedPreferences.accessToken() = getString(
     keyAccess,
     null
