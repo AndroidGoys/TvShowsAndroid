@@ -770,13 +770,21 @@ private fun TVChannelPageFragment.shareChannel(
 ) {
     val context = context
         ?: return
+
+    val subtext = channelDescription ?: ""
+
+    val firstParag = subtext.indexOf("\n\n")
+    val shortText = if (firstParag == -1)
+        subtext
+    else subtext.substring(0, firstParag)
+
     ShareUtils.shareWithImage(
         context,
         "${getString(R.string.app_name)} " +
             "${getString(R.string.has_channel)} " +
             "\"${channel.name}\" " +
             "${getString(R.string.with_rating)} " +
-            "${channel.rating}. ${channelDescription ?: ""} \n\n" +
+            "${channel.rating}.\n\n$shortText \n\n" +
             getString(R.string.lets_see_it),
         imageUri
     )

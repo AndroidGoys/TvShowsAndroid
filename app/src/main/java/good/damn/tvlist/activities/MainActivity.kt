@@ -96,6 +96,13 @@ ActivityResultCallback<Boolean> {
     ) {
         super.onCreate(savedInstanceState)
 
+        intent?.apply {
+            val action = action
+            val data = data
+
+            Log.d(TAG, "onCreate: DEEP_LINK: $action $data")
+        }
+
         getPreferences(
             Context.MODE_PRIVATE
         ).apply {
@@ -167,6 +174,7 @@ ActivityResultCallback<Boolean> {
             WindowInsetsCompat.CONSUMED
         }
 
+        mContainer
 
         mContainer.generateId()
         mContainer.post {
