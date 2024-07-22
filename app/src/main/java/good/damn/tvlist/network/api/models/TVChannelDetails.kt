@@ -1,13 +1,16 @@
 package good.damn.tvlist.network.api.models
 
 import good.damn.tvlist.extensions.extract
+import good.damn.tvlist.extensions.extractArray
+import good.damn.tvlist.extensions.getAt
 import org.json.JSONObject
 
 data class TVChannelDetails(
     val id: Int,
     val name: String,
     val description: String? = null,
-    val rating: Float
+    val rating: Float,
+    val viewUrl: String?
 ) {
 
     companion object {
@@ -31,11 +34,16 @@ data class TVChannelDetails(
                 "assessment"
             ) as? Double)?.toFloat() ?: 0.0f
 
+            val viewUrl = json.extractArray(
+                "viewUrls"
+            )?.getAt(0) as? String
+
             return TVChannelDetails(
                 id,
                 name,
                 desc,
-                rating
+                rating,
+                viewUrl
             )
 
         }

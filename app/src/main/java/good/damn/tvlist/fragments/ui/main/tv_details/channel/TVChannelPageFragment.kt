@@ -1,6 +1,7 @@
 package good.damn.tvlist.fragments.ui.main.tv_details.channel
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.view.Gravity
@@ -28,6 +29,7 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
+import good.damn.tvlist.fragments.ui.main.stream.StreamFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
@@ -66,6 +68,7 @@ OnRateClickListener {
 
     var channel: TVChannel2? = null
     var channelDescription: String? = null
+    var urlView: String? = null
 
     private var mBlurView: BlurShaderView? = null
     private var mReviewService: ReviewService? = null
@@ -344,6 +347,7 @@ OnRateClickListener {
                 App.ui {
                     text = details.description
                     channelDescription = details.description
+                    urlView = details.viewUrl
                 }
             }
 
@@ -531,6 +535,10 @@ OnRateClickListener {
                 this
             )
 
+            setOnClickListener(
+                this@TVChannelPageFragment::onClickPlay
+            )
+
             contentLayout.boundsFrame(
                 width = App.WIDTH,
                 height = -2,
@@ -685,6 +693,20 @@ OnRateClickListener {
             ),
             FragmentAnimation { f, fragment ->
                 fragment.view?.x = App.WIDTH * (1.0f - f)
+            }
+        )
+    }
+
+    private fun onClickPlay(
+        v: View
+    ) {
+        pushFragment(
+            StreamFragment.newInstance(
+                urlView ?: ""
+            ),
+            FragmentAnimation {
+                f, fragment ->
+                fragment.view?.x = App.WIDTH * (1.0f-f)
             }
         )
     }
