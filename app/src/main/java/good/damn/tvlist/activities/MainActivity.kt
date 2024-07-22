@@ -38,6 +38,7 @@ import good.damn.tvlist.extensions.accessToken
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.lastTimeSeconds
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.fragments.StackFragment
@@ -103,9 +104,19 @@ ActivityResultCallback<Boolean> {
             Log.d(TAG, "onCreate: DEEP_LINK: $action $data")
         }
 
+        App.CURRENT_TIME_SECONDS = (App.CALENDAR.timeInMillis / 1000).toInt()
+
         getPreferences(
             Context.MODE_PRIVATE
         ).apply {
+
+            App.LAST_SAVED_TIME_SECONDS = lastTimeSeconds()
+
+            Log.d(TAG, "onCreate: TIME: ${App.LAST_SAVED_TIME_SECONDS} ${App.CURRENT_TIME_SECONDS}")
+            
+            edit().lastTimeSeconds(
+                App.CURRENT_TIME_SECONDS
+            ).apply() // async
 
             val refreshToken = refreshToken()
                 ?: return@apply
@@ -173,8 +184,6 @@ ActivityResultCallback<Boolean> {
 
             WindowInsetsCompat.CONSUMED
         }
-
-        mContainer
 
         mContainer.generateId()
         mContainer.post {

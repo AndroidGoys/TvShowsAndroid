@@ -35,6 +35,7 @@ import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.show.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -68,7 +69,9 @@ OnRateClickListener {
 
     var channel: TVChannel2? = null
     var channelDescription: String? = null
-    var urlView: String? = null
+
+    private var urlView: String? = null
+    private var mUserReview: TVUserReview? = null
 
     private var mBlurView: BlurShaderView? = null
     private var mReviewService: ReviewService? = null
@@ -247,7 +250,7 @@ OnRateClickListener {
                 R.string.rate_tv_show
             )
         )
-        RateView(
+        val rateView = RateView(
             context
         ).apply {
 
@@ -266,7 +269,7 @@ OnRateClickListener {
             )
         }
 
-        AppCompatTextView(
+        val textViewPostReview = AppCompatTextView(
             context
         ).apply {
 
@@ -576,6 +579,38 @@ OnRateClickListener {
             "channels"
         )
 
+        App.IO.launch {
+            if (App.TOKEN_AUTH == null) {
+                return@launch
+            }
+
+            val userReview = mReviewService?.getUserReview(
+                false
+            ) ?: return@launch
+
+            mUserReview = userReview.result
+
+            if (userReview.errorStringId != -1) {
+                App.ui {
+                    toast(userReview.errorStringId)
+                }
+                return@launch
+            }
+
+            val review = mUserReview
+                ?: return@launch
+
+            App.ui {
+                textViewPostReview.setText(
+                    R.string.update_review
+                )
+
+                rateView.setStarsRate(
+                    review.rating
+                )
+            }
+        }
+
         return layout
     }
 
@@ -661,6 +696,7 @@ OnRateClickListener {
                     channel.shortName ?: channel.name,
                 ),
                 grade,
+                mUserReview,
                 reviewService
             ),
             FragmentAnimation {

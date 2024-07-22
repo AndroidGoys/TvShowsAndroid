@@ -888,6 +888,7 @@ class TVShowPageFragment
                     program.shortName ?: program.name,
                 ),
                 grade,
+                mUserReview,
                 reviewService
             ),
             FragmentAnimation {

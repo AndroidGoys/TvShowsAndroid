@@ -20,6 +20,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
+import good.damn.tvlist.network.api.models.show.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.RoundButton
@@ -39,15 +40,18 @@ TextWatcher {
         fun newInstance(
             tvShow: TVShowReview?,
             grade: Byte,
+            userReview: TVUserReview?,
             reviewService: ReviewService
         ) = TVPostReviewFragment().apply {
             this.review = tvShow
+            this.userReview = userReview
             this.grade = grade
             this.reviewService = reviewService
         }
     }
 
     var review: TVShowReview? = null
+    var userReview: TVUserReview? = null
     var grade: Byte = 0
     var reviewService: ReviewService? = null
 
@@ -126,7 +130,9 @@ TextWatcher {
             )
 
             setStarsRate(
-                grade
+                if (grade.toInt() == 0)
+                    userReview?.rating ?: 0
+                else grade
             )
 
             layout.addView(
@@ -189,6 +195,10 @@ TextWatcher {
                 InputFilter.LengthFilter(
                     MAX_LENGTH_REVIEW
                 )
+            )
+
+            setText(
+                userReview?.textReview
             )
 
             setHint(

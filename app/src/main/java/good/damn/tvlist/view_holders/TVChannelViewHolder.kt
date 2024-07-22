@@ -30,8 +30,6 @@ class TVChannelViewHolder(
 ): RecyclerView.ViewHolder(
     mLayout
 ) {
-    private val mCalendar = Calendar.getInstance()
-
     fun onBindViewHolder(
         t: TVChannel2?,
         releaseService: TVChannelReleasesService
@@ -58,32 +56,33 @@ class TVChannelViewHolder(
                 return@launch
             }
 
-            val timeSec = (mCalendar.timeInMillis / 1000).toInt()
             val cachedReleases = releaseService.getReleases(
                 t.id,
-                timeSec,
-                8,
+                App.LAST_SAVED_TIME_SECONDS,
+                limit = 8,
                 fromCache = true
             )
 
+            Log.d(TAG, "onBindViewHolder: CACHED_RELEASES: ${cachedReleases?.size}")
+            
             if (cachedReleases != null) {
+                App.RELEASES[t.id] = cachedReleases
                 App.ui {
                     mRecyclerViewReleases.releases = cachedReleases
                 }
+                return@launch
             }
 
             val releases = releaseService.getReleases(
                 t.id,
-                timeSec,
-                8,
+                App.CURRENT_TIME_SECONDS,
+                limit = 8,
                 fromCache = false
             ) ?: return@launch
 
-            if (cachedReleases == null) {
-                App.RELEASES[t.id] = releases
-                App.ui {
-                    mRecyclerViewReleases.releases = releases
-                }
+            App.RELEASES[t.id] = releases
+            App.ui {
+                mRecyclerViewReleases.releases = releases
             }
 
         }

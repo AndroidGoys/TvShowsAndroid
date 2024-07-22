@@ -89,7 +89,8 @@ open class NetworkJSONService(
     }
 
     protected fun getNetworkJSON(
-        url: String
+        url: String,
+        cacheUrl: String = url
     ): JSONObject? {
         val response = execute(
             makeRequestGET(
@@ -112,7 +113,7 @@ open class NetworkJSONService(
 
         CacheJSON.cache(
             json,
-            url.hashCode().toString(),
+            cacheUrl.hashCode().toString(),
             mCacheDirApp
         )
 

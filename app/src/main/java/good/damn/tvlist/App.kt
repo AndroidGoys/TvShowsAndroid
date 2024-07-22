@@ -22,6 +22,7 @@ import good.damn.tvlist.utils.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.io.File
+import java.util.Calendar
 
 class App
 : Application() {
@@ -48,12 +49,17 @@ class App
             Dispatchers.IO
         )
 
+        val CALENDAR = Calendar.getInstance()
+
         val RELEASES = HashMap<Int, ArrayList<TVChannelRelease>>()
         val FAVOURITE_TV_SHOWS = HashMap<Long, TVChannelRelease>()
         val iconMap = HashMap<String, Bitmap>()
 
         var WIDTH = 1
         var HEIGHT = 1
+
+        var LAST_SAVED_TIME_SECONDS = 0
+        var CURRENT_TIME_SECONDS = 0
 
         var NETWORK_AVAILABLE = false
 

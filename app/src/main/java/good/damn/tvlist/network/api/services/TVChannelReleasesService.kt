@@ -23,10 +23,14 @@ class TVChannelReleasesService
         limit: Int,
         fromCache: Boolean = false
     ): ArrayList<TVChannelRelease>? {
-        val url = "$URL/$channelId/releases?limit=$limit&time-start=$timeStartSeconds"
+        val cacheUrl = "$URL/$channelId/releases?limit=$limit"
+        val url = "$cacheUrl&time-start=$timeStartSeconds"
         val json = if (fromCache)
-            getCachedJson(url)
-        else getNetworkJSON(url)
+            getCachedJson(cacheUrl)
+        else getNetworkJSON(
+            url,
+            cacheUrl
+        )
 
         if (json == null) {
             return null
