@@ -107,7 +107,7 @@ class TVShowService(
         showId: Long,
         fromCache: Boolean = false
     ): ArrayList<TVShowChannelDate>? {
-        val url = "$URL_SHOWS/$showId/channels?releases-limit=1"
+        val url = "$URL_SHOWS/$showId/channels?"
 
         val json = if (fromCache)
             getCachedJson(url)
@@ -159,7 +159,7 @@ class TVShowService(
             }
 
             val timeStart = releases!!
-                .getJSONObject(len-1)
+                .getJSONObject(i)
                 .extract("timeStart")
             as? Int ?: continue
 

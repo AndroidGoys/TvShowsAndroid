@@ -348,6 +348,7 @@ OnAuthListener {
     override fun onFocusChanged(
         isFragmentFocused: Boolean
     ) {
+        super.onFocusChanged(isFragmentFocused)
         Log.d(TAG, "onFocusChanged: $isFragmentFocused")
         mBlurView?.apply {
             if (isFragmentFocused) {

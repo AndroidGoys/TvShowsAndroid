@@ -859,18 +859,18 @@ class TVShowPageFragment
     ) {
         val program = data ?: return
         val reviewService = mReviewService ?: return
-            pushFragment(
-                TVReviewsFragment.newInstance(
-                    TVShowReview(
-                        program.showId,
-                        program.shortName ?: program.name
-                    ),
-                    reviewService
+        pushFragment(
+            TVReviewsFragment.newInstance(
+                TVShowReview(
+                    program.showId,
+                    program.shortName ?: program.name
                 ),
-                FragmentAnimation { f, fragment ->
-                    fragment.view?.x = App.WIDTH * (1.0f - f)
-                }
-            )
+                reviewService
+            ),
+            FragmentAnimation { f, fragment ->
+                fragment.view?.x = App.WIDTH * (1.0f - f)
+            }
+        )
     }
 
     // Manifest.permission.POST_NOTIFICATIONS 33
