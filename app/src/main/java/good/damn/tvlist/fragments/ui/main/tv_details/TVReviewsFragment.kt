@@ -180,8 +180,9 @@ OnTabClickListener {
         review?.id?.let { showId ->
             App.IO.launch {
                 val reviews = reviewService
-                    ?.getReviews()
-                    ?: return@launch
+                    ?.getReviews(
+                        fromCache = !App.NETWORK_AVAILABLE
+                    ) ?: return@launch
 
                 App.ui {
                     mRecyclerView?.adapter = TVShowUserReviewsAdapter(

@@ -1,30 +1,22 @@
 package good.damn.tvlist.activities
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.IntentFilter
-import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.net.ConnectivityManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract.Profile
 import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.Animation
 import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
-import android.widget.Toast
-import android.window.OnBackInvokedCallback
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.ColorInt
+import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -38,7 +30,6 @@ import good.damn.tvlist.extensions.accessToken
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.lastTimeSeconds
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.fragments.StackFragment
@@ -48,7 +39,7 @@ import good.damn.tvlist.fragments.ui.main.MainContentFragment
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.navigators.MainFragmentNavigator
 import good.damn.tvlist.network.api.models.auth.TokenAuth
-import good.damn.tvlist.network.api.services.UserService
+import good.damn.tvlist.network.api.services.AuthService
 import good.damn.tvlist.views.toasts.ToastImage
 import kotlinx.coroutines.launch
 
@@ -182,25 +173,7 @@ ActivityResultCallback<Boolean> {
 
             val splash = SplashFragment()
 
-            splash.onAnimationEnd = {
-                replaceFragment(
-                    MainContentFragment(),
-                    baseAnimation = FragmentAnimation { f, fragment ->
-                        fragment.view?.y = App.HEIGHT * f
-                    },
-                    onAnimation = FragmentAnimation { f, fragment ->
-                        fragment.view?.y = App.HEIGHT * (f-1.0f)
-                    }
-                )
-
-                registerReceiver(
-                    mNetworkReceiver,
-                    IntentFilter(
-                        ConnectivityManager
-                            .CONNECTIVITY_ACTION
-                    )
-                )
-            }
+            splash.onAnimationEnd = this@MainActivity::onSplashEnd
 
             pushFragment(
                 splash,
@@ -445,6 +418,73 @@ ActivityResultCallback<Boolean> {
             isGrantedPermission
         )
         mPermissionFragment = null
+    }
+
+    @MainThread
+    private fun startMainFragment() {
+        replaceFragment(
+            MainContentFragment(),
+            baseAnimation = FragmentAnimation { f, fragment ->
+                fragment.view?.y = App.HEIGHT * f
+            },
+            onAnimation = FragmentAnimation { f, fragment ->
+                fragment.view?.y = App.HEIGHT * (f-1.0f)
+            }
+        )
+
+        registerReceiver(
+            mNetworkReceiver,
+            IntentFilter(
+                ConnectivityManager
+                    .CONNECTIVITY_ACTION
+            )
+        )
+    }
+
+    private fun onSplashEnd() {
+        val token = App.TOKEN_AUTH
+        if (token == null) {
+            startMainFragment()
+            return
+        }
+
+        val prefs = getPreferences(
+            Context.MODE_PRIVATE
+        )
+
+        App.IO.launch {
+            val result = AuthService().refreshAccess(
+                token.refreshToken
+            )
+
+            if (result.errorStringId != -1) {
+                App.ui {
+                    toast(
+                        2000L,
+                        0.2f,
+                        text = getString(result.errorStringId),
+                        animation = AnimationConfig(
+                            350
+                        )
+                    )
+                }
+            }
+
+            val newToken = result.result
+            if (newToken != null) {
+                App.TOKEN_AUTH = newToken
+                prefs.edit().apply {
+                    accessToken(newToken.accessToken)
+                    refreshToken(newToken.refreshToken)
+                    commit()
+                }
+            }
+
+            App.ui {
+                startMainFragment()
+            }
+
+        }
     }
 
 }

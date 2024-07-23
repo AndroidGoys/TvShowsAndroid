@@ -50,7 +50,7 @@ class ReviewService(
         fromCache: Boolean = false,
         rating: Byte = 0
     ): ArrayList<TVUserReview>? {
-        val url = if (rating < 0 || rating > 5)
+        val url = if (rating <= 0 || rating > 5)
             mUrlReviews
         else "$mUrlReviews?assessment=$rating"
 

@@ -24,6 +24,7 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVChannelReleaseFragment
+import good.damn.tvlist.network.api.services.AuthService
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.navigation.NavigationView
@@ -454,14 +455,6 @@ OnAuthListener {
     private fun onClickImageViewProfile(
         v: View
     ) {
-        val location = IntArray(2)
-        v.getLocationOnScreen(location)
-        val right = location[0] + v.width
-        val bottom = location[1] + v.height
-
-        val dx = App.WIDTH - right
-        val dy = App.HEIGHT - bottom
-
         pushFragment(
             ProfileFragment().apply {
                 onAuthListener = this@MainContentFragment
@@ -472,17 +465,6 @@ OnAuthListener {
                 fragment.view?.apply {
                     alpha = f
                 }
-                /*(fragment
-                    .view
-                    ?.layoutParams as? ViewGroup.MarginLayoutParams
-                    )?.apply {
-                        val i = 1.0f - f
-                        topMargin = (location[1] * f).toInt()
-                        leftMargin = (location[0] * f).toInt()
-                        rightMargin = (right + dx * i).toInt()
-                        bottomMargin = (bottom + dy * i).toInt()
-                        fragment.view?.layoutParams = this
-                    }*/
             }
         )
     }

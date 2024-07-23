@@ -3,6 +3,7 @@ package good.damn.tvlist.network
 import android.util.Log
 import good.damn.tvlist.App
 import good.damn.tvlist.extensions.toAuthToken
+import good.damn.tvlist.network.api.services.AuthService
 import kotlinx.coroutines.launch
 import okhttp3.Cache
 import okhttp3.CacheControl
