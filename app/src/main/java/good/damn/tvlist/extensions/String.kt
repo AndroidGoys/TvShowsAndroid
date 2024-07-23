@@ -3,8 +3,15 @@ package good.damn.tvlist.extensions
 import android.util.Log
 import android.util.Patterns
 import good.damn.tvlist.R
+import good.damn.tvlist.Unicode
 import good.damn.tvlist.models.Result
 import org.json.JSONObject
+
+fun String.shortName(
+    len: Int = 18
+) = if (length > len)
+    substring(0,len) + Unicode.DOTS
+else this
 
 fun String.isEmail() = Patterns
     .EMAIL_ADDRESS

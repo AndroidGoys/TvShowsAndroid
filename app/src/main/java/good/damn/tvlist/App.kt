@@ -38,7 +38,7 @@ class App
         lateinit var USER_AGENT: String
         lateinit var RESOURCES: Resources
         lateinit var CACHE_DIR: File
-        const val URL = "http://176.109.106.211"
+        const val URL = "http://damntv.ru"
         const val URL_SHARING_CHANNEL = "$URL/sharing"
         const val NOTIFICATION_ID = "tvShowSchedule"
 

@@ -36,12 +36,17 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
 import good.damn.tvlist.fragments.ui.main.MainContentFragment
+import good.damn.tvlist.fragments.ui.main.tv_details.channel.TVChannelPageFragment
 import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.navigators.MainFragmentNavigator
+import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.auth.TokenAuth
 import good.damn.tvlist.network.api.services.AuthService
+import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.views.toasts.ToastImage
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl
+import java.net.URL
 
 class MainActivity
 : AppCompatActivity(),
@@ -87,13 +92,6 @@ ActivityResultCallback<Boolean> {
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
-
-        intent?.apply {
-            val action = action
-            val data = data
-
-            Log.d(TAG, "onCreate: DEEP_LINK: $action $data")
-        }
 
         getPreferences(
             Context.MODE_PRIVATE
@@ -422,22 +420,90 @@ ActivityResultCallback<Boolean> {
 
     @MainThread
     private fun startMainFragment() {
-        replaceFragment(
-            MainContentFragment(),
-            baseAnimation = FragmentAnimation { f, fragment ->
-                fragment.view?.y = App.HEIGHT * f
-            },
-            onAnimation = FragmentAnimation { f, fragment ->
-                fragment.view?.y = App.HEIGHT * (f-1.0f)
-            }
-        )
-
         registerReceiver(
             mNetworkReceiver,
             IntentFilter(
                 ConnectivityManager
                     .CONNECTIVITY_ACTION
             )
+        )
+
+        val intent = intent
+        if (intent == null) {
+            defaultInitFragment()
+            return
+        }
+
+        // Deep link manager
+        val data = intent.data
+        Log.d(TAG, "onCreate: DEEP_LINK: $data")
+
+        if (data == null) {
+            defaultInitFragment()
+            return
+        }
+
+        if (data.host != "app.show") {
+            defaultInitFragment()
+            return
+        }
+
+        val id = try {
+            data.getQueryParameter(
+                "id"
+            )?.toInt() ?: -1
+        } catch (e: NumberFormatException) {
+            -1
+        }
+
+        if (id == -1) {
+            defaultInitFragment()
+            return
+        }
+
+        App.IO.launch {
+            val channel = TVChannel2Service().getChannelDetails(
+                id
+            )
+
+            if (channel == null) {
+                App.ui {
+                    defaultInitFragment()
+                }
+                return@launch
+            }
+
+            App.ui {
+                initFragment(
+                    TVChannelPageFragment.newInstance(
+                        channel
+                    )
+                )
+            }
+
+        }
+
+    }
+
+    @MainThread
+    private fun defaultInitFragment() {
+        initFragment(
+            MainContentFragment()
+        )
+    }
+
+    @MainThread
+    private fun initFragment(
+        fragment: StackFragment
+    ) {
+        replaceFragment(
+            fragment,
+            baseAnimation = FragmentAnimation { f, fragment ->
+                fragment.view?.y = App.HEIGHT * f
+            },
+            onAnimation = FragmentAnimation { f, fragment ->
+                fragment.view?.y = App.HEIGHT * (f-1.0f)
+            }
         )
     }
 

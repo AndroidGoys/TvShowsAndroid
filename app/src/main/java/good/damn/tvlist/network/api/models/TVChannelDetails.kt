@@ -10,7 +10,8 @@ data class TVChannelDetails(
     val name: String,
     val description: String? = null,
     val rating: Float,
-    val viewUrl: String?
+    val viewUrl: String?,
+    val imageUrl: String? = null
 ) {
 
     companion object {
@@ -38,12 +39,17 @@ data class TVChannelDetails(
                 "viewUrls"
             )?.getAt(0) as? String
 
+            val imageUrl = json.extract(
+                "imageUrl"
+            ) as? String
+
             return TVChannelDetails(
                 id,
                 name,
                 desc,
                 rating,
-                viewUrl
+                viewUrl,
+                imageUrl
             )
 
         }

@@ -24,6 +24,7 @@ import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
+import good.damn.tvlist.extensions.shortName
 import good.damn.tvlist.extensions.topHeightParams
 import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
@@ -36,6 +37,7 @@ import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.TVChannelDetails
 import good.damn.tvlist.network.api.models.TVReviewDistribution
 import good.damn.tvlist.network.api.models.user.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
@@ -60,6 +62,20 @@ OnRateClickListener {
     companion object {
         private const val TAG = "TVChannelPageFragment"
         const val DIR_PREVIEW = "bitmapChannelPreview"
+
+        fun newInstance(
+            channel: TVChannelDetails
+        ) = TVChannelPageFragment().apply {
+            this.channel = TVChannel2(
+                channel.imageUrl,
+                channel.name,
+                channel.id,
+                channel.rating,
+                channel.name.shortName(20)
+            )
+            this.channelDescription = channel.description
+            this.urlView = channel.viewUrl
+        }
 
         fun newInstance(
             channel: TVChannel2?
@@ -336,23 +352,27 @@ OnRateClickListener {
                 measureUnit * 0.036231f
             )
 
-            App.IO.launch {
-                val id = channel?.id
-                    ?: return@launch
+            text = channelDescription
 
-                val details = channelService.getChannelDetails(
-                    id,
-                    fromCache = !App.NETWORK_AVAILABLE
-                )
+            if (channelDescription == null) {
+                App.IO.launch {
+                    val id = channel?.id
+                        ?: return@launch
 
-                if (details == null) {
-                    return@launch
-                }
+                    val details = channelService.getChannelDetails(
+                        id,
+                        fromCache = !App.NETWORK_AVAILABLE
+                    )
 
-                App.ui {
-                    text = details.description
-                    channelDescription = details.description
-                    urlView = details.viewUrl
+                    if (details == null) {
+                        return@launch
+                    }
+
+                    App.ui {
+                        text = details.description
+                        channelDescription = details.description
+                        urlView = details.viewUrl
+                    }
                 }
             }
 
