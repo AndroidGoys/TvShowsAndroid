@@ -55,13 +55,18 @@ class App
         val FAVOURITE_TV_SHOWS = HashMap<Long, TVChannelRelease>()
         val iconMap = HashMap<String, Bitmap>()
 
+        val CURRENT_TIME_SECONDS = (
+            CALENDAR.timeInMillis / 1000
+        ).toInt()
+
         var WIDTH = 1
         var HEIGHT = 1
 
-        var LAST_SAVED_TIME_SECONDS = 0
-        var CURRENT_TIME_SECONDS = 0
-
         var NETWORK_AVAILABLE = false
+
+        fun createIO() = CoroutineScope(
+            Dispatchers.IO
+        )
 
         fun ui(
             runnable: Runnable

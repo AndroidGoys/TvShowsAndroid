@@ -104,19 +104,9 @@ ActivityResultCallback<Boolean> {
             Log.d(TAG, "onCreate: DEEP_LINK: $action $data")
         }
 
-        App.CURRENT_TIME_SECONDS = (App.CALENDAR.timeInMillis / 1000).toInt()
-
         getPreferences(
             Context.MODE_PRIVATE
         ).apply {
-
-            App.LAST_SAVED_TIME_SECONDS = lastTimeSeconds()
-
-            Log.d(TAG, "onCreate: TIME: ${App.LAST_SAVED_TIME_SECONDS} ${App.CURRENT_TIME_SECONDS}")
-            
-            edit().lastTimeSeconds(
-                App.CURRENT_TIME_SECONDS
-            ).apply() // async
 
             val refreshToken = refreshToken()
                 ?: return@apply

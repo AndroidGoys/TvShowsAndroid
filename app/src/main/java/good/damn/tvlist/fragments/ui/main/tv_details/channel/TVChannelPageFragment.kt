@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
@@ -35,6 +36,7 @@ import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
+import good.damn.tvlist.network.api.models.TVReviewDistribution
 import good.damn.tvlist.network.api.models.user.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVChannel2Service
@@ -578,7 +580,7 @@ OnRateClickListener {
         )
 
         App.IO.launch {
-            loadData(
+            loadDistroReview(
                 mReviewService,
                 statisticsView
             )
@@ -844,35 +846,56 @@ private fun TVChannelPageFragment.shareChannel(
 
 
 @WorkerThread
-private fun TVChannelPageFragment.loadData(
+private fun loadDistroReview(
     reviewService: ReviewService?,
     statisticsView: StatisticsView
 ) {
-    val distrosReview = reviewService?.getDistributionReviews(
-        fromCache = !App.NETWORK_AVAILABLE
-    )
-
-    App.ui {
-        distrosReview?.let { dist ->
-            if (dist.count == 0) {
-                return@ui
-            }
-
-            statisticsView.apply {
-                progressTitles = Array(5) {
-                    val d = dist.distribution[it]
-
-                    ProgressTitleDraw(
-                        d.title,
-                        if (d.count == 0) 0.1f
-                        else d.count.toFloat() / dist.count
-                    )
-                }
-                count = dist.count.toString()
-
-                updateStats()
-                invalidate()
-            }
+    reviewService?.getDistributionReviews(
+        fromCache = true
+    )?.let { dist ->
+        App.ui {
+            invalidateDistroReview(
+                dist,
+                statisticsView
+            )
         }
+    }
+
+    reviewService?.getDistributionReviews(
+        fromCache = false
+    )?.let { dist ->
+        App.ui {
+            invalidateDistroReview(
+                dist,
+                statisticsView
+            )
+        }
+    }
+
+}
+
+@MainThread
+private fun invalidateDistroReview(
+    dist: TVReviewDistribution,
+    statisticsView: StatisticsView
+) {
+    if (dist.count == 0) {
+        return
+    }
+
+    statisticsView.apply {
+        progressTitles = Array(5) {
+            val d = dist.distribution[it]
+
+            ProgressTitleDraw(
+                d.title,
+                if (d.count == 0) 0.1f
+                else d.count.toFloat() / dist.count
+            )
+        }
+        count = dist.count.toString()
+
+        updateStats()
+        invalidate()
     }
 }

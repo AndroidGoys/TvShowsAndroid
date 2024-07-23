@@ -25,6 +25,7 @@ class TVChannelReleasesService
     ): ArrayList<TVChannelRelease>? {
         val cacheUrl = "$URL/$channelId/releases?limit=$limit"
         val url = "$cacheUrl&time-start=$timeStartSeconds"
+
         val json = if (fromCache)
             getCachedJson(cacheUrl)
         else getNetworkJSON(
@@ -47,12 +48,12 @@ class TVChannelReleasesService
         }
 
         val releases = ArrayList<TVChannelRelease>(
-            jsonReleases!!.length()
+            len
         )
 
         for (i in 0..<len) {
             val release = TVChannelRelease.createFromJSON(
-                jsonReleases.getJSONObject(i)
+                jsonReleases!!.getJSONObject(i)
             ) ?: continue
 
             releases.add(

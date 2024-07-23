@@ -10,6 +10,7 @@ import good.damn.tvlist.R
 import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.middle
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.tv_details.channel.TVChannelPageFragment
@@ -20,6 +21,7 @@ import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVShowsRecyclerView
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -45,8 +47,7 @@ class TVChannelViewHolder(
         mTvChannelView.text = t.shortName ?: t.name
         mTvChannelView.invalidate()
 
-        App.IO.launch {
-
+        App.createIO().launch {
             val hashedReleases = App.RELEASES[t.id]
 
             if (hashedReleases != null) {
@@ -58,7 +59,7 @@ class TVChannelViewHolder(
 
             val cachedReleases = releaseService.getReleases(
                 t.id,
-                App.LAST_SAVED_TIME_SECONDS,
+                0,
                 limit = 8,
                 fromCache = true
             )
@@ -70,7 +71,12 @@ class TVChannelViewHolder(
                 App.ui {
                     mRecyclerViewReleases.releases = cachedReleases
                 }
-                return@launch
+
+                cachedReleases.middle()?.let {
+                    if (it.timeStart > App.CURRENT_TIME_SECONDS) {
+                        return@launch
+                    }
+                }
             }
 
             val releases = releaseService.getReleases(
