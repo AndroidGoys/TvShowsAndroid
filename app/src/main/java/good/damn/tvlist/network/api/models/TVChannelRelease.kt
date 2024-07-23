@@ -1,5 +1,6 @@
 package good.damn.tvlist.network.api.models
 
+import android.util.Log
 import good.damn.tvlist.Unicode
 import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.toTimeString
@@ -18,9 +19,13 @@ data class TVChannelRelease(
 ) {
 
     companion object {
+
+        private const val TAG = "TVChannelRelease"
+
         fun createFromJSON(
             json: JSONObject
         ): TVChannelRelease? {
+
             val showId = json.extract(
                 "showId"
             ) as? Int ?: return null
@@ -37,14 +42,15 @@ data class TVChannelRelease(
                 "showAgeLimit"
             ) as? Int ?: 4
 
-            val rating = json.extract(
+            val rating = (json.extract(
                 "showAssessment"
-            ) as? Float ?: 0.0f
+            ) as? Double)?.toFloat() ?: 0.0f
 
             val previewUrl = json.extract(
                 "previewUrl"
             ) as? String
 
+            Log.d(TAG, "createFromJSON: $censorAge")
 
             return TVChannelRelease(
                 showId.toLong(),

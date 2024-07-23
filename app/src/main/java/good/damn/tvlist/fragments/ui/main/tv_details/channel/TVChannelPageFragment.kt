@@ -800,47 +800,18 @@ private fun TVChannelPageFragment.onClickBtnBack(
 private fun TVChannelPageFragment.onClickShare(
     v: View
 ) {
-
     val channel = channel
         ?: return
 
-    if (channel.imageUrl == null) {
-        shareChannel(
-            channel,
-            channelDescription
-        )
-        return
-    }
-
-    val file = CacheFile.cacheFile(
-        App.CACHE_DIR,
-        TVShowPageFragment.DIR_PREVIEW,
-        channel.imageUrl.hashCode().toString()
-    )
-
-    val context = v.context
-
-    val uri = FileProvider.getUriForFile(
-        context,
-        context.packageName + ".provider",
-        file
-    )
     shareChannel(
         channel,
-        channelDescription,
-        uri
-    )
-
-    Log.d(
-        "TVShowDetailsFragment",
-        "onClickShare: FILE_IMAGE: $file ${file.exists()} $uri"
+        channelDescription
     )
 }
 
 private fun TVChannelPageFragment.shareChannel(
     channel: TVChannel2,
-    channelDescription: String?,
-    imageUri: Uri? = null
+    channelDescription: String?
 ) {
     val context = context
         ?: return
@@ -863,7 +834,7 @@ private fun TVChannelPageFragment.shareChannel(
             "\n\n${App.URL_SHARING_CHANNEL}/${channel.id}?" +
             "time-start=${App.CURRENT_TIME_SECONDS}&" +
             "time-zone=3",
-        imageUri
+        null
     )
 }
 

@@ -35,6 +35,7 @@ class TVChannelReleaseViewHolder(
         mReleaseView.rating = p.rating
         mReleaseView.isFavourite = App.FAVOURITE_TV_SHOWS
             .containsKey(p.showId)
+        mReleaseView.age = "${p.censorAge.age}+"
         mReleaseView.previewImage = null
 
         if (next != null) {
