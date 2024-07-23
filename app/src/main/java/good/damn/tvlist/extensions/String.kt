@@ -25,7 +25,7 @@ fun String.isStrongPassword(): Result<Void> {
         )
     }
 
-    if (!this.contains("[a-zA-Z]")) {
+    if (!this.contains("[a-zA-z]".toRegex())) {
         return Result(
             errorStringId = R.string.password_has_not_latin
         )

@@ -152,7 +152,6 @@ class LoginFragment
             gravity = Gravity.CENTER
 
             singleLined()
-            asteriskMask()
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP,
@@ -205,6 +204,7 @@ class LoginFragment
             gravity = Gravity.CENTER
 
             singleLined()
+            asteriskMask()
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP,

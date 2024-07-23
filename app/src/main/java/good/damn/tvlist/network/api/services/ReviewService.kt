@@ -19,6 +19,7 @@ class ReviewService(
 ) {
 
     private val mUrlReviews = "${App.URL}/api/$type/$id/reviews"
+    private val mUrlDistros = "$mUrlReviews/distribution"
     private val mUrlUserReview = "$mUrlReviews/@my"
 
     companion object {
@@ -29,6 +30,15 @@ class ReviewService(
     fun getDistributionReviews(
         fromCache: Boolean = false
     ) {
+        val response = if (fromCache)
+            getCachedJson(mUrlDistros)
+        else getNetworkJSON(mUrlReviews)
+
+        Log.d(TAG, "getDistributionReviews: $response")
+
+        if (response == null) {
+            return
+        }
 
     }
 
@@ -78,7 +88,7 @@ class ReviewService(
         else getNetworkJSON(mUrlReviews)
 
         Log.d(TAG, "getUserReview: $json")
-        
+
         if (json == null) {
             return Result(
                 errorStringId = R.string.invalid_object
@@ -87,7 +97,9 @@ class ReviewService(
 
         val comment = json.extractArray(
             "comments"
-        )?.getJSONAt(0) ?: return Result()
+        )?.getJSONAt(
+            0
+        ) ?: return Result()
 
         val model = TVUserReview.createFromJSON(
             comment
