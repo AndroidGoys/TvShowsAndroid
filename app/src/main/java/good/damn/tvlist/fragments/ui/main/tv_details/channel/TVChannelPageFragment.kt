@@ -838,8 +838,11 @@ private fun TVChannelPageFragment.shareChannel(
             "${getString(R.string.has_channel)} " +
             "\"${channel.name}\" " +
             "${getString(R.string.with_rating)} " +
-            "${channel.rating}.\n\n$shortText \n\n" +
-            getString(R.string.lets_see_it),
+            "${channel.rating}\n\n$shortText \n\n" +
+            getString(R.string.lets_see_it) +
+            "\n\n${App.URL_SHARING_CHANNEL}/${channel.id}?" +
+            "time-start=${App.CURRENT_TIME_SECONDS}&" +
+            "time-zone=3",
         imageUri
     )
 }

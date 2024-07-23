@@ -39,6 +39,7 @@ class App
         lateinit var RESOURCES: Resources
         lateinit var CACHE_DIR: File
         const val URL = "http://176.109.106.211"
+        const val URL_SHARING_CHANNEL = "$URL/sharing"
         const val NOTIFICATION_ID = "tvShowSchedule"
 
         val IMAGE_SCOPE = CoroutineScope(
