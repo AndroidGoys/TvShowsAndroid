@@ -31,12 +31,10 @@ class TVShowUserReviewsAdapter(
         mUserService
     )
 
-    fun addData(
+    fun updateData(
         d: ArrayList<TVUserReview>
     ) {
-        mData.addAll(
-            d
-        )
+        mData = d
     }
 
 }

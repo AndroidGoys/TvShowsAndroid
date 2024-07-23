@@ -229,27 +229,27 @@ OnTabClickListener {
     override fun onTabClick(
         tab: TabView
     ) {
-        val id = review?.id
-            ?: return
-
         val recyclerView = mRecyclerView
             ?: return
 
-        /*App.IO.launch {
-            val reviews = mShowService.getReviews(
-                id
+        App.IO.launch {
+            val reviews = reviewService?.getReviews(
+                fromCache = !App.NETWORK_AVAILABLE,
+                rating = try {
+                    tab.text?.toByte() ?: 0
+                } catch (e: NumberFormatException) {
+                    0
+                }
             ) ?: return@launch
             val ad = (recyclerView.adapter as? TVShowUserReviewsAdapter)
                 ?: return@launch
-            val s = ad.itemCount
-            ad.addData(reviews)
+            //val s = ad.itemCount
+            ad.updateData(reviews)
 
             App.ui {
-                ad.notifyItemRangeInserted(
-                    s,reviews.size
-                )
+                ad.notifyDataSetChanged()
             }
-        }*/
+        }
 
     }
 

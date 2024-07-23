@@ -47,12 +47,16 @@ class ReviewService(
 
     @WorkerThread
     fun getReviews(
-        fromCache: Boolean = false
+        fromCache: Boolean = false,
+        rating: Byte = 0
     ): ArrayList<TVUserReview>? {
+        val url = if (rating < 0 || rating > 5)
+            mUrlReviews
+        else "$mUrlReviews?assessment=$rating"
 
         val response = if (fromCache)
-            getCachedJson(mUrlReviews)
-        else getNetworkJSON(mUrlReviews)
+            getCachedJson(url)
+        else getNetworkJSON(url)
 
         Log.d(TAG, "getReviews: RESPONSE: $response")
 
