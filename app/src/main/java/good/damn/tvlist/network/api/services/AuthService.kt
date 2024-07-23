@@ -10,6 +10,7 @@ import good.damn.tvlist.models.Result
 import good.damn.tvlist.network.NetworkJSONService
 import good.damn.tvlist.network.api.models.auth.TokenAuth
 import good.damn.tvlist.network.api.models.error.Error
+import good.damn.tvlist.utils.JWTUtils
 import org.json.JSONObject
 
 class AuthService
@@ -31,26 +32,26 @@ class AuthService
         val jsonResult = requestPostJSON(
             URL_REFRESH,
             JSONObject().apply {
-                put("refreshToken", refreshToken)
+                put(TokenAuth.KEY_REFRESH, refreshToken)
             }
         )
 
+        Log.d(TAG, "refreshAccess: $jsonResult")
+        
         if (jsonResult.errorStringId != -1) {
             return Result(
                 errorStringId = jsonResult.errorStringId
             )
         }
 
-        val accessToken = jsonResult.result?.extract(
-            TokenAuth.KEY_ACCESS
-        ) as? String ?: return Result(
-            errorStringId = R.string.invalid_object
-        )
+        val result = jsonResult.result
+            ?: return Result(
+                errorStringId = R.string.some_error_happens
+            )
 
         return Result(
-            TokenAuth(
-                accessToken,
-                refreshToken
+            TokenAuth.createFromJSON(
+                result
             )
         )
     }

@@ -28,10 +28,12 @@ import good.damn.tvlist.broadcast_receivers.network.NetworkReceiver
 import good.damn.tvlist.broadcast_receivers.network.listeners.NetworkListener
 import good.damn.tvlist.extensions.accessToken
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.generateId
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.refreshToken
+import good.damn.tvlist.extensions.toJSONObject
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.splash.SplashFragment
@@ -43,6 +45,7 @@ import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.models.auth.TokenAuth
 import good.damn.tvlist.network.api.services.AuthService
 import good.damn.tvlist.network.api.services.TVChannel2Service
+import good.damn.tvlist.utils.JWTUtils
 import good.damn.tvlist.views.toasts.ToastImage
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl
@@ -56,20 +59,6 @@ ActivityResultCallback<Boolean> {
     companion object {
         private const val TAG = "MainActivity"
     }
-
-    @ColorInt
-    var navigationBarColor: Int = 0
-        set(v) {
-            window.navigationBarColor = v
-            field = v
-        }
-
-    @ColorInt
-    var statusBarColor: Int = 0
-        set(v) {
-            window.statusBarColor = v
-            field = v
-        }
 
     private lateinit var mNavigator: MainFragmentNavigator<StackFragment>
     private lateinit var mContainer: FrameLayout
@@ -92,6 +81,14 @@ ActivityResultCallback<Boolean> {
         savedInstanceState: Bundle?
     ) {
         super.onCreate(savedInstanceState)
+
+        registerReceiver(
+            mNetworkReceiver,
+            IntentFilter(
+                ConnectivityManager
+                    .CONNECTIVITY_ACTION
+            )
+        )
 
         getPreferences(
             Context.MODE_PRIVATE
@@ -305,17 +302,6 @@ ActivityResultCallback<Boolean> {
             targetFragment
         ) ?: false
 
-    fun showStatusBar() {
-        mWindowController?.show(
-            WindowInsetsCompat.Type.statusBars()
-        )
-    }
-
-    fun hideStatusBar() {
-        mWindowController?.show(
-            WindowInsetsCompat.Type.statusBars()
-        )
-    }
 
     fun requestContentBrowser(
         mimeType: String,
@@ -420,14 +406,6 @@ ActivityResultCallback<Boolean> {
 
     @MainThread
     private fun startMainFragment() {
-        registerReceiver(
-            mNetworkReceiver,
-            IntentFilter(
-                ConnectivityManager
-                    .CONNECTIVITY_ACTION
-            )
-        )
-
         val intent = intent
         if (intent == null) {
             defaultInitFragment()
@@ -517,6 +495,25 @@ ActivityResultCallback<Boolean> {
         val prefs = getPreferences(
             Context.MODE_PRIVATE
         )
+
+        val expiration = try {
+            JWTUtils.decode(
+                token.accessToken
+            ).extract(
+                1
+            )?.toJSONObject()?.extract(
+                "exp"
+            ) as? Int ?: 0
+        } catch (e: Exception) {
+            0
+        }
+
+        Log.d(TAG, "onSplashEnd: CHECK_TIME: ${App.CURRENT_TIME_SECONDS} $expiration")
+
+        if (App.CURRENT_TIME_SECONDS > expiration) {
+            startMainFragment()
+            return
+        }
 
         App.IO.launch {
             val result = AuthService().refreshAccess(

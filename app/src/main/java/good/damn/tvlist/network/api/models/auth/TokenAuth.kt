@@ -9,6 +9,7 @@ data class TokenAuth(
 ) {
     companion object {
         const val KEY_ACCESS = "accessToken"
+        const val KEY_REFRESH = "refreshToken"
         fun createFromJSON(
             json: JSONObject?
         ): TokenAuth? {
@@ -19,7 +20,7 @@ data class TokenAuth(
             ) as? String ?: return null
 
             val refreshToken = json.extract(
-                "refreshToken"
+                KEY_REFRESH
             ) as? String ?: return null
 
             return TokenAuth(
