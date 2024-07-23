@@ -270,51 +270,80 @@ Runnable {
     override fun run() {
         mSearchResultAdapter?.cleanCurrentResult()
         App.IO.launch {
-            val channels = mSearchService.getChannelsByName(
+            val cachedChannels = mSearchService.getChannelsByName(
                 mSearchRequest,
-                fromCache = !App.NETWORK_AVAILABLE
+                fromCache = true
             )
-
-            if (channels == null) {
-                return@launch
-            }
 
             val adapter = mSearchResultAdapter
                 ?: return@launch
 
-            adapter.addResult(
-                channels
-            )
 
-            App.ui {
-                adapter.notifyItemRangeInserted(
-                    0,
-                    channels.size
+            if (cachedChannels != null) {
+                adapter.addResult(
+                    cachedChannels
                 )
 
-                App.IO.launch {
-                    val shows = mSearchService.getShowsByName(
-                        mSearchRequest,
-                        fromCache = !App.NETWORK_AVAILABLE
+                App.ui {
+                    adapter.notifyItemRangeInserted(
+                        0,
+                        cachedChannels.size
                     )
+                }
+            }
 
-                    if (shows == null) {
-                        return@launch
-                    }
-
-                    val channelsPos = adapter.itemCount
-                    adapter.addResult(
-                        shows
-                    )
-
+            mSearchService.getChannelsByName(
+                mSearchRequest,
+                fromCache = false
+            )?.let {
+                if (cachedChannels == null) {
+                    adapter.addResult(it)
                     App.ui {
                         adapter.notifyItemRangeInserted(
-                            channelsPos,
-                            shows.size
+                            0,
+                            it.size
                         )
                     }
                 }
             }
+
+            val cachedShows = mSearchService.getShowsByName(
+                mSearchRequest,
+                fromCache = false
+            )
+
+            val channelsPos = adapter.itemCount
+
+            if (cachedShows != null) {
+                adapter.addResult(
+                    cachedShows
+                )
+
+                App.ui {
+                    adapter.notifyItemRangeInserted(
+                        channelsPos,
+                        cachedShows.size
+                    )
+                }
+            }
+
+            mSearchService.getShowsByName(
+                mSearchRequest,
+                fromCache = true
+            )?.let {
+                if (cachedShows == null) {
+                    adapter.addResult(
+                        it
+                    )
+                    App.ui {
+                        adapter.notifyItemRangeInserted(
+                            channelsPos,
+                            it.size
+                        )
+                    }
+                }
+            }
+
         }
     }
 
