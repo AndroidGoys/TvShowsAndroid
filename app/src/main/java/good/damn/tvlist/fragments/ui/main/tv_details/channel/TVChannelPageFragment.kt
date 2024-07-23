@@ -1,7 +1,6 @@
 package good.damn.tvlist.fragments.ui.main.tv_details.channel
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.view.Gravity
@@ -35,7 +34,7 @@ import good.damn.tvlist.fragments.ui.main.tv_details.TVPostReviewFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVReviewsFragment
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannel2
-import good.damn.tvlist.network.api.models.show.TVUserReview
+import good.damn.tvlist.network.api.models.user.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -375,7 +374,7 @@ OnRateClickListener {
             )
         )
 
-        StatisticsView(
+        val statisticsView = StatisticsView(
             context
         ).apply {
 
@@ -392,30 +391,28 @@ OnRateClickListener {
                 R.color.searchViewBack
             )
 
-            val c = 123456
-
-            count = c.toString()
+            count = 0.toString()
 
             progressTitles = arrayOf(
                 ProgressTitleDraw(
                     "5",
-                    23425f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "4",
-                    65842f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "3",
-                    25845f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "2",
-                    12452f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "1",
-                    12347f / c
+                    0.1f
                 )
             )
 
@@ -580,6 +577,35 @@ OnRateClickListener {
         )
 
         App.IO.launch {
+
+            val distrosReview = mReviewService?.getDistributionReviews(
+                fromCache = !App.NETWORK_AVAILABLE
+            )
+
+            App.ui {
+                distrosReview?.let { dist ->
+                    if (dist.count == 0) {
+                        return@ui
+                    }
+
+                    statisticsView.apply {
+                        progressTitles = Array(5) {
+                            val d = dist.distribution[it]
+
+                            ProgressTitleDraw(
+                                d.title,
+                                if (d.count == 0) 0.1f
+                                else d.count.toFloat() / dist.count
+                            )
+                        }
+                        count = dist.count.toString()
+
+                        updateStats()
+                        invalidate()
+                    }
+                }
+            }
+
             if (App.TOKEN_AUTH == null) {
                 return@launch
             }

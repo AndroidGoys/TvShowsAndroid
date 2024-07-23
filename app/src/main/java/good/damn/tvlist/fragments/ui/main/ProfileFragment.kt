@@ -331,7 +331,9 @@ OnAuthListener {
                     edit.commit() // sync write changes
                 }
                 App.TOKEN_AUTH = null
-                updateLayoutAuthState()
+                App.ui {
+                    updateLayoutAuthState()
+                }
                 return@launch
             }
 

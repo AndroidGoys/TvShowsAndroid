@@ -20,7 +20,7 @@ import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.models.tv_show.TVShowReview
-import good.damn.tvlist.network.api.models.show.TVUserReview
+import good.damn.tvlist.network.api.models.user.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.buttons.RoundButton

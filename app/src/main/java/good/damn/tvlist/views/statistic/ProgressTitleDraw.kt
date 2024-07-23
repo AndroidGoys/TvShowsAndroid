@@ -16,9 +16,9 @@ class ProgressTitleDraw(
     private val mProgressBackRect = RectF()
     private val mProgressRect = RectF()
 
-    private lateinit var mPaintText: Paint
-    private lateinit var mPaintProgress: Paint
-    private lateinit var mPaintProgressBack: Paint
+    private var mPaintText = Paint()
+    private var mPaintProgress = Paint()
+    private var mPaintProgressBack = Paint()
 
     fun stylePaint(
         paintText: Paint,

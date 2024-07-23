@@ -1,4 +1,4 @@
-package good.damn.tvlist.network.api.models.show
+package good.damn.tvlist.network.api.models.user
 
 import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.toGregorianDateString

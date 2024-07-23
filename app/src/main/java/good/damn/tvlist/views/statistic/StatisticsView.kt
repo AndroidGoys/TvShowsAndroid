@@ -11,6 +11,8 @@ import android.view.ViewGroup
 import androidx.annotation.ColorInt
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.views.RatingCanvas
 
 class StatisticsView(
@@ -90,9 +92,74 @@ class StatisticsView(
             return
         }
 
-        val width = params.width
-        val height = params.height
+        layoutView(
+            params.width,
+            params.height
+        )
+    }
 
+    override fun onDraw(
+        canvas: Canvas
+    ) {
+        super.onDraw(canvas)
+
+        canvas.drawText(
+            mRatingStr,
+            mRatingTextX,
+            mRatingTextY,
+            mPaintRating
+        )
+
+        canvas.drawText(
+            count,
+            mCountTextX,
+            mCountTextY,
+            mPaintCount
+        )
+
+        mDrawablePeople?.draw(
+            canvas
+        )
+
+        progressTitles?.forEach {
+            it.draw(canvas)
+        }
+    }
+
+    fun updateStats() {
+        layoutView(
+            widthParams(),
+            heightParams()
+        )
+    }
+
+    fun updateGradient() {
+        mPaintRating.shader = LinearGradient(
+            mRatingTextX,
+            mRatingTextY,
+            mRatingTextX+mRatingTextWidth,
+            mRatingTextY,
+            intArrayOf(
+                RatingCanvas.detectColor(
+                    rate = rating.toInt()
+                ),
+                RatingCanvas.detectColor(
+                    rate = ((rating - rating.toInt()) * 10f).toInt(),
+                    times = 2
+                )
+            ),
+            floatArrayOf(
+                0.0f,
+                1.0f
+            ),
+            Shader.TileMode.CLAMP
+        )
+    }
+
+    private fun layoutView(
+        width: Int,
+        height: Int
+    ) {
         mRatingTextWidth = mPaintRating.measureText(
             mRatingStr
         )
@@ -109,7 +176,6 @@ class StatisticsView(
         mCountTextX = (w - mPaintCount.measureText(
             count
         )) * 0.5f
-
         mCountTextY = height * 0.68585f + mPaintCount.textSize
 
         progressTitles?.let {
@@ -148,56 +214,5 @@ class StatisticsView(
         }
 
         updateGradient()
-    }
-
-    override fun onDraw(
-        canvas: Canvas
-    ) {
-        super.onDraw(canvas)
-
-        canvas.drawText(
-            mRatingStr,
-            mRatingTextX,
-            mRatingTextY,
-            mPaintRating
-        )
-
-        canvas.drawText(
-            count,
-            mCountTextX,
-            mCountTextY,
-            mPaintCount
-        )
-
-        mDrawablePeople?.draw(
-            canvas
-        )
-
-        progressTitles?.forEach {
-            it.draw(canvas)
-        }
-    }
-
-    fun updateGradient() {
-        mPaintRating.shader = LinearGradient(
-            mRatingTextX,
-            mRatingTextY,
-            mRatingTextX+mRatingTextWidth,
-            mRatingTextY,
-            intArrayOf(
-                RatingCanvas.detectColor(
-                    rate = rating.toInt()
-                ),
-                RatingCanvas.detectColor(
-                    rate = ((rating - rating.toInt()) * 10f).toInt(),
-                    times = 2
-                )
-            ),
-            floatArrayOf(
-                0.0f,
-                1.0f
-            ),
-            Shader.TileMode.CLAMP
-        )
     }
 }

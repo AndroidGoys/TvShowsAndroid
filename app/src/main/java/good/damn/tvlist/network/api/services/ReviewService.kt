@@ -4,12 +4,11 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.R
-import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.extractArray
-import good.damn.tvlist.extensions.getJSONAt
 import good.damn.tvlist.models.Result
 import good.damn.tvlist.network.NetworkJSONService
-import good.damn.tvlist.network.api.models.show.TVUserReview
+import good.damn.tvlist.network.api.models.TVReviewDistribution
+import good.damn.tvlist.network.api.models.user.TVUserReview
 import org.json.JSONObject
 
 class ReviewService(
@@ -30,19 +29,20 @@ class ReviewService(
     @WorkerThread
     fun getDistributionReviews(
         fromCache: Boolean = false
-    ) {
+    ): TVReviewDistribution? {
         val response = if (fromCache)
             getCachedJson(mUrlDistros)
-        else getNetworkJSON(mUrlReviews)
+        else getNetworkJSON(mUrlDistros)
 
         Log.d(TAG, "getDistributionReviews: $response")
 
         if (response == null) {
-            return
+            return null
         }
 
-
-
+        return TVReviewDistribution.createFromJSON(
+            response
+        )
     }
 
     @WorkerThread

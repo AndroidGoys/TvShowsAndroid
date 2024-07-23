@@ -13,7 +13,6 @@ import good.damn.tvlist.network.api.models.TVSearchResultShows
 import good.damn.tvlist.network.api.models.TVShow
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
 import good.damn.tvlist.network.api.models.show.TVShowDetails
-import good.damn.tvlist.network.api.models.show.TVUserReview
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -37,7 +36,7 @@ class TVShowService(
         val response = if (fromCache)
             getCachedJson(url)
         else getNetworkJSON(url)
-
+        
         if (response == null) {
             return null
         }

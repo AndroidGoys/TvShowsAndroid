@@ -45,7 +45,7 @@ import good.damn.tvlist.models.AnimationConfig
 import good.damn.tvlist.models.tv_show.TVShowReview
 import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.network.api.models.show.TVShowChannelDate
-import good.damn.tvlist.network.api.models.show.TVUserReview
+import good.damn.tvlist.network.api.models.user.TVUserReview
 import good.damn.tvlist.network.api.services.ReviewService
 import good.damn.tvlist.network.api.services.TVShowService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
@@ -468,30 +468,28 @@ class TVShowPageFragment
                 R.color.searchViewBack
             )
 
-            val c = 123456
-
-            count = c.toString()
+            count = 0.toString()
 
             progressTitles = arrayOf(
                 ProgressTitleDraw(
                     "5",
-                    23425f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "4",
-                    65842f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "3",
-                    25845f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "2",
-                    12452f / c
+                    0.1f
                 ),
                 ProgressTitleDraw(
                     "1",
-                    12347f / c
+                    0.1f
                 )
             )
 
@@ -780,9 +778,25 @@ class TVShowPageFragment
             )
 
             App.ui {
-                distrosReview?.let {
+                distrosReview?.let { dist ->
+                    if (dist.count == 0) {
+                        return@ui
+                    }
+
                     statisticsView.apply {
-                        progressTitles
+                        progressTitles = Array(5) {
+                            val d = dist.distribution[it]
+
+                            ProgressTitleDraw(
+                                d.title,
+                                if (d.count == 0) 0.1f
+                                else d.count.toFloat() / dist.count
+                            )
+                        }
+                        count = dist.count.toString()
+
+                        updateStats()
+                        invalidate()
                     }
                 }
             }
