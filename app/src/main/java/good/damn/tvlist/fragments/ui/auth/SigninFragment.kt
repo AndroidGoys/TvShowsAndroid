@@ -19,6 +19,8 @@ import good.damn.tvlist.extensions.accessToken
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.isEmail
+import good.damn.tvlist.extensions.isStrongPassword
 import good.damn.tvlist.extensions.normalWidth
 import good.damn.tvlist.extensions.refreshToken
 import good.damn.tvlist.extensions.setBackgroundColorId
@@ -436,6 +438,20 @@ OnAuthListener {
 
         if (password.isNullOrBlank()) {
             toast(R.string.password_empty)
+            return
+        }
+
+        if (!email.isEmail()) {
+            toast(R.string.it_not_email)
+            return
+        }
+
+        val stringId = password
+            .isStrongPassword()
+            .errorStringId
+
+        if (stringId != -1) {
+            toast(stringId)
             return
         }
 

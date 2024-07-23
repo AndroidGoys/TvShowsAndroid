@@ -5,7 +5,6 @@ import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.extractArray
-import good.damn.tvlist.extensions.getAt
 import good.damn.tvlist.extensions.getJSONAt
 import good.damn.tvlist.models.Result
 import good.damn.tvlist.network.NetworkJSONService
@@ -13,17 +12,24 @@ import good.damn.tvlist.network.api.models.show.TVUserReview
 import org.json.JSONObject
 
 class ReviewService(
-    private val mId: Long,
-    private val mType: String
+    id: Long,
+    type: String
 ): NetworkJSONService(
     App.CACHE_DIR
 ) {
 
-    private val mUrlReviews = "${App.URL}/api/$mType/$mId/reviews"
+    private val mUrlReviews = "${App.URL}/api/$type/$id/reviews"
     private val mUrlUserReview = "$mUrlReviews/@my"
 
     companion object {
         private const val TAG = "ReviewService"
+    }
+
+    @WorkerThread
+    fun getDistributionReviews(
+        fromCache: Boolean = false
+    ) {
+
     }
 
     @WorkerThread

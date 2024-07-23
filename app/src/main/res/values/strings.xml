@@ -65,4 +65,7 @@
     <string name="lets_see_it">Давай посмотрим?</string>
     <string name="need_sign_in_for_reviews">Нужен аккаунт для написания отзыва</string>
     <string name="update_review">Обновить отзыв</string>
+    <string name="password_less_than_8">Пароль должен быть больше 8 символов</string>
+    <string name="password_has_not_lowerscape">Пароль не содержит символ подчёркивания \'_\'</string>
+    <string name="it_not_email">Email не является почтовым адресом</string>
 </resources>
