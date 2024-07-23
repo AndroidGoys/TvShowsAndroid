@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.extensions.extract
 import good.damn.tvlist.extensions.extractArray
 import good.damn.tvlist.extensions.getJSONAt
 import good.damn.tvlist.models.Result
@@ -39,6 +40,8 @@ class ReviewService(
         if (response == null) {
             return
         }
+
+
 
     }
 
@@ -85,24 +88,16 @@ class ReviewService(
     ): Result<TVUserReview> {
         val json = if (fromCache)
             getCachedJson(mUrlUserReview)
-        else getNetworkJSON(mUrlReviews)
+        else getNetworkJSON(mUrlUserReview)
 
-        Log.d(TAG, "getUserReview: $json")
+        Log.d(TAG, "getUserReview: $json ${App.TOKEN_AUTH?.accessToken}")
 
         if (json == null) {
-            return Result(
-                errorStringId = R.string.invalid_object
-            )
+            return Result()
         }
 
-        val comment = json.extractArray(
-            "comments"
-        )?.getJSONAt(
-            0
-        ) ?: return Result()
-
         val model = TVUserReview.createFromJSON(
-            comment
+            json
         ) ?: return Result(
             errorStringId = R.string.invalid_object
         )

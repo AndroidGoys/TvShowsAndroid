@@ -47,7 +47,7 @@ class StatisticsView(
             mPaintProgressBack.color = v
         }
 
-    var count: String = "1234567"
+    var count: String = "0000000"
 
     var textSizeRatingFactor = 0.2f
     var textSizeCountFactor = 0.1f
@@ -63,7 +63,7 @@ class StatisticsView(
 
     var progressTitles: Array<ProgressTitleDraw>? = null
 
-    private var mRatingStr = "4.6"
+    private var mRatingStr = "0.0"
 
     private val mPaintRating = Paint()
     private val mPaintCount = Paint()

@@ -733,10 +733,10 @@ class TVShowPageFragment
             val details = showService.getShowDetails(
                 id.toInt(),
                 fromCache = !App.NETWORK_AVAILABLE
-            ) ?: return@launch
+            )
 
             App.ui {
-                details.apply {
+                details?.apply {
                     textViewDesc.text = description
                     textViewCensorAge.text = "${censorAge.age}+"
 
@@ -761,20 +761,32 @@ class TVShowPageFragment
 
             mChannelPointers = showService.getChannelPointers(
                 id
-            ) ?: return@launch
-
-            val pointers = mChannelPointers
-                ?: return@launch
+            )
 
             App.ui {
-                recyclerViewChannels.apply {
-                    adapter = TVShowChannelsAdapter(
-                        pointers,
-                        heightParams(),
-                        heightParams()
-                    )
+                mChannelPointers?.let {
+                    recyclerViewChannels.apply {
+                        adapter = TVShowChannelsAdapter(
+                            it,
+                            heightParams(),
+                            heightParams()
+                        )
+                    }
                 }
             }
+
+            val distrosReview = mReviewService?.getDistributionReviews(
+                fromCache = !App.NETWORK_AVAILABLE
+            )
+
+            App.ui {
+                distrosReview?.let {
+                    statisticsView.apply {
+                        progressTitles
+                    }
+                }
+            }
+
 
             if (App.TOKEN_AUTH == null) {
                 return@launch
