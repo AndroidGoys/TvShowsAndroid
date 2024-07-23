@@ -19,6 +19,12 @@ fun String.isStrongPassword(): Result<Void> {
         )
     }
 
+    if (!this.contains("[0-9]".toRegex())) {
+        return Result(
+            errorStringId = R.string.password_has_not_numbers
+        )
+    }
+
     if (!this.contains("_".toRegex())) {
         return Result(
             errorStringId = R.string.password_has_not_lowerscape

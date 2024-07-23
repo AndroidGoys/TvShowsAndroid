@@ -16,6 +16,7 @@ import androidx.core.view.children
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.extensions.accessToken
+import good.damn.tvlist.extensions.asteriskMask
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
@@ -266,6 +267,7 @@ OnAuthListener {
             gravity = Gravity.CENTER
 
             singleLined()
+            asteriskMask()
 
             boundsLinear(
                 gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP,
