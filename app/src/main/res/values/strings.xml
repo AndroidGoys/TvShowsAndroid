@@ -69,4 +69,5 @@
     <string name="password_has_not_lowerscape">Пароль не содержит символ подчёркивания \'_\'</string>
     <string name="it_not_email">Email не является почтовым адресом</string>
     <string name="password_has_not_numbers">Пароль должен содержать цифру</string>
+    <string name="password_has_not_latin">Пароль должен содержать латинские символы</string>
 </resources>
