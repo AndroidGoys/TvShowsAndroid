@@ -12,6 +12,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.WorkerThread
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -727,110 +728,32 @@ class TVShowPageFragment
         )
 
         App.IO.launch {
-
-            val details = showService.getShowDetails(
+            loadDetails(
+                showService,
                 id.toInt(),
-                fromCache = !App.NETWORK_AVAILABLE
+                textViewDesc,
+                textViewCensorAge,
+                statisticsView,
+                recyclerViewImages,
+                measureUnit
             )
 
-            App.ui {
-                details?.apply {
-                    textViewDesc.text = description
-                    textViewCensorAge.text = "${censorAge.age}+"
-
-                    Log.d(TAG, "onCreateView: RATING: $rating")
-                    statisticsView.let { statView ->
-                        statView.rating = rating
-                        statView.updateGradient()
-                        statView.invalidate()
-                    }
-
-                    if (imagesUrl == null) {
-                        return@apply
-                    }
-                    recyclerViewImages.adapter = TVShowImagesAdapter(
-                        imagesUrl,
-                        (measureUnit * 324.normalWidth())
-                            .toInt(),
-                        recyclerViewImages.heightParams()
-                    )
-                }
-            }
-
-            mChannelPointers = showService.getChannelPointers(
-                id
+            loadDistroReviews(
+                mReviewService,
+                statisticsView
             )
 
-            App.ui {
-                mChannelPointers?.let {
-                    recyclerViewChannels.apply {
-                        adapter = TVShowChannelsAdapter(
-                            it,
-                            heightParams(),
-                            heightParams()
-                        )
-                    }
-                }
-            }
-
-            val distrosReview = mReviewService?.getDistributionReviews(
-                fromCache = !App.NETWORK_AVAILABLE
+            loadChannelPointers(
+                id,
+                showService,
+                recyclerViewChannels
             )
 
-            App.ui {
-                distrosReview?.let { dist ->
-                    if (dist.count == 0) {
-                        return@ui
-                    }
+            loadUserReview(
+                textViewPostReview,
+                rateView
+            )
 
-                    statisticsView.apply {
-                        progressTitles = Array(5) {
-                            val d = dist.distribution[it]
-
-                            ProgressTitleDraw(
-                                d.title,
-                                if (d.count == 0) 0.1f
-                                else d.count.toFloat() / dist.count
-                            )
-                        }
-                        count = dist.count.toString()
-
-                        updateStats()
-                        invalidate()
-                    }
-                }
-            }
-
-
-            if (App.TOKEN_AUTH == null) {
-                return@launch
-            }
-
-            val userReview = mReviewService?.getUserReview(
-                false
-            ) ?: return@launch
-
-            mUserReview = userReview.result
-
-            if (userReview.errorStringId != -1) {
-                App.ui {
-                    toast(userReview.errorStringId)
-                }
-                return@launch
-            }
-
-            val review = mUserReview
-                ?: return@launch
-
-            App.ui {
-                textViewPostReview.setText(
-                    R.string.update_review
-                )
-
-                rateView.setStarsRate(
-                    review.rating
-                )
-            }
         }
 
         return layout
@@ -1071,6 +994,65 @@ class TVShowPageFragment
         enableInteraction(true)
     }
 
+    @WorkerThread
+    private fun loadChannelPointers(
+        id: Long,
+        showService: TVShowService,
+        recyclerViewChannels: RecyclerView
+    ) {
+        mChannelPointers = showService.getChannelPointers(
+            id
+        )
+
+        App.ui {
+            mChannelPointers?.let {
+                recyclerViewChannels.apply {
+                    adapter = TVShowChannelsAdapter(
+                        it,
+                        heightParams(),
+                        heightParams()
+                    )
+                }
+            }
+        }
+    }
+
+    @WorkerThread
+    private fun loadUserReview(
+        textViewPostReview: AppCompatTextView,
+        rateView: RateView
+    ) {
+        if (App.TOKEN_AUTH == null) {
+            return
+        }
+
+        val userReview = mReviewService?.getUserReview(
+            false
+        ) ?: return
+
+        mUserReview = userReview.result
+
+        if (userReview.errorStringId != -1) {
+            App.ui {
+                toast(userReview.errorStringId)
+            }
+            return
+        }
+
+        val review = mUserReview
+            ?: return
+
+        App.ui {
+            textViewPostReview.setText(
+                R.string.update_review
+            )
+
+            rateView.setStarsRate(
+                review.rating
+            )
+        }
+    }
+
 }
 
 private fun TVShowPageFragment.onClickBtnBack(
@@ -1082,4 +1064,79 @@ private fun TVShowPageFragment.onClickBtnBack(
             fragment.view?.y = App.HEIGHT * f
         }
     )
+}
+
+@WorkerThread
+private fun TVShowPageFragment.loadDistroReviews(
+    reviewService: ReviewService?,
+    statisticsView: StatisticsView
+) {
+    val distrosReview = reviewService?.getDistributionReviews(
+        fromCache = !App.NETWORK_AVAILABLE
+    )
+
+    App.ui {
+        distrosReview?.let { dist ->
+            if (dist.count == 0) {
+                return@ui
+            }
+
+            statisticsView.apply {
+                progressTitles = Array(5) {
+                    val d = dist.distribution[it]
+
+                    ProgressTitleDraw(
+                        d.title,
+                        if (d.count == 0) 0.1f
+                        else d.count.toFloat() / dist.count
+                    )
+                }
+                count = dist.count.toString()
+
+                updateStats()
+                invalidate()
+            }
+        }
+    }
+}
+
+@WorkerThread
+private fun TVShowPageFragment.loadDetails(
+    showService: TVShowService,
+    id: Int,
+    textViewDesc: AppCompatTextView,
+    textViewCensorAge: AppCompatTextView,
+    statisticsView: StatisticsView,
+    recyclerViewImages: RecyclerView,
+    measureUnit: Int
+) {
+    val details = showService.getShowDetails(
+        id,
+        fromCache = !App.NETWORK_AVAILABLE
+    )
+
+    App.ui {
+        details?.apply {
+            textViewDesc.text = description
+            textViewCensorAge.text = "${censorAge.age}+"
+
+            Log.d("TVShowPageFragment",
+                "onCreateView: RATING: $rating")
+            statisticsView.let { statView ->
+                statView.rating = rating
+                statView.updateGradient()
+                statView.invalidate()
+            }
+
+            if (imagesUrl == null) {
+                return@apply
+            }
+            recyclerViewImages.adapter = TVShowImagesAdapter(
+                imagesUrl,
+                (measureUnit * 324.normalWidth())
+                    .toInt(),
+                recyclerViewImages.heightParams()
+            )
+        }
+    }
 }

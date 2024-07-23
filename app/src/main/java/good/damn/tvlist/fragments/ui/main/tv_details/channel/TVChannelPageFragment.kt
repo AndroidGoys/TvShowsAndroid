@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.annotation.WorkerThread
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.FileProvider
 import good.damn.shaderblur.views.BlurShaderView
@@ -577,64 +578,15 @@ OnRateClickListener {
         )
 
         App.IO.launch {
-
-            val distrosReview = mReviewService?.getDistributionReviews(
-                fromCache = !App.NETWORK_AVAILABLE
+            loadData(
+                mReviewService,
+                statisticsView
             )
-
-            App.ui {
-                distrosReview?.let { dist ->
-                    if (dist.count == 0) {
-                        return@ui
-                    }
-
-                    statisticsView.apply {
-                        progressTitles = Array(5) {
-                            val d = dist.distribution[it]
-
-                            ProgressTitleDraw(
-                                d.title,
-                                if (d.count == 0) 0.1f
-                                else d.count.toFloat() / dist.count
-                            )
-                        }
-                        count = dist.count.toString()
-
-                        updateStats()
-                        invalidate()
-                    }
-                }
-            }
-
-            if (App.TOKEN_AUTH == null) {
-                return@launch
-            }
-
-            val userReview = mReviewService?.getUserReview(
-                false
-            ) ?: return@launch
-
-            mUserReview = userReview.result
-
-            if (userReview.errorStringId != -1) {
-                App.ui {
-                    toast(userReview.errorStringId)
-                }
-                return@launch
-            }
-
-            val review = mUserReview
-                ?: return@launch
-
-            App.ui {
-                textViewPostReview.setText(
-                    R.string.update_review
-                )
-
-                rateView.setStarsRate(
-                    review.rating
-                )
-            }
+            loadUserReview(
+                mReviewService,
+                rateView,
+                textViewPostReview
+            )
         }
 
         return layout
@@ -773,6 +725,44 @@ OnRateClickListener {
         )
     }
 
+
+    @WorkerThread
+    private fun loadUserReview(
+        reviewService: ReviewService?,
+        rateView: RateView,
+        textViewPostReview: AppCompatTextView
+    ) {
+        if (App.TOKEN_AUTH == null) {
+            return
+        }
+
+        val userReview = reviewService?.getUserReview(
+            false
+        ) ?: return
+
+        mUserReview = userReview.result
+
+        if (userReview.errorStringId != -1) {
+            App.ui {
+                toast(userReview.errorStringId)
+            }
+            return
+        }
+
+        val review = mUserReview
+            ?: return
+
+        App.ui {
+            textViewPostReview.setText(
+                R.string.update_review
+            )
+
+            rateView.setStarsRate(
+                review.rating
+            )
+        }
+    }
+
 }
 
 private fun TVChannelPageFragment.onClickBtnBack(
@@ -850,4 +840,39 @@ private fun TVChannelPageFragment.shareChannel(
             getString(R.string.lets_see_it),
         imageUri
     )
+}
+
+
+@WorkerThread
+private fun TVChannelPageFragment.loadData(
+    reviewService: ReviewService?,
+    statisticsView: StatisticsView
+) {
+    val distrosReview = reviewService?.getDistributionReviews(
+        fromCache = !App.NETWORK_AVAILABLE
+    )
+
+    App.ui {
+        distrosReview?.let { dist ->
+            if (dist.count == 0) {
+                return@ui
+            }
+
+            statisticsView.apply {
+                progressTitles = Array(5) {
+                    val d = dist.distribution[it]
+
+                    ProgressTitleDraw(
+                        d.title,
+                        if (d.count == 0) 0.1f
+                        else d.count.toFloat() / dist.count
+                    )
+                }
+                count = dist.count.toString()
+
+                updateStats()
+                invalidate()
+            }
+        }
+    }
 }
