@@ -473,6 +473,8 @@ OnAuthListener {
                             }
                         }
 
+                        updateProfile()
+
                         toast(R.string.avatar_changed)
                         return@ui
                     }
