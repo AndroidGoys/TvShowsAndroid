@@ -9,6 +9,7 @@ import good.damn.tvlist.network.api.models.user.UserProfile
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import good.damn.tvlist.models.Result
+import org.json.JSONObject
 
 class UserService
 : NetworkJSONService(
@@ -19,10 +20,49 @@ class UserService
         private const val TAG = "UserService"
         private const val URL_PROFILE = "${App.URL}/api/users/@me"
         private const val URL_PROFILE_ID = "${App.URL}/api/users"
+        private const val URL_FAVOURITE_SHOWS = "${App.URL}/api/shows/favorites"
+
         private val CONTENT_TYPE_IMG = "image/png".toMediaType()
 
         const val URL_USER_AVATAR = "$URL_PROFILE/avatar"
         const val DIR_AVATAR = "bitmapAvatars"
+    }
+
+    @WorkerThread
+    fun getFavouriteShows(): ArrayList<Long>? {
+        val resp = getNetworkJSON(
+            URL_FAVOURITE_SHOWS
+        ) ?: return null
+
+        Log.d(TAG, "getFavouriteShows: $resp")
+
+        return null
+    }
+
+    @WorkerThread
+    fun deleteFavouriteShow(
+        id: Long
+    ) {
+        val resp = execute(
+            makeRequestDelete(
+                URL_FAVOURITE_SHOWS,
+            )
+        )
+    }
+
+    @WorkerThread
+    fun postFavouriteShow(
+        id: Long
+    ) {
+        val resp = requestPostJSON(
+            URL_FAVOURITE_SHOWS,
+            JSONObject().apply {
+                put("id", id)
+            }
+        )
+
+        Log.d(TAG, "postFavouriteShow: $resp ${resp.result}")
+
     }
 
     @WorkerThread

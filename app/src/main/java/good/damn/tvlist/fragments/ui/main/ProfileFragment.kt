@@ -355,7 +355,8 @@ OnAuthListener {
                     App.CACHE_DIR,
                     BITMAP_PROFILE,
                     s,
-                    s
+                    s,
+                    withCache = !App.NETWORK_AVAILABLE
                 ) {
                     profileView.setAvatar(it)
                 }

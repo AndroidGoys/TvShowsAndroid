@@ -4,7 +4,6 @@ import android.content.Context
 import good.damn.tvlist.App
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
 import good.damn.tvlist.network.api.services.TVChannel2Service
-import good.damn.tvlist.network.api.services.lime.TVChannelsService
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
 import kotlinx.coroutines.launch
 

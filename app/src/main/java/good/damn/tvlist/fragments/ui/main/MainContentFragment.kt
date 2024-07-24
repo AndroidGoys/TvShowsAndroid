@@ -442,7 +442,8 @@ OnAuthListener {
                     App.CACHE_DIR,
                     UserService.DIR_AVATAR,
                     s,
-                    s
+                    s,
+                    withCache = !App.NETWORK_AVAILABLE
                 ) {
                     imageViewProfile.bitmap = it
                     imageViewProfile.invalidate()

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import good.damn.tvlist.App
 import good.damn.tvlist.cache.CacheBitmap
+import good.damn.tvlist.cache.CacheFile
 import good.damn.tvlist.utils.BitmapUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,25 @@ class NetworkBitmap {
     companion object {
         private const val TAG = "NetworkBitmap"
         private const val DIR_ORIGINAL = "original/bitmap"
+
+        fun deleteCache(
+            url: String,
+            cacheDirApp: File,
+            dirName: String
+        ) {
+            Log.d(TAG, "deleteCache: $url")
+            deleteCachedFile(
+                url,
+                cacheDirApp,
+                dirName
+            )
+
+            deleteCachedFile(
+                url,
+                cacheDirApp,
+                DIR_ORIGINAL
+            )
+        }
 
         fun cacheOriginal(
             bitmap: Bitmap,
@@ -36,49 +56,53 @@ class NetworkBitmap {
             dirName: String,
             viewWidth: Int,
             viewHeight: Int,
+            withCache: Boolean = true,
             completion: (Bitmap) -> Unit
         ) = App.IMAGE_SCOPE.launch {
-            val cachedNativeBitmap = CacheBitmap.loadFromCache(
-                url,
-                dirName,
-                cacheDirApp
-            )
 
-            if (cachedNativeBitmap != null) {
-                App.ui {
-                    completion(
-                        cachedNativeBitmap
-                    )
-                }
-                return@launch
-            }
-
-            val cachedOriginalBitmap = CacheBitmap.loadFromCache(
-                url,
-                DIR_ORIGINAL,
-                cacheDirApp
-            )
-
-            if (cachedOriginalBitmap != null) {
-                val aspectedBitmap = BitmapUtils.aspectedBitmap(
-                    cachedOriginalBitmap,
-                    viewWidth,
-                    viewHeight
-                )
-
-                CacheBitmap.cache(
-                    aspectedBitmap,
+            if (withCache) {
+                val cachedNativeBitmap = CacheBitmap.loadFromCache(
                     url,
                     dirName,
                     cacheDirApp
                 )
 
-                App.ui {
-                    completion(
-                        aspectedBitmap
-                    )
+                if (cachedNativeBitmap != null) {
+                    App.ui {
+                        completion(
+                            cachedNativeBitmap
+                        )
+                    }
+                    return@launch
                 }
-                return@launch
+
+                val cachedOriginalBitmap = CacheBitmap.loadFromCache(
+                    url,
+                    DIR_ORIGINAL,
+                    cacheDirApp
+                )
+
+                if (cachedOriginalBitmap != null) {
+                    val aspectedBitmap = BitmapUtils.aspectedBitmap(
+                        cachedOriginalBitmap,
+                        viewWidth,
+                        viewHeight
+                    )
+
+                    CacheBitmap.cache(
+                        aspectedBitmap,
+                        url,
+                        dirName,
+                        cacheDirApp
+                    )
+
+                    App.ui {
+                        completion(
+                            aspectedBitmap
+                        )
+                    }
+                    return@launch
+                }
             }
 
             // Check expiration period?
@@ -139,6 +163,24 @@ class NetworkBitmap {
                 }
 
             }
+        }
+
+        private fun deleteCachedFile(
+            url: String,
+            cacheDirApp: File,
+            dirName: String
+        ) {
+            val cachedFile = CacheBitmap.cacheBitmapFile(
+                url,
+                dirName,
+                cacheDirApp
+            )
+
+            if (!cachedFile.exists()) {
+                return
+            }
+
+            cachedFile.delete()
         }
     }
 }

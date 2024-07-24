@@ -4,7 +4,6 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
-import good.damn.tvlist.network.api.models.TVChannel
 import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.view_holders.TVChannelViewHolder

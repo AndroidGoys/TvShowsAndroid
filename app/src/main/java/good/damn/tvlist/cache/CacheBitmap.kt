@@ -67,7 +67,7 @@ class CacheBitmap {
         }
 
 
-        private fun cacheBitmapFile(
+        fun cacheBitmapFile(
             name: String,
             dirName: String,
             cacheDirApp: File

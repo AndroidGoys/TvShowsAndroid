@@ -145,6 +145,10 @@ class TVShowService(
                 "name"
             ) as? String
 
+            val channelId = channel.extract(
+                "id"
+            ) as? Long ?: -1
+
             val releases = channel.extractObject(
                 "releases"
             )?.extractArray(
@@ -164,6 +168,7 @@ class TVShowService(
 
             channelDates.add(
                 TVShowChannelDate(
+                    channelId,
                     timeStart.toTimeString(),
                     timeStart.toGregorianDateString(),
                     imageUrl,

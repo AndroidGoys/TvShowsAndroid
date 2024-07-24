@@ -36,6 +36,7 @@ import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
+import good.damn.tvlist.extensions.toShareChannelUrl
 import good.damn.tvlist.extensions.topHeightParams
 import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
@@ -973,9 +974,20 @@ class TVShowPageFragment
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = release.timeStart * 1000L
 
-        val channel = mChannelPointers?.run {
-            extract(size-1)?.name
-        } ?: ""
+        var channel = ""
+        var channelUrl = ""
+
+        mChannelPointers?.apply {
+            val pointer = extract(
+                size-1
+            )
+
+            channel = pointer?.name ?: ""
+            channelUrl = pointer
+                ?.channelId
+                ?.toShareChannelUrl()
+                ?: ""
+        }
 
         val text = "${getString(R.string.lets_see)}:\n\n" +
             "\"${release.name}\" " +
@@ -983,7 +995,7 @@ class TVShowPageFragment
             "${getString(R.string.at_time)} " +
             "${release.startTimeString} " +
             "${getString(R.string.on_channel)} \"$channel\" " +
-            "${getString(R.string.in_app)} ${getString(R.string.app_name)}?"
+            "${getString(R.string.in_app)} ${getString(R.string.app_name)}?\n\n$channelUrl"
 
         ShareUtils.shareWithImage(
             context,

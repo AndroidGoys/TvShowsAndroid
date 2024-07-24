@@ -12,7 +12,6 @@ import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
 import good.damn.tvlist.network.api.models.TVChannelRelease
-import good.damn.tvlist.network.api.models.TVProgram
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.program.OnClickChannelReleaseListener
 import good.damn.tvlist.views.program.TVChannelReleaseView

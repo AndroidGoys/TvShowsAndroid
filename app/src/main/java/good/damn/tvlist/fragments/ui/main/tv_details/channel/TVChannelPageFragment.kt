@@ -25,6 +25,7 @@ import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.setTextColorId
 import good.damn.tvlist.extensions.setTextSizePx
 import good.damn.tvlist.extensions.shortName
+import good.damn.tvlist.extensions.toShareChannelUrl
 import good.damn.tvlist.extensions.topHeightParams
 import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
@@ -831,9 +832,7 @@ private fun TVChannelPageFragment.shareChannel(
             "${getString(R.string.with_rating)} " +
             "${channel.rating}\n\n$shortText \n\n" +
             getString(R.string.lets_see_it) +
-            "\n\n${App.URL_SHARING_CHANNEL}/${channel.id}?" +
-            "time-start=${App.CURRENT_TIME_SECONDS}&" +
-            "time-zone=3",
+            "\n\n ${firstParag.toLong().toShareChannelUrl()}",
         null
     )
 }
