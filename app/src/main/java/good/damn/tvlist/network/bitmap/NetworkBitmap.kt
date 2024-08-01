@@ -56,53 +56,50 @@ class NetworkBitmap {
             dirName: String,
             viewWidth: Int,
             viewHeight: Int,
-            withCache: Boolean = true,
             completion: (Bitmap) -> Unit
         ) = App.IMAGE_SCOPE.launch {
 
-            if (withCache) {
-                val cachedNativeBitmap = CacheBitmap.loadFromCache(
+            val cachedNativeBitmap = CacheBitmap.loadFromCache(
+                url,
+                dirName,
+                cacheDirApp
+            )
+
+            if (cachedNativeBitmap != null) {
+                App.ui {
+                    completion(
+                        cachedNativeBitmap
+                    )
+                }
+                return@launch
+            }
+
+            val cachedOriginalBitmap = CacheBitmap.loadFromCache(
+                url,
+                DIR_ORIGINAL,
+                cacheDirApp
+            )
+
+            if (cachedOriginalBitmap != null) {
+                val aspectedBitmap = BitmapUtils.aspectedBitmap(
+                    cachedOriginalBitmap,
+                    viewWidth,
+                    viewHeight
+                )
+
+                CacheBitmap.cache(
+                    aspectedBitmap,
                     url,
                     dirName,
                     cacheDirApp
                 )
 
-                if (cachedNativeBitmap != null) {
-                    App.ui {
-                        completion(
-                            cachedNativeBitmap
-                        )
-                    }
-                    return@launch
-                }
-
-                val cachedOriginalBitmap = CacheBitmap.loadFromCache(
-                    url,
-                    DIR_ORIGINAL,
-                    cacheDirApp
-                )
-
-                if (cachedOriginalBitmap != null) {
-                    val aspectedBitmap = BitmapUtils.aspectedBitmap(
-                        cachedOriginalBitmap,
-                        viewWidth,
-                        viewHeight
+                App.ui {
+                    completion(
+                        aspectedBitmap
                     )
-
-                    CacheBitmap.cache(
-                        aspectedBitmap,
-                        url,
-                        dirName,
-                        cacheDirApp
-                    )
-
-                    App.ui {
-                        completion(
-                            aspectedBitmap
-                        )
-                    }
-                    return@launch
                 }
+                return@launch
             }
 
             // Check expiration period?
