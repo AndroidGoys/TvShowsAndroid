@@ -59,7 +59,7 @@ class TVChannelReleaseViewHolder(
             mReleaseView.heightParams()
         ) {
             mReleaseView.previewImage = it
-            mReleaseView.invalidate()
+            mReleaseView.startImageAnimation()
         }
 
     }

@@ -1,5 +1,6 @@
 package good.damn.tvlist.views.program
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -9,6 +10,7 @@ import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import good.damn.tvlist.App
 import good.damn.tvlist.R
@@ -102,6 +104,8 @@ class TVChannelReleaseView(
 
     private val mRectProgress = RectF()
 
+    private val mImageAnimator = ValueAnimator()
+
     private val mDrawableFavourites = App.drawable(
         R.drawable.ic_star_fill_lime
     )
@@ -119,8 +123,17 @@ class TVChannelReleaseView(
     private var mTimeY = 0f
     private var mTimeX = 0f
 
+    private var mImageX = 0f
+
     init {
         mPaintGradientGray.isDither = true
+        mImageAnimator.duration = 175
+        mImageAnimator.interpolator = AccelerateDecelerateInterpolator()
+
+        mImageAnimator.addUpdateListener {
+            mImageX = it.animatedValue as? Float ?: 0f
+            invalidate()
+        }
     }
     
     override fun setLayoutParams(
@@ -165,6 +178,9 @@ class TVChannelReleaseView(
         )
         mRating.cornerRadius = ratingHeight * 0.3125f
 
+        mImageAnimator.setFloatValues(
+            width, 0f
+        )
 
         super.setLayoutParams(params)
     }
@@ -209,7 +225,7 @@ class TVChannelReleaseView(
         if (previewImage != null) {
             canvas.drawBitmap(
                 previewImage!!,
-                0f,
+                mImageX,
                 0f,
                 mPaintProgress
             )
@@ -274,6 +290,10 @@ class TVChannelReleaseView(
             this,
             cacheRelease
         )
+    }
+
+    fun startImageAnimation() {
+        mImageAnimator.start()
     }
 
 }

@@ -60,7 +60,6 @@ OnAuthListener {
         context: Context,
         measureUnit: Int
     ): View {
-
         val layout = FrameLayout(
             context
         )
