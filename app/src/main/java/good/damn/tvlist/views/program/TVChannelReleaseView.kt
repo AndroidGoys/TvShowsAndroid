@@ -79,6 +79,9 @@ class TVChannelReleaseView(
                 return
             }
             mRectProgress.right = width * progress
+            mProgressAnimator.setFloatValues(
+                0f,mRectProgress.right
+            )
         }
 
     var rating = 0f
@@ -105,6 +108,7 @@ class TVChannelReleaseView(
     private val mRectProgress = RectF()
 
     private val mImageAnimator = ValueAnimator()
+    private val mProgressAnimator = ValueAnimator()
 
     private val mDrawableFavourites = App.drawable(
         R.drawable.ic_star_fill_lime
@@ -127,11 +131,19 @@ class TVChannelReleaseView(
 
     init {
         mPaintGradientGray.isDither = true
+
         mImageAnimator.duration = 175
         mImageAnimator.interpolator = AccelerateDecelerateInterpolator()
 
         mImageAnimator.addUpdateListener {
             mImageX = it.animatedValue as? Float ?: 0f
+            invalidate()
+        }
+
+        mProgressAnimator.duration = 500
+        mProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
+        mProgressAnimator.addUpdateListener {
+            mRectProgress.right = it.animatedValue as? Float ?: 0f
             invalidate()
         }
     }
@@ -179,7 +191,7 @@ class TVChannelReleaseView(
         mRating.cornerRadius = ratingHeight * 0.3125f
 
         mImageAnimator.setFloatValues(
-            width, 0f
+            -width, 0f
         )
 
         super.setLayoutParams(params)
@@ -194,6 +206,10 @@ class TVChannelReleaseView(
 
         mRectProgress.right = width * progress
         mRectProgress.top = height.toFloat() - progressWidth
+
+        mProgressAnimator.setFloatValues(
+            0f,mRectProgress.right
+        )
 
         paddingBottom.toFloat().let { bottomPadding ->
             mTimeY = height - bottomPadding
@@ -290,6 +306,10 @@ class TVChannelReleaseView(
             this,
             cacheRelease
         )
+    }
+
+    fun startProgressAnimation() {
+        mProgressAnimator.start()
     }
 
     fun startImageAnimation() {

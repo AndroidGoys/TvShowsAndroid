@@ -37,6 +37,9 @@ class TVChannelReleaseViewHolder(
         mReleaseView.age = "${p.censorAge.age}+"
         mReleaseView.previewImage = null
 
+        mReleaseView.progress = 0f
+        mReleaseView.invalidate()
+
         if (next != null) {
             val t = mCalendar.timeInMillis / 1000
             val dt = t - p.timeStart
@@ -45,7 +48,9 @@ class TVChannelReleaseViewHolder(
         } else {
             mReleaseView.progress = 0f
         }
-        mReleaseView.invalidate()
+        mReleaseView.post {
+            mReleaseView.startProgressAnimation()
+        }
 
         if (p.previewUrl == null) {
             return
