@@ -1,5 +1,6 @@
 package good.damn.tvlist.views.round
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -10,7 +11,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
-import good.damn.tvlist.extensions.widthParams
 
 class RoundedImageView(
     context: Context
@@ -41,6 +41,7 @@ class RoundedImageView(
             mBitmapX = (width - v.width) * 0.5f
             mBitmapY = (height - v.height) * 0.5f
         }
+
     var drawable: Drawable? = null
 
     var imageScaleX = 1f
@@ -53,10 +54,23 @@ class RoundedImageView(
     private var mBitmapX = 0f
     private var mBitmapY = 0f
 
+    private val mImageAnimator = ValueAnimator()
+
     init {
-        mPaint.style = Paint.Style.STROKE
-        mPaint.isAntiAlias = true
-        mPaint.color = 0xff000000.toInt()
+        mPaint.apply {
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+            color = 0xff000000.toInt()
+        }
+
+        mImageAnimator.apply {
+            duration = 350
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                mBitmapY = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
+        }
 
         mTouchInteraction.apply {
             minValue = 1.2f
@@ -68,8 +82,21 @@ class RoundedImageView(
         }
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
+    override fun onLayout(
+        changed: Boolean,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int
+    ) {
+        super.onLayout(
+            changed,
+            left,
+            top,
+            right,
+            bottom
+        )
+
         val dx = ((1.0f-imageScaleX) * width * 0.5f).toInt()
         val dy = ((1.0f-imageScaleY) * height * 0.5f).toInt()
 
@@ -79,6 +106,10 @@ class RoundedImageView(
             mRectStroke.right = mRectViewRound.right - strokeWidth
             mRectStroke.bottom = mRectViewRound.bottom - strokeWidth
         }
+
+        mImageAnimator.setFloatValues(
+            height.toFloat(), 0f
+        )
 
         drawable?.setBounds(
             dx,
@@ -133,6 +164,10 @@ class RoundedImageView(
             id,
             null
         )
+    }
+
+    fun startImageAnimation() {
+        mImageAnimator.start()
     }
 
 }

@@ -597,7 +597,7 @@ class TVShowPageFragment
                     heightParams()
                 ) {
                     bitmap = it
-                    invalidate()
+                    startImageAnimation()
                 }
             }
 

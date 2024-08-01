@@ -33,7 +33,7 @@ class TVShowImageViewHolder(
             mImage.heightParams()
         ) {
             mImage.bitmap = it
-            mImage.invalidate()
+            mImage.startImageAnimation()
         }
     }
 
