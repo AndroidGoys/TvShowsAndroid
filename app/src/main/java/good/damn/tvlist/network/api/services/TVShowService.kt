@@ -112,8 +112,6 @@ class TVShowService(
             getCachedJson(url)
         else getNetworkJSON(url)
 
-        Log.d(TAG, "getChannelPointers: $json")
-        
         if (json == null) {
             return null
         }
@@ -155,14 +153,14 @@ class TVShowService(
                 "releases"
             )
 
-            val len = releases?.length() ?: 0
+            val index = (releases?.length() ?: 0) - 1
 
-            if (len == 0) {
+            if (index < 0) {
                 continue
             }
 
             val timeStart = releases!!
-                .getJSONObject(i)
+                .getJSONObject(index)
                 .extract("timeStart")
             as? Int ?: continue
 

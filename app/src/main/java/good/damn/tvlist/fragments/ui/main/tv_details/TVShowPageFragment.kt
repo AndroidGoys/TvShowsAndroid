@@ -985,8 +985,9 @@ class TVShowPageFragment
             channel = pointer?.name ?: ""
             channelUrl = pointer
                 ?.channelId
-                ?.toShareChannelUrl()
-                ?: ""
+                ?.toShareChannelUrl(
+                    withTimeStartSec = release.timeStart
+                ) ?: ""
         }
 
         val text = "${getString(R.string.lets_see)}:\n\n" +
