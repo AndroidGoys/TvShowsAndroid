@@ -28,6 +28,7 @@ class TVChannelReleaseViewHolder(
         p: TVChannelRelease,
         next: TVChannelRelease?
     ) {
+        mReleaseView.stopDownloadAnimation()
         mReleaseView.cacheRelease = p
         mReleaseView.title = p.shortName ?: p.name
         mReleaseView.timeString = p.startTimeString
@@ -48,13 +49,15 @@ class TVChannelReleaseViewHolder(
         } else {
             mReleaseView.progress = 0f
         }
-        mReleaseView.post {
-            mReleaseView.startProgressAnimation()
-        }
 
         if (p.previewUrl == null) {
+            mReleaseView.post {
+                mReleaseView.startProgressAnimation()
+            }
             return
         }
+
+        mReleaseView.startDownloadAnimation()
 
         NetworkBitmap.loadFromNetwork(
             p.previewUrl,
@@ -63,6 +66,7 @@ class TVChannelReleaseViewHolder(
             mReleaseView.widthParams(),
             mReleaseView.heightParams()
         ) {
+            mReleaseView.stopDownloadAnimation()
             mReleaseView.previewImage = it
             mReleaseView.startImageAnimation()
         }

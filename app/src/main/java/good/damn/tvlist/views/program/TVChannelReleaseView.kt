@@ -1,5 +1,6 @@
 package good.damn.tvlist.views.program
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,15 +10,19 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.renderscript.Sampler.Value
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.annotation.MainThread
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.animators.RepeatValueAnimator
 import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.views.RatingCanvas
 import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 import good.damn.tvlist.views.round.RoundView
+import kotlinx.coroutines.delay
 
 class TVChannelReleaseView(
     context: Context
@@ -27,6 +32,7 @@ class TVChannelReleaseView(
 
     companion object {
         private const val TAG = "TVProgramView"
+        private const val INTERVAL_ANIMATION_DOWNLOAD_MS = 300
     }
 
     var title = "Кухня"
@@ -104,11 +110,13 @@ class TVChannelReleaseView(
     private val mPaintTime = Paint()
     private val mPaintGradientGray = Paint()
     private val mPaintProgress = Paint()
+    private val mPaintLoading = Paint()
 
     private val mRectProgress = RectF()
 
     private val mImageAnimator = ValueAnimator()
     private val mProgressAnimator = ValueAnimator()
+    private val mDownloadAnimator = RepeatValueAnimator()
 
     private val mDrawableFavourites = App.drawable(
         R.drawable.ic_star_fill_lime
@@ -129,22 +137,38 @@ class TVChannelReleaseView(
 
     private var mImageX = 0f
 
+    private var mDownloadGradientX = 0f
+
     init {
         mPaintGradientGray.isDither = true
+        mPaintLoading.isDither = true
 
-        mImageAnimator.duration = 175
-        mImageAnimator.interpolator = AccelerateDecelerateInterpolator()
-
-        mImageAnimator.addUpdateListener {
-            mImageX = it.animatedValue as? Float ?: 0f
-            invalidate()
+        mImageAnimator.apply {
+            duration = 175
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                mImageX = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
         }
 
-        mProgressAnimator.duration = 500
-        mProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
-        mProgressAnimator.addUpdateListener {
-            mRectProgress.right = it.animatedValue as? Float ?: 0f
-            invalidate()
+        mDownloadAnimator.apply {
+            duration = 300
+            interpolator = AccelerateDecelerateInterpolator()
+            repeatDelay = 1500
+            addUpdateListener {
+                mDownloadGradientX = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
+        }
+
+        mProgressAnimator.apply {
+            duration = 500
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                mRectProgress.right = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
         }
     }
     
@@ -163,7 +187,7 @@ class TVChannelReleaseView(
         mProgressRadius = height * 0.5f
 
         val halfWidth = width * 0.5f
-        val linearGradient = LinearGradient(
+        mPaintGradientGray.shader = LinearGradient(
             halfWidth,
             height,
             halfWidth,
@@ -178,7 +202,26 @@ class TVChannelReleaseView(
             ),
             Shader.TileMode.CLAMP
         )
-        mPaintGradientGray.shader = linearGradient
+
+
+        val widthGradientDownload = width * 0.5f
+        mPaintLoading.shader = LinearGradient(
+            0f,
+            0f,
+            widthGradientDownload,
+            0f,
+            intArrayOf(
+                0x00ffffff,
+                0xffffffff.toInt(),
+                0x00ffffff
+            ),
+            floatArrayOf(
+                0.0f,
+                0.5f,
+                1.0f
+            ),
+            Shader.TileMode.CLAMP
+        )
 
         val ratingHeight = height * 0.07804f
         mRating.textSize = ratingHeight * 0.6875f
@@ -189,6 +232,10 @@ class TVChannelReleaseView(
             ratingHeight
         )
         mRating.cornerRadius = ratingHeight * 0.3125f
+
+        mDownloadAnimator.setFloatValues(
+            -widthGradientDownload, width
+        )
 
         mImageAnimator.setFloatValues(
             -width, 0f
@@ -237,6 +284,17 @@ class TVChannelReleaseView(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+
+        if (mDownloadAnimator.isRunning) {
+            canvas.translate(
+                mDownloadGradientX,
+                0f
+            )
+            canvas.drawPaint(
+                mPaintLoading
+            )
+            return
+        }
 
         if (previewImage != null) {
             canvas.drawBitmap(
@@ -308,12 +366,24 @@ class TVChannelReleaseView(
         )
     }
 
+    @MainThread
     fun startProgressAnimation() {
         mProgressAnimator.start()
     }
 
+    @MainThread
     fun startImageAnimation() {
         mImageAnimator.start()
+    }
+
+    @MainThread
+    fun startDownloadAnimation() {
+        mDownloadAnimator.start()
+    }
+
+    @MainThread
+    fun stopDownloadAnimation() {
+        mDownloadAnimator.cancel()
     }
 
 }
