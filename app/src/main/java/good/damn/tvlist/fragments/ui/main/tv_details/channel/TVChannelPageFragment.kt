@@ -832,7 +832,7 @@ private fun TVChannelPageFragment.shareChannel(
             "${getString(R.string.with_rating)} " +
             "${channel.rating}\n\n$shortText \n\n" +
             getString(R.string.lets_see_it) +
-            "\n\n ${firstParag.toLong().toShareChannelUrl()}",
+            "\n\n ${channel.id.toLong().toShareChannelUrl()}",
         null
     )
 }
