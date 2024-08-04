@@ -42,10 +42,12 @@ class TVChannelViewHolder(
         }
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
 
-        mTvChannelView.channel = t
-
-        mTvChannelView.text = t.shortName ?: t.name
-        mTvChannelView.invalidate()
+        mTvChannelView.apply {
+            channel = t
+            text = t.shortName ?: t.name
+            imagePreview = null
+            invalidate()
+        }
 
         App.createIO().launch {
             val hashedReleases = App.RELEASES[t.id]
@@ -115,6 +117,9 @@ class TVChannelViewHolder(
                 bounds,
                 bounds
             ) {
+                if (it == null) {
+                    return@loadFromNetwork
+                }
                 App.iconMap[url] = it
                 mTvChannelView.imagePreview = it
                 mTvChannelView.invalidate()

@@ -269,9 +269,9 @@ class TVChannelReleaseView(
         }
 
         val favSize = (width * 0.18f).toInt()
-
         val drawX = width - favSize - paddingStart
         val drawY = (height * 0.03902f).toInt()
+
         mDrawableFavourites?.setBounds(
             drawX,
             drawY,
@@ -287,7 +287,14 @@ class TVChannelReleaseView(
             canvas
         )
 
-        if (mDownloadAnimator.isRunning) {
+        if (previewImage != null) {
+            canvas.drawBitmap(
+                previewImage!!,
+                mImageX,
+                0f,
+                mPaintProgress
+            )
+        } else if (mDownloadAnimator.isRunning) {
             canvas.translate(
                 mDownloadGradientX,
                 0f
@@ -295,15 +302,9 @@ class TVChannelReleaseView(
             canvas.drawPaint(
                 mPaintLoading
             )
-            return
-        }
-
-        if (previewImage != null) {
-            canvas.drawBitmap(
-                previewImage!!,
-                mImageX,
-                0f,
-                mPaintProgress
+            canvas.translate(
+                -mDownloadGradientX,
+                0f
             )
         }
 
@@ -368,6 +369,7 @@ class TVChannelReleaseView(
         )
     }
 
+
     @MainThread
     fun startProgressAnimation() {
         mProgressAnimator.start()
@@ -387,5 +389,4 @@ class TVChannelReleaseView(
     fun stopDownloadAnimation() {
         mDownloadAnimator.cancel()
     }
-
 }

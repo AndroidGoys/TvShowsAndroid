@@ -56,7 +56,7 @@ class NetworkBitmap {
             dirName: String,
             viewWidth: Int,
             viewHeight: Int,
-            completion: (Bitmap) -> Unit
+            completion: (Bitmap?) -> Unit
         ) = App.IMAGE_SCOPE.launch {
 
             val cachedNativeBitmap = CacheBitmap.loadFromCache(
@@ -116,6 +116,9 @@ class NetworkBitmap {
                 connection.getInputStream()
             } catch (e: Exception) {
                 Log.d(TAG, "loadFromNetwork: ERROR: ${e.message}")
+                App.ui {
+                    completion(null)
+                }
                 return@launch
             }
 
@@ -158,7 +161,6 @@ class NetworkBitmap {
                 App.ui {
                     completion(aspectedBitmap)
                 }
-
             }
         }
 
