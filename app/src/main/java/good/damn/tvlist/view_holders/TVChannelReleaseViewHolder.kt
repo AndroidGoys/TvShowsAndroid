@@ -22,55 +22,47 @@ class TVChannelReleaseViewHolder(
 ): RecyclerView.ViewHolder(
     mReleaseView
 ) {
-    private val mCalendar = Calendar.getInstance()
-
     fun onBindViewHolder(
         p: TVChannelRelease,
         next: TVChannelRelease?
-    ) {
-        mReleaseView.stopDownloadAnimation()
-        mReleaseView.cacheRelease = p
-        mReleaseView.title = p.shortName ?: p.name
-        mReleaseView.timeString = p.startTimeString
-        mReleaseView.rating = p.rating
-        mReleaseView.isFavourite = App.FAVOURITE_TV_SHOWS
+    ) = mReleaseView.apply {
+        stopDownloadAnimation()
+        cacheRelease = p
+        title = p.shortName ?: p.name
+        timeString = p.startTimeString
+        rating = p.rating
+        isFavourite = App.FAVOURITE_TV_SHOWS
             .containsKey(p.showId)
-        mReleaseView.age = "${p.censorAge.age}+"
-        mReleaseView.previewImage = null
+        age = "${p.censorAge.age}+"
+        previewImage = null
+        progress = 0f
+        invalidate()
 
-        mReleaseView.progress = 0f
-        mReleaseView.invalidate()
-
-        if (next != null) {
-            val t = mCalendar.timeInMillis / 1000
-            val dt = t - p.timeStart
-            val dt2 = next.timeStart - p.timeStart
-            mReleaseView.progress = dt / dt2.toFloat()
-        } else {
-            mReleaseView.progress = 0f
-        }
+        progress = if (next == null)
+            0f
+        else (App.CURRENT_TIME_SECONDS / 1000 - p.timeStart).toFloat() /
+            (next.timeStart - p.timeStart)
 
         if (p.previewUrl == null) {
-            mReleaseView.post {
-                mReleaseView.startProgressAnimation()
+            post {
+                startProgressAnimation()
             }
-            return
+            return@apply
         }
 
-        mReleaseView.startDownloadAnimation()
-
+        startDownloadAnimation()
         NetworkBitmap.loadFromNetwork(
             p.previewUrl,
             App.CACHE_DIR,
             "bitmapChannelRelease",
-            mReleaseView.widthParams(),
-            mReleaseView.heightParams()
+            widthParams(),
+            heightParams()
         ) {
-            mReleaseView.stopDownloadAnimation()
-            mReleaseView.previewImage = it
-            mReleaseView.startImageAnimation()
+            stopDownloadAnimation()
+            previewImage = it
+            startImageAnimation()
+            startProgressAnimation()
         }
-
     }
 
     companion object {

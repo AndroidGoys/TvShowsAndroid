@@ -32,7 +32,6 @@ class TVChannelReleaseView(
 
     companion object {
         private const val TAG = "TVProgramView"
-        private const val INTERVAL_ANIMATION_DOWNLOAD_MS = 300
     }
 
     var title = "Кухня"
@@ -203,7 +202,6 @@ class TVChannelReleaseView(
             Shader.TileMode.CLAMP
         )
 
-
         val widthGradientDownload = width * 0.5f
         mPaintLoading.shader = LinearGradient(
             0f,
@@ -282,8 +280,12 @@ class TVChannelReleaseView(
         )
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
+    override fun onDraw(
+        canvas: Canvas
+    ) {
+        super.onDraw(
+            canvas
+        )
 
         if (mDownloadAnimator.isRunning) {
             canvas.translate(
