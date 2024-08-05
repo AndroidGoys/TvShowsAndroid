@@ -31,6 +31,7 @@ import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.TVChannelPlayerFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.stream.StreamFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
@@ -738,9 +739,7 @@ OnRateClickListener {
         v: View
     ) {
         pushFragment(
-            StreamFragment.newInstance(
-                urlView ?: ""
-            ),
+            TVChannelPlayerFragment(),
             FragmentAnimation {
                 f, fragment ->
                 fragment.view?.x = App.WIDTH * (1.0f-f)

@@ -231,6 +231,13 @@ class TVChannelReleaseView(
         )
         mRating.cornerRadius = ratingHeight * 0.3125f
 
+        mRectProgress.right = width * progress
+        mRectProgress.top = height - progressWidth
+
+        mProgressAnimator.setFloatValues(
+            0f,mRectProgress.right
+        )
+
         mDownloadAnimator.setFloatValues(
             -widthGradientDownload, width
         )
@@ -248,13 +255,6 @@ class TVChannelReleaseView(
         mPaintTitle.textSize = height * sizeTitleFactor
         mPaintAge.textSize = height * sizeAgeFactor
         mPaintTime.textSize = height * sizeTimeFactor
-
-        mRectProgress.right = width * progress
-        mRectProgress.top = height.toFloat() - progressWidth
-
-        mProgressAnimator.setFloatValues(
-            0f,mRectProgress.right
-        )
 
         paddingBottom.toFloat().let { bottomPadding ->
             mTimeY = height - bottomPadding
