@@ -15,9 +15,7 @@ import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.FragmentAdapter
 import good.damn.tvlist.extensions.boundsFrame
-import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
-import good.damn.tvlist.extensions.leftParams
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
@@ -55,6 +53,8 @@ OnDateSetListener {
     private var mSearchView: SearchView? = null
     private var mViewPager: ViewPager2? = null
 
+    private var mDatePickerDialog: DatePickerDialog? = null
+
     private val mFragmentReleases = TVChannelReleaseFragment()
 
     private val mFragments: Array<StackFragment> = arrayOf(
@@ -78,6 +78,15 @@ OnDateSetListener {
         measureUnit: Int
     ): View {
 
+        mChannelCalendar.apply {
+            mDatePickerDialog = DatePickerDialog(
+                context,
+                this@MainContentFragment,
+                get(Calendar.YEAR),
+                get(Calendar.MONTH),
+                get(Calendar.DAY_OF_MONTH)
+            )
+        }
 
         val layout = FrameLayout(
             context
@@ -452,7 +461,6 @@ OnDateSetListener {
         mFragmentReleases.onNetworkDisconnected()
     }
 
-
     override fun onAuthSuccess() {
         Log.d(TAG, "onAuthSuccess: ")
         setUserAvatar()
@@ -478,14 +486,15 @@ OnDateSetListener {
     private fun onClickDatePicker(
         v: View
     ) {
-        mChannelCalendar.apply {
-            DatePickerDialog(
-                v.context,
-                this@MainContentFragment,
-                get(Calendar.YEAR),
-                get(Calendar.MONTH),
-                get(Calendar.DAY_OF_MONTH)
-            ).show()
+        mDatePickerDialog?.apply {
+            mChannelCalendar.apply {
+                updateDate(
+                    get(Calendar.YEAR),
+                    get(Calendar.MONTH),
+                    get(Calendar.DAY_OF_MONTH)
+                )
+            }
+            show()
         }
     }
 
