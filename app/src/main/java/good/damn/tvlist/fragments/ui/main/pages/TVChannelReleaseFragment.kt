@@ -28,6 +28,12 @@ class TVChannelReleaseFragment
 
     private var mRecyclerView: TVChannelsRecyclerView? = null
 
+
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        initChannels()
+    }
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -72,8 +78,6 @@ class TVChannelReleaseFragment
             }
         }
 
-        initChannels()
-
         return mRecyclerView!!
     }
 
@@ -85,6 +89,7 @@ class TVChannelReleaseFragment
 
 
     private fun initChannels() {
+        Log.d(TAG, "initChannels: $mRecyclerView")
         if (mRecyclerView == null) {
             return
         }

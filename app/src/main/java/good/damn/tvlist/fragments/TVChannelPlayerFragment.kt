@@ -14,17 +14,12 @@ class TVChannelPlayerFragment
 
     private var mPlayer: Player? = null
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
         mPlayer?.apply {
             prepare()
             play()
         }
-
     }
 
     override fun onCreateView(

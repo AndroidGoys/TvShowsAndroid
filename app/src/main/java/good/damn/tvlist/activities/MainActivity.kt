@@ -237,6 +237,10 @@ ActivityResultCallback<Boolean> {
             withAnimation.duration.toLong()
         )
 
+        mAnimator.onAnimationEnd = {
+            fragment.onAnimationEnd()
+        }
+
         mAnimator.startTransition(
             inAnimation = withAnimation,
             inFragment = fragment
@@ -277,10 +281,9 @@ ActivityResultCallback<Boolean> {
             return
         }
         val topFragment = mNavigator.topFragment
-        pushFragment(
-            on
-        )
+        pushFragment(on)
         mAnimator.onAnimationEnd = {
+            on.onAnimationEnd()
             mNavigator.removeFragment(
                 mNavigator.size - 2
             )

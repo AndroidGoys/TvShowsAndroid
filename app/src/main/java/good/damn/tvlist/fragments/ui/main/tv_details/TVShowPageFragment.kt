@@ -91,6 +91,11 @@ class TVShowPageFragment
 
     private var mChannelPointers: ArrayList<TVShowChannelDate>? = null
 
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        mBlurView?.startRenderLoop()
+    }
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -140,7 +145,6 @@ class TVShowPageFragment
                 height = topBar.heightParams()
             )
             topBar.addView(this,0)
-            startRenderLoop()
         }
 
 

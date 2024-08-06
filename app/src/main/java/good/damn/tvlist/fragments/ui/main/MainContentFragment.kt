@@ -47,6 +47,7 @@ OnAuthListener {
 
     private var mBlurView: BlurShaderView? = null
     private var mImageViewProfile: RoundedImageView? = null
+    private var mSearchView: SearchView? = null
     private lateinit var mViewPager: ViewPager2
 
     private val mFragments: Array<StackFragment> = arrayOf(
@@ -55,6 +56,14 @@ OnAuthListener {
     )
 
     private val mUserService = UserService()
+
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        mFragments[0].onAnimationEnd()
+
+        mSearchView?.startAnimation()
+        setUserAvatar()
+    }
 
     override fun onCreateView(
         context: Context,
@@ -99,64 +108,18 @@ OnAuthListener {
                 ::onClickImageViewProfile
             )
         }
-        val searchView = SearchView(
+        mSearchView = SearchView(
             context
-        )
-        val imageViewLikes = RoundedImageView(
-            context
-        )
-
-        // Setup viewPager
-        mViewPager.adapter = FragmentAdapter(
-            mFragments,
-            childFragmentManager,
-            lifecycle
-        )
-        mViewPager.isUserInputEnabled = false
-
-
-
-        // Background colors
-        layout.setBackgroundColorId(
-            R.color.background
-        )
-        layoutTopBar.setBackgroundColor(0)
-        layoutTopBarContent.setBackgroundColor(
+        ).apply {
+            setBackgroundColorId(
+                R.color.searchViewBack
+            )
             App.color(
-                R.color.background
-            ).withAlpha(0.5f)
-        )
-        searchView.setBackgroundColorId(
-            R.color.searchViewBack
-        )
-        navigationView.setBackgroundColorId(
-            R.color.background
-        )
-        // Stroke colors
-        imageViewLikes.strokeColor = 0x3318191F
-        // Text color
-        App.color(
-            R.color.searchText
-        ).withAlpha(0.39f).let {
-            searchView.textColorWord = it
-            searchView.textColorExample = it
-        }
-
-        // Navigation colors
-
-        navigationView.apply {
-            selectedItemColor = App.color(
-                R.color.navigationIcon
-            )
-            itemColor = App.color(
-                R.color.navigationIconBackground
-            )
-        }
-
-
-        searchView.apply {
-            // Typefaces
-
+                R.color.searchText
+            ).withAlpha(0.39f).let {
+                textColorWord = it
+                textColorExample = it
+            }
             typefaceExample = App.font(
                 R.font.open_sans_regular,
                 context
@@ -195,16 +158,59 @@ OnAuthListener {
             animationDuration = 750
             animationInterval = 4000
             animationInterpolator = LinearInterpolator()
+
+            App.drawable(
+                R.drawable.ic_lens
+            )?.let {
+                it.alpha = (255 * 0.48f).toInt()
+                drawable = it
+            }
         }
+        val imageViewLikes = RoundedImageView(
+            context
+        )
+
+        // Setup viewPager
+        mViewPager.adapter = FragmentAdapter(
+            mFragments,
+            childFragmentManager,
+            lifecycle
+        )
+        mViewPager.isUserInputEnabled = false
+
+
+
+        // Background colors
+        layout.setBackgroundColorId(
+            R.color.background
+        )
+        layoutTopBar.setBackgroundColor(0)
+        layoutTopBarContent.setBackgroundColor(
+            App.color(
+                R.color.background
+            ).withAlpha(0.5f)
+        )
+        navigationView.setBackgroundColorId(
+            R.color.background
+        )
+        // Stroke colors
+        imageViewLikes.strokeColor = 0x3318191F
+
+        // Navigation colors
+
+        navigationView.apply {
+            selectedItemColor = App.color(
+                R.color.navigationIcon
+            )
+            itemColor = App.color(
+                R.color.navigationIconBackground
+            )
+        }
+
+
 
 
         // Drawables
-        App.drawable(
-            R.drawable.ic_lens
-        )?.let {
-            it.alpha = (255 * 0.48f).toInt()
-            searchView.drawable = it
-        }
         imageViewLikes.apply {
             drawable = App.drawable(
                 R.drawable.ic_heart
@@ -249,10 +255,9 @@ OnAuthListener {
 
             mImageViewProfile?.cornerRadius = it * 0.5f
             imageViewLikes.cornerRadius = it * 0.5f
-            searchView.cornerRadius = it * 0.2317f
 
             (measureUnit * 0.04348f).let { interval ->
-                searchView.boundsLinear(
+                mSearchView?.boundsLinear(
                     width = (measureUnit * 0.64251f).toInt(),
                     height = it,
                     left = interval
@@ -263,12 +268,15 @@ OnAuthListener {
                     left = interval
                 )
             }
-            searchView.setPadding(
-                (searchView.widthParams() * 0.04887f).toInt(),
-                0,
-                0,
-                0
-            )
+            mSearchView?.apply {
+                cornerRadius = it * 0.2317f
+                setPadding(
+                    (widthParams() * 0.04887f).toInt(),
+                    0,
+                    0,
+                    0
+                )
+            }
         }
 
         (measureUnit * 0.13285f).toInt().let { bottomHeight ->
@@ -314,7 +322,7 @@ OnAuthListener {
 
         layoutTopBarContent.apply {
             addView(mImageViewProfile)
-            addView(searchView)
+            addView(mSearchView)
             addView(imageViewLikes)
         }
 
@@ -329,8 +337,6 @@ OnAuthListener {
             addView(navigationView)
         }
 
-        searchView.startAnimation()
-
         // Setup listeners
         navigationView.onItemClickListener = this
         navigationView.currentItem = 0
@@ -339,8 +345,6 @@ OnAuthListener {
         imageViewLikes.setOnClickListener(
             this::onClickImageViewLikes
         )
-
-        setUserAvatar()
 
         return layout
     }
@@ -354,11 +358,13 @@ OnAuthListener {
             if (isFragmentFocused) {
                 startRenderLoop()
                 onResume()
+                mSearchView?.startAnimation()
                 return@apply
             }
 
             stopRenderLoop()
             onPause()
+            mSearchView?.pauseAnimation()
         }
     }
 
@@ -372,6 +378,7 @@ OnAuthListener {
             startRenderLoop()
             onResume()
         }
+        mSearchView?.startAnimation()
     }
 
     override fun onPause() {
@@ -384,6 +391,7 @@ OnAuthListener {
             stopRenderLoop()
             onPause()
         }
+        mSearchView?.pauseAnimation()
     }
 
     override fun onDestroy() {
