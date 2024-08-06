@@ -216,21 +216,30 @@ OnAuthListener {
             imageScaleY = 0.5f
         }
 
+        val imageViewDate = RoundedImageView(
+            context
+        ).apply {
+            drawable = App.drawable(
+                R.drawable.ic_calendar
+            )
+            imageScaleY = 0.75f
+            imageScaleX = 0.75f
+        }
+
         // Bounds
         (measureUnit * 0.09903f).toInt().let { iconHeight ->
             val profileSearchHeight = measureUnit * 0.1715f
-            val dateHeight = measureUnit * 0.0315f
             val topInset = getTopInset()
             val topInsetContent = topInset + (
                 profileSearchHeight - iconHeight
             ) * 0.5f
 
             val marginBetweenContent = measureUnit * 0.04348f
-            val searchWidth = measureUnit * 0.64251f
+            val searchWidth = measureUnit * 0.54251f
 
             val marginHorizontal = (measureUnit -
                 marginBetweenContent * 2 -
-                iconHeight * 2 -
+                iconHeight * 3 -
                 searchWidth) / 2
 
             val searchViewBottomPosX = marginBetweenContent +
@@ -238,33 +247,45 @@ OnAuthListener {
                 marginHorizontal +
                 searchWidth
 
-            mSearchView?.boundsLinear(
+            mImageViewProfile?.boundsFrame(
+                width = iconHeight,
+                height = iconHeight,
+                top = topInsetContent,
+                left = marginHorizontal
+            )
+
+            mSearchView?.boundsFrame(
                 width = searchWidth.toInt(),
                 height = iconHeight,
                 left = searchViewBottomPosX - searchWidth,
                 top = topInsetContent
             )
 
-            imageViewLikes.boundsLinear(
-                width = iconHeight,
-                height = iconHeight,
-                left = searchViewBottomPosX + marginBetweenContent,
-                top = topInsetContent
-            )
+            (marginBetweenContent * 0.5f).let { halfInterval ->
+                (searchViewBottomPosX + halfInterval).let {
+                    imageViewDate.boundsFrame(
+                        width = iconHeight,
+                        height = iconHeight,
+                        left = it,
+                        top = topInsetContent
+                    )
+
+                    imageViewLikes.boundsFrame(
+                        width = iconHeight,
+                        height = iconHeight,
+                        left = it + halfInterval + iconHeight,
+                        top = topInsetContent
+                    )
+                }
+            }
+
+
 
             layoutTopBar.boundsFrame(
                 Gravity.TOP,
                 width = -1,
                 height = profileSearchHeight.toInt()
-                    + dateHeight.toInt()
                     + topInset
-            )
-
-            mImageViewProfile?.boundsLinear(
-                width = iconHeight,
-                height = iconHeight,
-                top = topInsetContent,
-                left = marginHorizontal
             )
 
             (iconHeight * 0.04878f).let { strokeWidth ->
@@ -294,12 +315,10 @@ OnAuthListener {
                 bottom = (measureUnit * 0.11352f)
             )
 
-
             navigationView.radius = bottomHeight * 0.16363f
             navigationView.cardElevation = bottomHeight * 0.1f
 
             (bottomHeight * 0.36363f).toInt().let { vectorSize ->
-
                 val playVector = PlayVector(
                     y = ((bottomHeight - vectorSize) * 0.5f).toInt(),
                     width = vectorSize,
@@ -331,6 +350,7 @@ OnAuthListener {
             addView(mBlurView)
             addView(mImageViewProfile)
             addView(mSearchView)
+            addView(imageViewDate)
             addView(imageViewLikes)
         }
 
