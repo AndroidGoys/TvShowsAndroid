@@ -59,10 +59,27 @@ abstract class StackFragment
         return v
     }
 
+    override fun onResume() {
+        super.onResume()
+        onDeepFocusChange(
+            true
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        onDeepFocusChange(
+            false
+        )
+    }
+
     open fun onFocusChanged(
         isFragmentFocused: Boolean
     ) {
         enableInteraction(
+            isFragmentFocused
+        )
+        onDeepFocusChange(
             isFragmentFocused
         )
     }
@@ -183,6 +200,10 @@ abstract class StackFragment
             InputMethodManager.SHOW_IMPLICIT
         )
     }
+
+    protected open fun onDeepFocusChange(
+        isVisible: Boolean
+    ) {}
 
     open fun onAnimationEnd() {}
 

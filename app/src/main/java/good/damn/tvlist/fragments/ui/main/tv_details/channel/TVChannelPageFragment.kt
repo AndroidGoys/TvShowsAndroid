@@ -96,6 +96,11 @@ OnRateClickListener {
     private var mBlurView: BlurShaderView? = null
     private var mReviewService: ReviewService? = null
 
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        mBlurView?.startRenderLoop()
+    }
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -145,7 +150,6 @@ OnRateClickListener {
                 height = topBar.heightParams()
             )
             topBar.addView(this,0)
-            startRenderLoop()
         }
 
 

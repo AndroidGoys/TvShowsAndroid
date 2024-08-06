@@ -6,7 +6,6 @@ import android.view.Gravity
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
@@ -15,6 +14,8 @@ import good.damn.tvlist.adapters.FragmentAdapter
 import good.damn.tvlist.extensions.boundsFrame
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
+import good.damn.tvlist.extensions.leftParams
+import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
@@ -24,7 +25,6 @@ import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVChannelReleaseFragment
-import good.damn.tvlist.network.api.services.AuthService
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.views.navigation.NavigationView
@@ -48,7 +48,7 @@ OnAuthListener {
     private var mBlurView: BlurShaderView? = null
     private var mImageViewProfile: RoundedImageView? = null
     private var mSearchView: SearchView? = null
-    private lateinit var mViewPager: ViewPager2
+    private var mViewPager: ViewPager2? = null
 
     private val mFragments: Array<StackFragment> = arrayOf(
         TVChannelReleaseFragment(),
@@ -69,31 +69,65 @@ OnAuthListener {
         context: Context,
         measureUnit: Int
     ): View {
+
+
         val layout = FrameLayout(
             context
-        )
+        ).apply {
+            setBackgroundColorId(
+                R.color.background
+            )
+        }
+
+
         mViewPager = ViewPager2(
             context
-        )
+        ).apply {
+            adapter = FragmentAdapter(
+                mFragments,
+                childFragmentManager,
+                lifecycle
+            )
+            isUserInputEnabled = false
+
+            mBlurView = BlurShaderView(
+                context,
+                this,
+                7,
+                0.35f,
+                App.color(
+                    R.color.background
+                ).withAlpha(
+                    0.5f
+                ).rgba()
+            ).apply {
+                isClickable = true
+            }
+        }
+
+
         val navigationView = NavigationView(
             context
-        )
+        ).apply {
+            selectedItemColor = App.color(
+                R.color.navigationIcon
+            )
+            itemColor = App.color(
+                R.color.navigationIconBackground
+            )
+
+            setBackgroundColorId(
+                R.color.background
+            )
+        }
 
 
         val layoutTopBar = FrameLayout(
             context
-        )
-        mBlurView = BlurShaderView(
-            context,
-            mViewPager,
-            7,
-            0.35f,
         ).apply {
-            isClickable = true
+            setBackgroundColor(0)
         }
-        val layoutTopBarContent = LinearLayout(
-            context
-        )
+
         mImageViewProfile = RoundedImageView(
             context
         ).apply {
@@ -108,6 +142,9 @@ OnAuthListener {
                 ::onClickImageViewProfile
             )
         }
+
+
+
         mSearchView = SearchView(
             context
         ).apply {
@@ -166,52 +203,12 @@ OnAuthListener {
                 drawable = it
             }
         }
+
+
         val imageViewLikes = RoundedImageView(
             context
-        )
-
-        // Setup viewPager
-        mViewPager.adapter = FragmentAdapter(
-            mFragments,
-            childFragmentManager,
-            lifecycle
-        )
-        mViewPager.isUserInputEnabled = false
-
-
-
-        // Background colors
-        layout.setBackgroundColorId(
-            R.color.background
-        )
-        layoutTopBar.setBackgroundColor(0)
-        layoutTopBarContent.setBackgroundColor(
-            App.color(
-                R.color.background
-            ).withAlpha(0.5f)
-        )
-        navigationView.setBackgroundColorId(
-            R.color.background
-        )
-        // Stroke colors
-        imageViewLikes.strokeColor = 0x3318191F
-
-        // Navigation colors
-
-        navigationView.apply {
-            selectedItemColor = App.color(
-                R.color.navigationIcon
-            )
-            itemColor = App.color(
-                R.color.navigationIconBackground
-            )
-        }
-
-
-
-
-        // Drawables
-        imageViewLikes.apply {
+        ).apply {
+            strokeColor = 0x3318191F
             drawable = App.drawable(
                 R.drawable.ic_heart
             )
@@ -219,57 +216,67 @@ OnAuthListener {
             imageScaleY = 0.5f
         }
 
-        layoutTopBarContent.gravity = Gravity
-            .CENTER_HORIZONTAL
-
         // Bounds
-        (measureUnit * 0.09903f).toInt().let {
-            (measureUnit * 0.1715f).toInt().let { nativeHeight ->
-                layoutTopBar.boundsFrame(
-                    Gravity.TOP,
-                    width = -1,
-                    height = nativeHeight + getTopInset()
-                )
-                layoutTopBarContent.boundsFrame(
-                    width = measureUnit,
-                    height = layoutTopBar.heightParams()
-                )
+        (measureUnit * 0.09903f).toInt().let { iconHeight ->
+            val profileSearchHeight = measureUnit * 0.1715f
+            val dateHeight = measureUnit * 0.0315f
+            val topInset = getTopInset()
+            val topInsetContent = topInset + (
+                profileSearchHeight - iconHeight
+            ) * 0.5f
 
-                layoutTopBarContent.setPadding(
-                    0,
-                    getTopInset() + ((nativeHeight - it) * 0.5f).toInt(),
-                    0,
-                    0
-                )
-            }
+            val marginBetweenContent = measureUnit * 0.04348f
+            val searchWidth = measureUnit * 0.64251f
 
-            mImageViewProfile?.boundsLinear(
-                width = it,
-                height = it,
+            val marginHorizontal = (measureUnit -
+                marginBetweenContent * 2 -
+                iconHeight * 2 -
+                searchWidth) / 2
+
+            val searchViewBottomPosX = marginBetweenContent +
+                iconHeight +
+                marginHorizontal +
+                searchWidth
+
+            mSearchView?.boundsLinear(
+                width = searchWidth.toInt(),
+                height = iconHeight,
+                left = searchViewBottomPosX - searchWidth,
+                top = topInsetContent
             )
 
-            (it * 0.04878f).let { strokeWidth ->
+            imageViewLikes.boundsLinear(
+                width = iconHeight,
+                height = iconHeight,
+                left = searchViewBottomPosX + marginBetweenContent,
+                top = topInsetContent
+            )
+
+            layoutTopBar.boundsFrame(
+                Gravity.TOP,
+                width = -1,
+                height = profileSearchHeight.toInt()
+                    + dateHeight.toInt()
+                    + topInset
+            )
+
+            mImageViewProfile?.boundsLinear(
+                width = iconHeight,
+                height = iconHeight,
+                top = topInsetContent,
+                left = marginHorizontal
+            )
+
+            (iconHeight * 0.04878f).let { strokeWidth ->
                 mImageViewProfile?.strokeWidth = strokeWidth
                 imageViewLikes.strokeWidth = strokeWidth
             }
 
-            mImageViewProfile?.cornerRadius = it * 0.5f
-            imageViewLikes.cornerRadius = it * 0.5f
+            mImageViewProfile?.cornerRadius = iconHeight * 0.5f
+            imageViewLikes.cornerRadius = iconHeight * 0.5f
 
-            (measureUnit * 0.04348f).let { interval ->
-                mSearchView?.boundsLinear(
-                    width = (measureUnit * 0.64251f).toInt(),
-                    height = it,
-                    left = interval
-                )
-                imageViewLikes.boundsLinear(
-                    width = it,
-                    height = it,
-                    left = interval
-                )
-            }
             mSearchView?.apply {
-                cornerRadius = it * 0.2317f
+                cornerRadius = iconHeight * 0.2317f
                 setPadding(
                     (widthParams() * 0.04887f).toInt(),
                     0,
@@ -320,15 +327,11 @@ OnAuthListener {
 
         }
 
-        layoutTopBarContent.apply {
+        layoutTopBar.apply {
+            addView(mBlurView)
             addView(mImageViewProfile)
             addView(mSearchView)
             addView(imageViewLikes)
-        }
-
-        layoutTopBar.apply {
-            addView(mBlurView)
-            addView(layoutTopBarContent)
         }
 
         layout.apply {
@@ -387,7 +390,7 @@ OnAuthListener {
         if (!isFragmentFocused()) {
             return
         }
-        mBlurView?.apply { 
+        mBlurView?.apply {
             stopRenderLoop()
             onPause()
         }
@@ -405,7 +408,7 @@ OnAuthListener {
         navigationView: NavigationView
     ) {
         navigationView.currentItem = index
-        mViewPager.currentItem = index
+        mViewPager?.currentItem = index
     }
 
     override fun onNetworkConnected() {
