@@ -472,15 +472,19 @@ OnDateSetListener {
         month: Int,
         dayOfMonth: Int
     ) {
-        mChannelCalendar.set(
-            year,
-            month,
-            dayOfMonth
-        )
-
-        mFragmentReleases.onCalendarSet(
-            mChannelCalendar
-        )
+        mChannelCalendar.apply {
+            set(
+                year,
+                month,
+                dayOfMonth,
+                get(Calendar.HOUR_OF_DAY),
+                get(Calendar.MINUTE),
+                get(Calendar.SECOND)
+            )
+            mFragmentReleases.onCalendarSet(
+                this
+            )
+        }
     }
 
     private fun onClickDatePicker(
