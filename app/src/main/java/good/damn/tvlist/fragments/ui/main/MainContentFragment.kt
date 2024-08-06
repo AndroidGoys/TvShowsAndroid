@@ -1,10 +1,13 @@
 package good.damn.tvlist.fragments.ui.main
 
+import android.app.DatePickerDialog
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.animation.LinearInterpolator
+import android.widget.DatePicker
 import android.widget.FrameLayout
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
@@ -35,11 +38,13 @@ import good.damn.tvlist.views.navigation.NavigationItem
 import good.damn.tvlist.views.navigation.interfaces.OnItemClickNavigationListener
 import good.damn.tvlist.views.round.RoundedImageView
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class MainContentFragment
 : StackFragment(),
 OnItemClickNavigationListener,
-OnAuthListener {
+OnAuthListener,
+OnDateSetListener {
 
     companion object {
         private const val TAG = "MainContentFragment"
@@ -50,17 +55,20 @@ OnAuthListener {
     private var mSearchView: SearchView? = null
     private var mViewPager: ViewPager2? = null
 
+    private val mFragmentReleases = TVChannelReleaseFragment()
+
     private val mFragments: Array<StackFragment> = arrayOf(
-        TVChannelReleaseFragment(),
+        mFragmentReleases,
         MediaListFragment()
     )
 
     private val mUserService = UserService()
 
+    private val mChannelCalendar = Calendar.getInstance()
+
     override fun onAnimationEnd() {
         super.onAnimationEnd()
-        mFragments[0].onAnimationEnd()
-
+        mFragmentReleases.onAnimationEnd()
         mSearchView?.startAnimation()
         setUserAvatar()
     }
@@ -224,6 +232,11 @@ OnAuthListener {
             )
             imageScaleY = 0.75f
             imageScaleX = 0.75f
+
+            setOnClickListener(
+                this@MainContentFragment::onClickDatePicker
+            )
+
         }
 
         // Bounds
@@ -432,17 +445,65 @@ OnAuthListener {
     }
 
     override fun onNetworkConnected() {
-        mFragments[0].onNetworkConnected()
+        mFragmentReleases.onNetworkConnected()
     }
 
     override fun onNetworkDisconnected() {
-        mFragments[0].onNetworkDisconnected()
+        mFragmentReleases.onNetworkDisconnected()
     }
 
 
     override fun onAuthSuccess() {
         Log.d(TAG, "onAuthSuccess: ")
         setUserAvatar()
+    }
+
+    override fun onDateSet(
+        view: DatePicker?,
+        year: Int,
+        month: Int,
+        dayOfMonth: Int
+    ) {
+        mChannelCalendar.set(
+            year,
+            month,
+            dayOfMonth
+        )
+
+        mFragmentReleases.onCalendarSet(
+            mChannelCalendar
+        )
+    }
+
+    private fun onClickDatePicker(
+        v: View
+    ) {
+        mChannelCalendar.apply {
+            DatePickerDialog(
+                v.context,
+                this@MainContentFragment,
+                get(Calendar.YEAR),
+                get(Calendar.MONTH),
+                get(Calendar.DAY_OF_MONTH)
+            ).show()
+        }
+    }
+
+    private fun onClickImageViewProfile(
+        v: View
+    ) {
+        pushFragment(
+            ProfileFragment().apply {
+                onAuthListener = this@MainContentFragment
+            },
+            FragmentAnimation(
+                duration = 350
+            ) { f, fragment ->
+                fragment.view?.apply {
+                    alpha = f
+                }
+            }
+        )
     }
 
     private fun setUserAvatar() {
@@ -481,24 +542,6 @@ OnAuthListener {
             }
         }
     }
-
-    private fun onClickImageViewProfile(
-        v: View
-    ) {
-        pushFragment(
-            ProfileFragment().apply {
-                onAuthListener = this@MainContentFragment
-            },
-            FragmentAnimation(
-                duration = 350
-            ) { f, fragment ->
-                fragment.view?.apply {
-                    alpha = f
-                }
-            }
-        )
-    }
-
 }
 
 private fun MainContentFragment.onClickSearch(

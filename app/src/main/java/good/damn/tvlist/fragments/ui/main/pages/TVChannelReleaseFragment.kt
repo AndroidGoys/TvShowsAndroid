@@ -1,22 +1,28 @@
 package good.damn.tvlist.fragments.ui.main.pages
 
+import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.util.Log
 import android.view.View
+import android.widget.DatePicker
 import androidx.recyclerview.widget.LinearLayoutManager
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.recycler_view.TVChannelAdapter
+import good.damn.tvlist.extensions.getTimeInSeconds
 import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.interfaces.OnCalendarSetListener
 import good.damn.tvlist.network.api.services.TVChannel2Service
 import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.views.recycler_views.TVChannelsRecyclerView
 import good.damn.tvlist.views.recycler_views.scroll_listeners.StreamScrollListener
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class TVChannelReleaseFragment
-: StackFragment() {
+: StackFragment(),
+OnCalendarSetListener {
 
     companion object {
         private const val TAG = "TVProgramFragment"
@@ -27,7 +33,6 @@ class TVChannelReleaseFragment
     private val mReleaseService = TVChannelReleasesService()
 
     private var mRecyclerView: TVChannelsRecyclerView? = null
-
 
     override fun onAnimationEnd() {
         super.onAnimationEnd()
@@ -89,58 +94,69 @@ class TVChannelReleaseFragment
 
 
     private fun initChannels() {
-        Log.d(TAG, "initChannels: $mRecyclerView")
+
         if (mRecyclerView == null) {
             return
         }
 
         App.IO.launch {
-
-            val cachedProgram = mChannelService.getChannels(
+            val cachedChannels = mChannelService.getChannels(
                 offset = 0,
                 limit = UPDATE_COUNT,
                 fromCache = true
             )
 
             App.IO.launch {
-                val program = mChannelService.getChannels(
+                val channels = mChannelService.getChannels(
                     offset = 0,
                     limit = UPDATE_COUNT
                 ) ?: return@launch
 
-                if (cachedProgram == null) {
+                if (cachedChannels == null) {
                     Log.d(
                         TAG,
-                        "onCreateView: CACHED_PROGRAM:" +
-                            "${program.size}"
+                        "onCreateView: CACHED_CHANNELS:" +
+                            "${channels.size}"
                     )
                     App.ui {
                         mRecyclerView?.adapterChannels = TVChannelAdapter(
                             App.WIDTH,
                             App.HEIGHT,
-                            program,
+                            channels,
                             mReleaseService
                         )
                     }
                 }
             }
 
-            if (cachedProgram != null) {
+            if (cachedChannels != null) {
                 Log.d(
                     TAG,
-                    "onCreateView: CACHED_PROGRAM:" +
-                        "${cachedProgram.size}"
+                    "onCreateView: CACHED_CHANNELS:" +
+                        "${cachedChannels.size}"
                 )
                 App.ui {
                     mRecyclerView?.adapterChannels = TVChannelAdapter(
                         App.WIDTH,
                         App.HEIGHT,
-                        cachedProgram,
+                        cachedChannels,
                         mReleaseService
                     )
                 }
             }
 
+        }
+    }
+
+    override fun onCalendarSet(
+        calendar: Calendar
+    ) {
+        mRecyclerView?.adapterChannels?.apply {
+            timeSeconds = calendar.getTimeInSeconds()
+            notifyItemRangeChanged(
+                0,
+                itemCount
+            )
         }
     }
 }

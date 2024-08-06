@@ -51,7 +51,6 @@ class App
 
         val CALENDAR = Calendar.getInstance()
 
-        val RELEASES = HashMap<Int, ArrayList<TVChannelRelease>>()
         val FAVOURITE_TV_SHOWS = HashMap<Long, TVChannelRelease>()
         val iconMap = HashMap<String, Bitmap>()
 

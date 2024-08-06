@@ -34,6 +34,7 @@ class TVChannelViewHolder(
 ) {
     fun onBindViewHolder(
         t: TVChannel2?,
+        onTimeSeconds: Int,
         releaseService: TVChannelReleasesService
     ) {
         mLayout.alpha = 0f
@@ -50,31 +51,17 @@ class TVChannelViewHolder(
         }
 
         App.createIO().launch {
-            val hashedReleases = App.RELEASES[t.id]
-
-            if (hashedReleases != null) {
-                App.ui {
-                    mRecyclerViewReleases.releases = hashedReleases
-                }
-                return@launch
-            }
-
-            val cachedReleases = releaseService.getReleases(
+            releaseService.getReleases(
                 t.id,
                 0,
                 limit = 8,
                 fromCache = true
-            )
-
-            Log.d(TAG, "onBindViewHolder: CACHED_RELEASES: ${cachedReleases?.size}")
-            
-            if (cachedReleases != null) {
-                App.RELEASES[t.id] = cachedReleases
+            )?.apply {
                 App.ui {
-                    mRecyclerViewReleases.releases = cachedReleases
+                    mRecyclerViewReleases.releases = this
                 }
 
-                cachedReleases.middle()?.let {
+                middle()?.let {
                     if (it.timeStart > App.CURRENT_TIME_SECONDS) {
                         return@launch
                     }
@@ -83,16 +70,14 @@ class TVChannelViewHolder(
 
             val releases = releaseService.getReleases(
                 t.id,
-                App.CURRENT_TIME_SECONDS,
+                onTimeSeconds,
                 limit = 8,
                 fromCache = false
             ) ?: return@launch
 
-            App.RELEASES[t.id] = releases
             App.ui {
                 mRecyclerViewReleases.releases = releases
             }
-
         }
 
         mLayout.animate()

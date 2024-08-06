@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.ViewGroup
 import androidx.annotation.WorkerThread
 import androidx.recyclerview.widget.RecyclerView
+import good.damn.tvlist.App
 import good.damn.tvlist.network.api.models.TVChannel2
 import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.view_holders.TVChannelViewHolder
@@ -18,6 +19,8 @@ class TVChannelAdapter(
     companion object {
         private const val TAG = "TVChannelAdapter"
     }
+
+    var timeSeconds: Int = App.CURRENT_TIME_SECONDS
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -35,6 +38,7 @@ class TVChannelAdapter(
         position: Int
     ) = holder.onBindViewHolder(
         data[position],
+        timeSeconds,
         mReleaseService
     )
 

@@ -2,6 +2,10 @@ package good.damn.tvlist.extensions
 
 import java.util.Calendar
 
+fun Calendar.getTimeInSeconds() = (
+    timeInMillis / 1000L
+).toInt()
+
 fun Calendar.getMonthString(): String {
     val month = get(
         Calendar.MONTH
