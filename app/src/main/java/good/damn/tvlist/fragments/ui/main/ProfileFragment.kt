@@ -285,6 +285,83 @@ OnAuthListener {
         return mLayout ?: View(context)
     }
 
+    override fun onGetContentUri(
+        uri: Uri?
+    ) {
+        if (uri == null) {
+            enableInteraction(true)
+            return
+        }
+
+        try {
+            val bytes = context?.contentResolver?.openInputStream(
+                uri
+            )?.readBytes(4096)
+
+            if (bytes == null) {
+                enableInteraction(true)
+                return
+            }
+
+            App.IO.launch {
+                val optimizedBitmap = BitmapUtils.aspectedBitmap(
+                    BitmapFactory.decodeByteArray(
+                        bytes,
+                        0,
+                        bytes.size
+                    ),
+                    512,
+                    512
+                )
+
+                val baos = ByteArrayOutputStream()
+                NetworkBitmap.cacheOriginal(
+                    optimizedBitmap,
+                    UserService.URL_USER_AVATAR,
+                    App.CACHE_DIR
+                )
+
+                optimizedBitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    80,
+                    baos
+                )
+
+                val avatar = baos.toByteArray()
+                baos.close()
+
+                val response = mUserService.uploadAvatar(
+                    avatar
+                )
+
+                App.ui {
+                    updateProfileImage(
+                        response,
+                        optimizedBitmap
+                    )
+                }
+            }
+
+        } catch (e: Exception) {
+            enableInteraction(true)
+            Log.d(TAG, "onGetContentUri: ERROR: ${e.message}")
+            toast(R.string.some_error_happens)
+        }
+
+    }
+
+    override fun onAuthSuccess() {
+        popFragment(
+            FragmentAnimation(
+                150
+            ) { f, fragment ->
+                fragment.view?.alpha = 1.0f - f
+            }
+        )
+
+        updateLayoutAuthState()
+    }
+
     private fun onClickLogout(
         v: View
     ) {
@@ -458,84 +535,6 @@ OnAuthListener {
             urlProfile
         )
     }
-
-    override fun onGetContentUri(
-        uri: Uri?
-    ) {
-        if (uri == null) {
-            enableInteraction(true)
-            return
-        }
-
-        try {
-            val bytes = context?.contentResolver?.openInputStream(
-                uri
-            )?.readBytes(4096)
-
-            if (bytes == null) {
-                enableInteraction(true)
-                return
-            }
-
-            App.IO.launch {
-                val optimizedBitmap = BitmapUtils.aspectedBitmap(
-                    BitmapFactory.decodeByteArray(
-                        bytes,
-                        0,
-                        bytes.size
-                    ),
-                    512,
-                    512
-                )
-
-                val baos = ByteArrayOutputStream()
-                NetworkBitmap.cacheOriginal(
-                    optimizedBitmap,
-                    UserService.URL_USER_AVATAR,
-                    App.CACHE_DIR
-                )
-
-                optimizedBitmap.compress(
-                    Bitmap.CompressFormat.JPEG,
-                    80,
-                    baos
-                )
-
-                val avatar = baos.toByteArray()
-                baos.close()
-
-                val response = mUserService.uploadAvatar(
-                    avatar
-                )
-
-                App.ui {
-                    updateProfileImage(
-                        response,
-                        optimizedBitmap
-                    )
-                }
-            }
-
-        } catch (e: Exception) {
-            enableInteraction(true)
-            Log.d(TAG, "onGetContentUri: ERROR: ${e.message}")
-            toast(R.string.some_error_happens)
-        }
-
-    }
-
-    override fun onAuthSuccess() {
-        popFragment(
-            FragmentAnimation(
-                150
-            ) { f, fragment ->
-                fragment.view?.alpha = 1.0f - f
-            }
-        )
-
-        updateLayoutAuthState()
-    }
-
 }
 
 private fun ProfileFragment.defaultBigButton(

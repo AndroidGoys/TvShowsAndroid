@@ -28,24 +28,25 @@ class TVSearchResultViewHolder(
 
     fun onBindViewHolder(
         result: TVSearchResult?
-    ) {
+    ) = mIconNameView.apply {
+
         Log.d(TAG, "onBindViewHolder: ${result?.name}")
 
+        stopDownloadAnimation()
         if (result == null) {
-            return
+            return@apply
         }
 
-        mIconNameView.apply {
-            model = result
-            text = result.name
-            bitmap = null
-            invalidate()
-        }
+        model = result
+        text = result.name
+        bitmap = null
 
         if (result.imageURL == null) {
-            return
+            invalidate()
+            return@apply
         }
 
+        startDownloadAnimation()
         val bitmapSize = mIconNameView.heightParams()
         NetworkBitmap.loadFromNetwork(
             result.imageURL,
@@ -54,10 +55,9 @@ class TVSearchResultViewHolder(
             bitmapSize,
             bitmapSize
         ) {
-            mIconNameView.apply {
-                bitmap = it
-                invalidate()
-            }
+            bitmap = it
+            stopDownloadAnimation()
+            invalidate()
         }
     }
 
