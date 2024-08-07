@@ -2,6 +2,8 @@ package good.damn.tvlist.fragments.ui.main
 
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
 import android.util.Log
 import android.view.Gravity
@@ -9,12 +11,14 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.DatePicker
 import android.widget.FrameLayout
+import android.widget.TimePicker
 import androidx.viewpager2.widget.ViewPager2
 import good.damn.shaderblur.views.BlurShaderView
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.adapters.FragmentAdapter
 import good.damn.tvlist.extensions.boundsFrame
+import good.damn.tvlist.extensions.getTimeInSeconds
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.rgba
 import good.damn.tvlist.extensions.setBackgroundColorId
@@ -42,7 +46,8 @@ class MainContentFragment
 : StackFragment(),
 OnItemClickNavigationListener,
 OnAuthListener,
-OnDateSetListener {
+OnDateSetListener,
+OnTimeSetListener {
 
     companion object {
         private const val TAG = "MainContentFragment"
@@ -54,6 +59,7 @@ OnDateSetListener {
     private var mViewPager: ViewPager2? = null
 
     private var mDatePickerDialog: DatePickerDialog? = null
+    private var mTimePickerDialog: TimePickerDialog? = null
 
     private val mFragmentReleases = TVChannelReleaseFragment()
 
@@ -86,6 +92,15 @@ OnDateSetListener {
                 get(Calendar.MONTH),
                 get(Calendar.DAY_OF_MONTH)
             )
+
+            mTimePickerDialog = TimePickerDialog(
+                context,
+                this@MainContentFragment,
+                get(Calendar.HOUR_OF_DAY),
+                get(Calendar.MINUTE),
+                true
+            )
+
         }
 
         val layout = FrameLayout(
@@ -466,24 +481,44 @@ OnDateSetListener {
         setUserAvatar()
     }
 
+    override fun onTimeSet(
+        view: TimePicker?,
+        hourOfDay: Int,
+        minute: Int
+    ) {
+        Log.d(TAG, "onTimeSet: SAVED_DATE: ${mChannelCalendar.getTimeInSeconds()}")
+        mChannelCalendar.apply {
+            set(
+                get(Calendar.YEAR),
+                get(Calendar.MONTH),
+                get(Calendar.DAY_OF_MONTH),
+                hourOfDay,
+                minute
+            )
+
+            Log.d(TAG, "onTimeSet: NEW_TIME: ${mChannelCalendar.getTimeInSeconds()}")
+
+            mFragmentReleases.onCalendarSet(
+                this
+            )
+        }
+    }
+
     override fun onDateSet(
         view: DatePicker?,
         year: Int,
         month: Int,
         dayOfMonth: Int
     ) {
+        Log.d(TAG, "onDateSet: PREV_DATE: ${mChannelCalendar.getTimeInSeconds()}")
         mChannelCalendar.apply {
             set(
                 year,
                 month,
-                dayOfMonth,
-                get(Calendar.HOUR_OF_DAY),
-                get(Calendar.MINUTE),
-                get(Calendar.SECOND)
+                dayOfMonth
             )
-            mFragmentReleases.onCalendarSet(
-                this
-            )
+
+            mTimePickerDialog?.show()
         }
     }
 
