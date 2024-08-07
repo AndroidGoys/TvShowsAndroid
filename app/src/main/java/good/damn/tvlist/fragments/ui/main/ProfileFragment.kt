@@ -11,8 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.annotation.DrawableRes
+import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.lifecycle.lifecycleScope
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.cache.CacheBitmap
@@ -31,6 +33,8 @@ import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.OnAuthListener
 import good.damn.tvlist.fragments.ui.auth.SigninFragment
+import good.damn.tvlist.fragments.ui.main.interfaces.OnUpdateProfileImageListener
+import good.damn.tvlist.models.Result
 import good.damn.tvlist.network.api.services.UserService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.BitmapUtils
@@ -51,6 +55,7 @@ OnAuthListener {
         private const val BITMAP_PROFILE = "bitmapProfile"
     }
 
+    var onUpdateProfileImageListener: OnUpdateProfileImageListener? = null
     var onAuthListener: OnAuthListener? = null
 
     private var mBtnLogout: BigButtonView? = null
@@ -62,6 +67,13 @@ OnAuthListener {
     private var mLayout: LinearLayout? = null
 
     private val mUserService = UserService()
+
+    private var mUrlProfile: String? = null
+
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        updateProfile()
+    }
 
     override fun onCreateView(
         context: Context,
@@ -270,8 +282,6 @@ OnAuthListener {
             }
         }
 
-        updateProfile()
-
         return mLayout ?: View(context)
     }
 
@@ -337,6 +347,8 @@ OnAuthListener {
                 return@launch
             }
 
+            mUrlProfile = profile.avatarUrl
+
             App.ui {
 
                 val profileView = mProfileView
@@ -346,18 +358,23 @@ OnAuthListener {
                     profile
                 )
 
-                profile.avatarUrl ?: return@ui
+                val urlProfile = mUrlProfile
+                    ?: return@ui
 
                 val s = profileView.heightParams()
 
                 NetworkBitmap.loadFromNetwork(
-                    profile.avatarUrl,
+                    urlProfile,
                     App.CACHE_DIR,
                     BITMAP_PROFILE,
                     s,
                     s
                 ) {
                     profileView.setAvatar(it)
+                    onUpdateProfileImageListener?.onUpdateProfileImage(
+                        it,
+                        urlProfile
+                    )
                 }
 
                 onAuthListener?.onAuthSuccess()
@@ -404,6 +421,41 @@ OnAuthListener {
         enableInteraction(false)
         requestContentBrowser(
             "image/png"
+        )
+    }
+
+    @MainThread
+    private fun updateProfileImage(
+        response: Result<Void>,
+        image: Bitmap
+    ) {
+        enableInteraction(true)
+        if (response.errorStringId != -1) {
+            toast(response.errorStringId)
+            return
+        }
+
+        val urlProfile = mUrlProfile
+            ?: return
+
+        mProfileView?.mImageViewProfile?.apply {
+            val s = heightParams()
+            bitmap = NetworkBitmap.contextCache(
+                image,
+                urlProfile,
+                App.CACHE_DIR,
+                BITMAP_PROFILE,
+                s,
+                s
+            )
+            invalidate()
+        }
+
+        toast(R.string.avatar_changed)
+
+        onUpdateProfileImageListener?.onUpdateProfileImage(
+            image,
+            urlProfile
         )
     }
 
@@ -457,29 +509,10 @@ OnAuthListener {
                 )
 
                 App.ui {
-                    enableInteraction(true)
-                    if (response.errorStringId == -1) {
-                        mProfileView?.mImageViewProfile?.apply {
-                            val s = heightParams()
-                            NetworkBitmap.loadFromNetwork(
-                                UserService.URL_USER_AVATAR,
-                                App.CACHE_DIR,
-                                BITMAP_PROFILE,
-                                s,
-                                s
-                            ) {
-                                bitmap = it
-                                invalidate()
-                            }
-                        }
-
-                        updateProfile()
-
-                        toast(R.string.avatar_changed)
-                        return@ui
-                    }
-
-                    toast(response.errorStringId)
+                    updateProfileImage(
+                        response,
+                        optimizedBitmap
+                    )
                 }
             }
 

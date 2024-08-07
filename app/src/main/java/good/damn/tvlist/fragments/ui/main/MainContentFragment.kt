@@ -5,6 +5,7 @@ import android.app.DatePickerDialog.OnDateSetListener
 import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -28,6 +29,7 @@ import good.damn.tvlist.fragments.SearchFragment
 import good.damn.tvlist.fragments.StackFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.auth.OnAuthListener
+import good.damn.tvlist.fragments.ui.main.interfaces.OnUpdateProfileImageListener
 import good.damn.tvlist.fragments.ui.main.pages.MediaListFragment
 import good.damn.tvlist.fragments.ui.main.pages.TVChannelReleaseFragment
 import good.damn.tvlist.network.api.services.UserService
@@ -45,7 +47,7 @@ import java.util.Calendar
 class MainContentFragment
 : StackFragment(),
 OnItemClickNavigationListener,
-OnAuthListener,
+OnUpdateProfileImageListener,
 OnDateSetListener,
 OnTimeSetListener {
 
@@ -76,7 +78,6 @@ OnTimeSetListener {
         super.onAnimationEnd()
         mFragmentReleases.onAnimationEnd()
         mSearchView?.startAnimation()
-        setUserAvatar()
     }
 
     override fun onCreateView(
@@ -476,9 +477,26 @@ OnTimeSetListener {
         mFragmentReleases.onNetworkDisconnected()
     }
 
-    override fun onAuthSuccess() {
-        Log.d(TAG, "onAuthSuccess: ")
-        setUserAvatar()
+    override fun onUpdateProfileImage(
+        b: Bitmap?,
+        urlProfile: String
+    ) {
+        mImageViewProfile?.apply {
+            val h = heightParams()
+
+            bitmap = if (b == null)
+                null
+            else NetworkBitmap.contextCache(
+                b,
+                urlProfile,
+                App.CACHE_DIR,
+                UserService.DIR_AVATAR,
+                h,
+                h
+            )
+
+            invalidate()
+        }
     }
 
     override fun onTimeSet(
@@ -542,7 +560,7 @@ OnTimeSetListener {
     ) {
         pushFragment(
             ProfileFragment().apply {
-                onAuthListener = this@MainContentFragment
+                onUpdateProfileImageListener = this@MainContentFragment
             },
             FragmentAnimation(
                 duration = 350
@@ -552,43 +570,6 @@ OnTimeSetListener {
                 }
             }
         )
-    }
-
-    private fun setUserAvatar() {
-        Log.d(TAG, "setUserAvatar: $mImageViewProfile")
-        val imageViewProfile = mImageViewProfile
-            ?: return
-
-        App.IO.launch {
-            Log.d(TAG, "setUserAvatar: ACCESS_TOKEN: ${App.TOKEN_AUTH?.accessToken}")
-            mUserService.updateAccessToken(
-                App.TOKEN_AUTH?.accessToken ?: ""
-            )
-            val profile = mUserService.getProfile(
-                fromCache = true
-            )
-            Log.d(TAG, "setUserAvatar: PROFILE: ${profile?.avatarUrl}")
-
-            if (profile == null) {
-                return@launch
-            }
-
-            App.ui {
-                val s = imageViewProfile.heightParams()
-                profile.avatarUrl ?: return@ui
-                NetworkBitmap.loadFromNetwork(
-                    profile.avatarUrl,
-                    App.CACHE_DIR,
-                    UserService.DIR_AVATAR,
-                    s,
-                    s
-                ) {
-                    imageViewProfile.bitmap = it
-                    imageViewProfile.invalidate()
-                }
-
-            }
-        }
     }
 }
 
