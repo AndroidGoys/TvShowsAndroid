@@ -55,8 +55,8 @@ class TVSearchResultViewHolder(
             bitmapSize,
             bitmapSize
         ) {
-            bitmap = it
             stopDownloadAnimation()
+            bitmap = it
             invalidate()
         }
     }

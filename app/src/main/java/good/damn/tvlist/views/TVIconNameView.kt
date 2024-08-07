@@ -82,7 +82,7 @@ class TVIconNameView(
         cornerRadius = height * 0.24137f
 
         mDownloadAnimation.layout(
-            width * 0.1f,
+            width * 0.3f,
             width,
             height
         )

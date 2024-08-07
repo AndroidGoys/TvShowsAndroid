@@ -6,6 +6,18 @@ fun Calendar.getTimeInSeconds() = (
     timeInMillis / 1000L
 ).toInt()
 
+fun Calendar.getDateTimeString() =
+    "${getDayString()}.${getMonthString()}.${get(Calendar.YEAR)} " +
+    "${getHourString()}:${getMinuteString()}"
+
+fun Calendar.getMinuteString() = get2NumberString(
+    Calendar.MINUTE
+)
+
+fun Calendar.getHourString() = get2NumberString(
+    Calendar.HOUR_OF_DAY
+)
+
 fun Calendar.getMonthString(): String {
     val month = get(
         Calendar.MONTH
@@ -17,13 +29,17 @@ fun Calendar.getMonthString(): String {
     return "$month1$month2"
 }
 
-fun Calendar.getDayString(): String {
-    val day = get(
-        Calendar.DAY_OF_MONTH
-    )
+fun Calendar.getDayString() = get2NumberString(
+    Calendar.DAY_OF_MONTH
+)
 
-    val day1 = day / 10
-    val day2 = day % 10
+private fun Calendar.get2NumberString(
+    field: Int
+): String {
+    val v = get(field)
 
-    return "$day1$day2"
+    val v1 = v / 10
+    val v2 = v % 10
+
+    return "$v1$v2"
 }

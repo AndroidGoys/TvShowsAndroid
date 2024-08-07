@@ -27,6 +27,8 @@ import good.damn.tvlist.views.text_fields.TextFieldRound
 abstract class StackFragment
 : NetworkFragment() {
 
+    var onViewCreated: ((View)->Unit)? = null
+
     private var mInputManager: InputMethodManager? = null
 
     override fun onCreate(
@@ -39,6 +41,20 @@ abstract class StackFragment
         mInputManager = context?.getSystemService(
             Context.INPUT_METHOD_SERVICE
         ) as? InputMethodManager
+    }
+
+    final override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
+
+        onViewCreated?.invoke(
+            view
+        )
     }
 
     override fun onCreateView(

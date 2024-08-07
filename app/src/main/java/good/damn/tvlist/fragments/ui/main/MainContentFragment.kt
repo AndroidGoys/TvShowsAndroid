@@ -70,8 +70,6 @@ OnTimeSetListener {
         MediaListFragment()
     )
 
-    private val mUserService = UserService()
-
     private val mChannelCalendar = Calendar.getInstance()
 
     override fun onAnimationEnd() {

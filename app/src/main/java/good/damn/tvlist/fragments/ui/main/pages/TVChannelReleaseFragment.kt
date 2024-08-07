@@ -25,7 +25,7 @@ class TVChannelReleaseFragment
 OnCalendarSetListener {
 
     companion object {
-        private const val TAG = "TVProgramFragment"
+        private const val TAG = "TVChannelReleaseFragm"
         private const val UPDATE_COUNT = 5
     }
 
@@ -43,7 +43,7 @@ OnCalendarSetListener {
         context: Context,
         measureUnit: Int
     ): View {
-
+        Log.d(TAG, "onCreateView: ")
         val layoutManager = LinearLayoutManager(
             context,
             LinearLayoutManager.VERTICAL,
@@ -94,7 +94,7 @@ OnCalendarSetListener {
 
 
     private fun initChannels() {
-
+        Log.d(TAG, "initChannels: RECYCLER_VIEW: $mRecyclerView")
         if (mRecyclerView == null) {
             return
         }
