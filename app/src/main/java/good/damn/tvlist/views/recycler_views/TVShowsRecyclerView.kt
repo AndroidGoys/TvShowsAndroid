@@ -22,9 +22,17 @@ class TVShowsRecyclerView(
     var releases: ArrayList<TVChannelRelease>? = null
         set(v) {
             field = v
-            adapterPrograms.releases = v
-            adapterPrograms.notifyDataSetChanged()
+            adapterPrograms.apply {
+                releases = v
+                post {
+                    notifyDataSetChanged()
+                }
+            }
         }
+
+    init {
+        setHasFixedSize(true)
+    }
 
     override fun setLayoutParams(
         params: ViewGroup.LayoutParams?

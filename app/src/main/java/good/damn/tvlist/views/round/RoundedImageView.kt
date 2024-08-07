@@ -11,6 +11,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.res.ResourcesCompat
+import good.damn.tvlist.extensions.heightParams
 
 class RoundedImageView(
     context: Context
@@ -107,10 +108,6 @@ class RoundedImageView(
             mRectStroke.bottom = mRectViewRound.bottom - strokeWidth
         }
 
-        mImageAnimator.setFloatValues(
-            height.toFloat(), 0f
-        )
-
         drawable?.setBounds(
             dx,
             dy,
@@ -167,6 +164,9 @@ class RoundedImageView(
     }
 
     fun startImageAnimation() {
+        mImageAnimator.setFloatValues(
+            heightParams().toFloat(), 0f
+        )
         mImageAnimator.start()
     }
 

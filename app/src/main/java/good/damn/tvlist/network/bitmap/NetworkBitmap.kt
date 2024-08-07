@@ -18,23 +18,28 @@ class NetworkBitmap {
         private const val TAG = "NetworkBitmap"
         private const val DIR_ORIGINAL = "original/bitmap"
 
-        fun deleteCache(
+        fun contextCache(
+            b: Bitmap,
             url: String,
             cacheDirApp: File,
-            dirName: String
-        ) {
-            Log.d(TAG, "deleteCache: $url")
-            deleteCachedFile(
-                url,
-                cacheDirApp,
-                dirName
+            dirName: String,
+            viewWidth: Int,
+            viewHeight: Int,
+        ): Bitmap {
+            val aspectedBitmap = BitmapUtils.aspectedBitmap(
+                b,
+                viewWidth,
+                viewHeight
             )
 
-            deleteCachedFile(
+            CacheBitmap.cache(
+                aspectedBitmap,
                 url,
-                cacheDirApp,
-                DIR_ORIGINAL
+                dirName,
+                cacheDirApp
             )
+
+            return aspectedBitmap
         }
 
         fun cacheOriginal(
@@ -56,53 +61,46 @@ class NetworkBitmap {
             dirName: String,
             viewWidth: Int,
             viewHeight: Int,
-            withCache: Boolean = true,
-            completion: (Bitmap) -> Unit
+            completion: (Bitmap?) -> Unit
         ) = App.IMAGE_SCOPE.launch {
 
-            if (withCache) {
-                val cachedNativeBitmap = CacheBitmap.loadFromCache(
+            val cachedNativeBitmap = CacheBitmap.loadFromCache(
+                url,
+                dirName,
+                cacheDirApp
+            )
+
+            if (cachedNativeBitmap != null) {
+                App.ui {
+                    completion(
+                        cachedNativeBitmap
+                    )
+                }
+                return@launch
+            }
+
+            val cachedOriginalBitmap = CacheBitmap.loadFromCache(
+                url,
+                DIR_ORIGINAL,
+                cacheDirApp
+            )
+
+            if (cachedOriginalBitmap != null) {
+                val aspectedBitmap = contextCache(
+                    cachedOriginalBitmap,
                     url,
+                    cacheDirApp,
                     dirName,
-                    cacheDirApp
+                    viewWidth,
+                    viewHeight
                 )
 
-                if (cachedNativeBitmap != null) {
-                    App.ui {
-                        completion(
-                            cachedNativeBitmap
-                        )
-                    }
-                    return@launch
-                }
-
-                val cachedOriginalBitmap = CacheBitmap.loadFromCache(
-                    url,
-                    DIR_ORIGINAL,
-                    cacheDirApp
-                )
-
-                if (cachedOriginalBitmap != null) {
-                    val aspectedBitmap = BitmapUtils.aspectedBitmap(
-                        cachedOriginalBitmap,
-                        viewWidth,
-                        viewHeight
+                App.ui {
+                    completion(
+                        aspectedBitmap
                     )
-
-                    CacheBitmap.cache(
-                        aspectedBitmap,
-                        url,
-                        dirName,
-                        cacheDirApp
-                    )
-
-                    App.ui {
-                        completion(
-                            aspectedBitmap
-                        )
-                    }
-                    return@launch
                 }
+                return@launch
             }
 
             // Check expiration period?
@@ -112,13 +110,16 @@ class NetworkBitmap {
                     url
                 ).openConnection()
 
-                connection.connectTimeout = 5000
-                connection.readTimeout = 5000
+                connection.connectTimeout = 3000
+                connection.readTimeout = 3000
                 connection.connect()
 
                 connection.getInputStream()
             } catch (e: Exception) {
                 Log.d(TAG, "loadFromNetwork: ERROR: ${e.message}")
+                App.ui {
+                    completion(null)
+                }
                 return@launch
             }
 
@@ -138,49 +139,25 @@ class NetworkBitmap {
             )?.let {
                 inp.close()
 
-                CacheBitmap.cache(
+                cacheOriginal(
                     it,
                     url,
-                    DIR_ORIGINAL,
                     cacheDirApp
                 )
 
-                val aspectedBitmap = BitmapUtils.aspectedBitmap(
+                val aspectedBitmap = contextCache(
                     it,
+                    url,
+                    cacheDirApp,
+                    dirName,
                     viewWidth,
                     viewHeight
-                )
-
-                CacheBitmap.cache(
-                    aspectedBitmap,
-                    url,
-                    dirName,
-                    cacheDirApp
                 )
 
                 App.ui {
                     completion(aspectedBitmap)
                 }
-
             }
-        }
-
-        private fun deleteCachedFile(
-            url: String,
-            cacheDirApp: File,
-            dirName: String
-        ) {
-            val cachedFile = CacheBitmap.cacheBitmapFile(
-                url,
-                dirName,
-                cacheDirApp
-            )
-
-            if (!cachedFile.exists()) {
-                return
-            }
-
-            cachedFile.delete()
         }
     }
 }

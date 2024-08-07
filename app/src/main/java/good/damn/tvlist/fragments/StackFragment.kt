@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,8 @@ import good.damn.tvlist.views.text_fields.TextFieldRound
 abstract class StackFragment
 : NetworkFragment() {
 
+    var onViewCreated: ((View)->Unit)? = null
+
     private var mInputManager: InputMethodManager? = null
 
     override fun onCreate(
@@ -38,6 +41,20 @@ abstract class StackFragment
         mInputManager = context?.getSystemService(
             Context.INPUT_METHOD_SERVICE
         ) as? InputMethodManager
+    }
+
+    final override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
+
+        onViewCreated?.invoke(
+            view
+        )
     }
 
     override fun onCreateView(
@@ -58,10 +75,27 @@ abstract class StackFragment
         return v
     }
 
+    override fun onResume() {
+        super.onResume()
+        onDeepFocusChange(
+            true
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        onDeepFocusChange(
+            false
+        )
+    }
+
     open fun onFocusChanged(
         isFragmentFocused: Boolean
     ) {
         enableInteraction(
+            isFragmentFocused
+        )
+        onDeepFocusChange(
             isFragmentFocused
         )
     }
@@ -183,6 +217,11 @@ abstract class StackFragment
         )
     }
 
+    protected open fun onDeepFocusChange(
+        isVisible: Boolean
+    ) {}
+
+    open fun onAnimationEnd() {}
 
     protected abstract fun onCreateView(
         context: Context,

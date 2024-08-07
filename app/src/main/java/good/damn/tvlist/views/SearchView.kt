@@ -210,6 +210,10 @@ class SearchView(
         )
     }
 
+    fun pauseAnimation() {
+        mAnimator.pause()
+    }
+
     fun startAnimation() {
         mAnimator.start()
     }

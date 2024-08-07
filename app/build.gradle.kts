@@ -38,6 +38,10 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-datasource-okhttp:1.3.1")
+    implementation("androidx.media3:media3-exoplayer-hls:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
     implementation("androidx.webkit:webkit:1.8.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     //implementation("com.github.GoodDamn:DynamicBlurView_with_OpenGL_Android:1.7")

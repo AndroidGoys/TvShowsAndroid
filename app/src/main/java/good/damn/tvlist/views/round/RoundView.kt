@@ -20,7 +20,7 @@ open class RoundView(
     context
 ), OnUpdateAnimationListener, OnTapListener {
 
-    var cornerRadius = 2f
+    var cornerRadius = 0f
     protected val mRectViewRound = RectF()
 
     private val mPaintBack = Paint()
@@ -64,18 +64,20 @@ open class RoundView(
     override fun onDraw(
         canvas: Canvas
     ) {
-        mClipPath.reset()
-        mClipPath.addRoundRect(
-            mRectViewRound,
-            cornerRadius,
-            cornerRadius,
-            Path.Direction.CW
-        )
-        mClipPath.close()
+        if (cornerRadius > 1f) {
+            mClipPath.reset()
+            mClipPath.addRoundRect(
+                mRectViewRound,
+                cornerRadius,
+                cornerRadius,
+                Path.Direction.CW
+            )
+            mClipPath.close()
 
-        canvas.clipPath(
-            mClipPath
-        )
+            canvas.clipPath(
+                mClipPath
+            )
+        }
 
         if (mPaintBack.color == 0) {
             return

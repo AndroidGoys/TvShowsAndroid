@@ -91,6 +91,11 @@ class TVShowPageFragment
 
     private var mChannelPointers: ArrayList<TVShowChannelDate>? = null
 
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        mBlurView?.startRenderLoop()
+    }
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -140,7 +145,6 @@ class TVShowPageFragment
                 height = topBar.heightParams()
             )
             topBar.addView(this,0)
-            startRenderLoop()
         }
 
 
@@ -985,8 +989,9 @@ class TVShowPageFragment
             channel = pointer?.name ?: ""
             channelUrl = pointer
                 ?.channelId
-                ?.toShareChannelUrl()
-                ?: ""
+                ?.toShareChannelUrl(
+                    withTimeStartSec = release.timeStart
+                ) ?: ""
         }
 
         val text = "${getString(R.string.lets_see)}:\n\n" +

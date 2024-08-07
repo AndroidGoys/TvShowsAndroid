@@ -1,5 +1,6 @@
 package good.damn.tvlist.views.program
 
+import android.animation.Animator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
@@ -9,15 +10,20 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Shader
 import android.graphics.Typeface
+import android.renderscript.Sampler.Value
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.ColorInt
+import androidx.annotation.MainThread
 import good.damn.tvlist.App
 import good.damn.tvlist.R
+import good.damn.tvlist.animators.RepeatValueAnimator
 import good.damn.tvlist.network.api.models.TVChannelRelease
 import good.damn.tvlist.views.RatingCanvas
+import good.damn.tvlist.views.canvas.CVDownloadAnimation
 import good.damn.tvlist.views.interactions.interfaces.OnTapListener
 import good.damn.tvlist.views.round.RoundView
+import kotlinx.coroutines.delay
 
 class TVChannelReleaseView(
     context: Context
@@ -110,6 +116,10 @@ class TVChannelReleaseView(
     private val mImageAnimator = ValueAnimator()
     private val mProgressAnimator = ValueAnimator()
 
+    private val mDownloadAnimation = CVDownloadAnimation(
+        this
+    )
+
     private val mDrawableFavourites = App.drawable(
         R.drawable.ic_star_fill_lime
     )
@@ -129,22 +139,26 @@ class TVChannelReleaseView(
 
     private var mImageX = 0f
 
+
     init {
         mPaintGradientGray.isDither = true
 
-        mImageAnimator.duration = 175
-        mImageAnimator.interpolator = AccelerateDecelerateInterpolator()
-
-        mImageAnimator.addUpdateListener {
-            mImageX = it.animatedValue as? Float ?: 0f
-            invalidate()
+        mImageAnimator.apply {
+            duration = 175
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                mImageX = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
         }
 
-        mProgressAnimator.duration = 500
-        mProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
-        mProgressAnimator.addUpdateListener {
-            mRectProgress.right = it.animatedValue as? Float ?: 0f
-            invalidate()
+        mProgressAnimator.apply {
+            duration = 500
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener {
+                mRectProgress.right = it.animatedValue as? Float ?: 0f
+                invalidate()
+            }
         }
     }
     
@@ -163,7 +177,7 @@ class TVChannelReleaseView(
         mProgressRadius = height * 0.5f
 
         val halfWidth = width * 0.5f
-        val linearGradient = LinearGradient(
+        mPaintGradientGray.shader = LinearGradient(
             halfWidth,
             height,
             halfWidth,
@@ -178,7 +192,14 @@ class TVChannelReleaseView(
             ),
             Shader.TileMode.CLAMP
         )
-        mPaintGradientGray.shader = linearGradient
+
+        val widthGradientDownload = width * 0.5f
+
+        mDownloadAnimation.layout(
+            widthGradientDownload,
+            width,
+            height
+        )
 
         val ratingHeight = height * 0.07804f
         mRating.textSize = ratingHeight * 0.6875f
@@ -189,6 +210,13 @@ class TVChannelReleaseView(
             ratingHeight
         )
         mRating.cornerRadius = ratingHeight * 0.3125f
+
+        mRectProgress.right = width * progress
+        mRectProgress.top = height - progressWidth
+
+        mProgressAnimator.setFloatValues(
+            0f,mRectProgress.right
+        )
 
         mImageAnimator.setFloatValues(
             -width, 0f
@@ -204,13 +232,6 @@ class TVChannelReleaseView(
         mPaintAge.textSize = height * sizeAgeFactor
         mPaintTime.textSize = height * sizeTimeFactor
 
-        mRectProgress.right = width * progress
-        mRectProgress.top = height.toFloat() - progressWidth
-
-        mProgressAnimator.setFloatValues(
-            0f,mRectProgress.right
-        )
-
         paddingBottom.toFloat().let { bottomPadding ->
             mTimeY = height - bottomPadding
             mAgeY = mTimeY
@@ -224,9 +245,9 @@ class TVChannelReleaseView(
         }
 
         val favSize = (width * 0.18f).toInt()
-
         val drawX = width - favSize - paddingStart
         val drawY = (height * 0.03902f).toInt()
+
         mDrawableFavourites?.setBounds(
             drawX,
             drawY,
@@ -235,8 +256,12 @@ class TVChannelReleaseView(
         )
     }
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
+    override fun onDraw(
+        canvas: Canvas
+    ) {
+        super.onDraw(
+            canvas
+        )
 
         if (previewImage != null) {
             canvas.drawBitmap(
@@ -244,6 +269,10 @@ class TVChannelReleaseView(
                 mImageX,
                 0f,
                 mPaintProgress
+            )
+        } else if (mDownloadAnimation.isRunning()) {
+            mDownloadAnimation.draw(
+                canvas
             )
         }
 
@@ -308,12 +337,24 @@ class TVChannelReleaseView(
         )
     }
 
+
+    @MainThread
     fun startProgressAnimation() {
         mProgressAnimator.start()
     }
 
+    @MainThread
     fun startImageAnimation() {
         mImageAnimator.start()
     }
 
+    @MainThread
+    fun startDownloadAnimation() {
+        mDownloadAnimation.start()
+    }
+
+    @MainThread
+    fun stopDownloadAnimation() {
+        mDownloadAnimation.stop()
+    }
 }

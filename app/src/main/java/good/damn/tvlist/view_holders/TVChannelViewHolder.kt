@@ -2,6 +2,7 @@ package good.damn.tvlist.view_holders
 
 import android.content.Context
 import android.util.Log
+import android.view.Gravity
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +12,7 @@ import good.damn.tvlist.activities.MainActivity
 import good.damn.tvlist.extensions.boundsLinear
 import good.damn.tvlist.extensions.heightParams
 import good.damn.tvlist.extensions.middle
+import good.damn.tvlist.extensions.setBackgroundColorId
 import good.damn.tvlist.extensions.size
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.tv_details.channel.TVChannelPageFragment
@@ -19,83 +21,77 @@ import good.damn.tvlist.network.api.services.TVChannelReleasesService
 import good.damn.tvlist.network.bitmap.NetworkBitmap
 import good.damn.tvlist.utils.ViewUtils
 import good.damn.tvlist.views.TVChannelView
+import good.damn.tvlist.views.TVDateRangeView
 import good.damn.tvlist.views.decorations.MarginItemDecoration
 import good.damn.tvlist.views.recycler_views.TVShowsRecyclerView
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Calendar
 
 class TVChannelViewHolder(
     private val mTvChannelView: TVChannelView,
     private val mRecyclerViewReleases: TVShowsRecyclerView,
+    private val mDateRangeView: TVDateRangeView,
     private val mLayout: LinearLayout
 ): RecyclerView.ViewHolder(
     mLayout
 ) {
     fun onBindViewHolder(
         t: TVChannel2?,
+        onTimeSeconds: Int,
         releaseService: TVChannelReleasesService
     ) {
-        mLayout.alpha = 0f
         if (t == null) {
             return
         }
         Log.d(TAG, "setChannel: IMAGE_URL ${t.imageUrl}")
 
-        mTvChannelView.channel = t
-
-        mTvChannelView.text = t.shortName ?: t.name
-        mTvChannelView.invalidate()
+        mTvChannelView.apply {
+            channel = t
+            text = t.shortName ?: t.name
+            imagePreview = null
+            invalidate()
+        }
 
         App.createIO().launch {
-            val hashedReleases = App.RELEASES[t.id]
-
-            if (hashedReleases != null) {
-                App.ui {
-                    mRecyclerViewReleases.releases = hashedReleases
-                }
-                return@launch
-            }
-
-            val cachedReleases = releaseService.getReleases(
+            releaseService.getReleases(
                 t.id,
                 0,
                 limit = 8,
                 fromCache = true
-            )
-
-            Log.d(TAG, "onBindViewHolder: CACHED_RELEASES: ${cachedReleases?.size}")
-            
-            if (cachedReleases != null) {
-                App.RELEASES[t.id] = cachedReleases
+            )?.apply {
                 App.ui {
-                    mRecyclerViewReleases.releases = cachedReleases
+                    mRecyclerViewReleases.releases = this
+                    mDateRangeView.apply {
+                        timeSecondsLeft = firstOrNull()?.timeStart ?: 0
+                        timeSecondsRight = lastOrNull()?.timeStart ?: 0
+
+                        invalidate()
+                    }
                 }
 
-                cachedReleases.middle()?.let {
+                middle()?.let {
                     if (it.timeStart > App.CURRENT_TIME_SECONDS) {
                         return@launch
                     }
                 }
             }
 
-            val releases = releaseService.getReleases(
+            releaseService.getReleases(
                 t.id,
-                App.CURRENT_TIME_SECONDS,
+                onTimeSeconds,
                 limit = 8,
                 fromCache = false
-            ) ?: return@launch
+            )?.apply {
+                App.ui {
+                    mRecyclerViewReleases.releases = this
+                    mDateRangeView.apply {
+                        timeSecondsLeft = firstOrNull()?.timeStart ?: 0
+                        timeSecondsRight = lastOrNull()?.timeStart ?: 0
 
-            App.RELEASES[t.id] = releases
-            App.ui {
-                mRecyclerViewReleases.releases = releases
+                        invalidate()
+                    }
+                }
             }
-
         }
-
-        mLayout.animate()
-            .alpha(1.0f)
-            .start()
 
         t.imageUrl?.let { url ->
             if (App.iconMap.containsKey(url)) {
@@ -115,6 +111,9 @@ class TVChannelViewHolder(
                 bounds,
                 bounds
             ) {
+                if (it == null) {
+                    return@loadFromNetwork
+                }
                 App.iconMap[url] = it
                 mTvChannelView.imagePreview = it
                 mTvChannelView.invalidate()
@@ -132,39 +131,54 @@ class TVChannelViewHolder(
 
             val layout = ViewUtils.verticalLinear(
                 context
-            )
+            ).apply {
+                setBackgroundColor(0)
+            }
+
+
             val channelView = TVChannelView(
                 context
-            )
+            ).apply {
+                textColor = App.color(
+                    R.color.accentColor
+                )
+                typeface = App.font(
+                    R.font.open_sans_semi_bold,
+                    context
+                )
+                imageIcon = App.drawable(
+                    R.drawable.ic_info
+                )
+                setBackgroundColor(0)
+            }
+
+
             val recyclerView = TVShowsRecyclerView(
                 context
-            )
+            ).apply {
+                setBackgroundColor(0)
+            }
 
-            // Text Colors
-            channelView.textColor = App.color(
-                R.color.accentColor
-            )
 
-            //Typeface
-            channelView.typeface = App.font(
-                R.font.open_sans_semi_bold,
+            val dateRangeView = TVDateRangeView(
                 context
             )
 
-            // Drawable
-            channelView.imageIcon = App.drawable(
-                R.drawable.ic_info
-            )
-
-            layout.setBackgroundColor(0)
-            channelView.setBackgroundColor(0)
-            recyclerView.setBackgroundColor(0)
 
             // Bounds
             (height * 0.31256f).toInt().let { heightView ->
+
+                val dateViewHeight = (
+                    heightView * 0.05f
+                ).toInt()
+
+                val dateViewTop = (
+                    heightView * 0.05f
+                ).toInt()
+
                 layout.size(
                     width,
-                    heightView
+                    heightView + dateViewHeight + dateViewTop
                 )
 
                 channelView.setPadding(
@@ -186,9 +200,15 @@ class TVChannelViewHolder(
 
                 recyclerView.boundsLinear(
                     width = width,
-                    height = (heightView * 0.71811f)
-                        .toInt(),
+                    height = (heightView * 0.71811f).toInt(),
                     top = heightView * 0.06993f
+                )
+
+                dateRangeView.boundsLinear(
+                    gravity = Gravity.CENTER_HORIZONTAL,
+                    width = width - channelView.paddingLeft * 2,
+                    height = dateViewHeight,
+                    top = dateViewTop.toFloat()
                 )
 
                 recyclerView.heightHolder = recyclerView.heightParams()
@@ -208,6 +228,7 @@ class TVChannelViewHolder(
             layout.apply {
                 addView(channelView)
                 addView(recyclerView)
+                addView(dateRangeView)
             }
 
             recyclerView.clipToPadding = false
@@ -245,6 +266,7 @@ class TVChannelViewHolder(
             return TVChannelViewHolder(
                 channelView,
                 recyclerView,
+                dateRangeView,
                 layout
             )
         }

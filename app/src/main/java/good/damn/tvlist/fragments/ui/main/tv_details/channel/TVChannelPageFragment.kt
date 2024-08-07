@@ -31,6 +31,7 @@ import good.damn.tvlist.extensions.topParams
 import good.damn.tvlist.extensions.widthParams
 import good.damn.tvlist.extensions.withAlpha
 import good.damn.tvlist.fragments.StackFragment
+import good.damn.tvlist.fragments.TVChannelPlayerFragment
 import good.damn.tvlist.fragments.animation.FragmentAnimation
 import good.damn.tvlist.fragments.ui.main.stream.StreamFragment
 import good.damn.tvlist.fragments.ui.main.tv_details.TVShowPageFragment
@@ -95,6 +96,11 @@ OnRateClickListener {
     private var mBlurView: BlurShaderView? = null
     private var mReviewService: ReviewService? = null
 
+    override fun onAnimationEnd() {
+        super.onAnimationEnd()
+        mBlurView?.startRenderLoop()
+    }
+
     override fun onCreateView(
         context: Context,
         measureUnit: Int
@@ -144,7 +150,6 @@ OnRateClickListener {
                 height = topBar.heightParams()
             )
             topBar.addView(this,0)
-            startRenderLoop()
         }
 
 
@@ -738,9 +743,7 @@ OnRateClickListener {
         v: View
     ) {
         pushFragment(
-            StreamFragment.newInstance(
-                urlView ?: ""
-            ),
+            TVChannelPlayerFragment(),
             FragmentAnimation {
                 f, fragment ->
                 fragment.view?.x = App.WIDTH * (1.0f-f)
@@ -832,7 +835,7 @@ private fun TVChannelPageFragment.shareChannel(
             "${getString(R.string.with_rating)} " +
             "${channel.rating}\n\n$shortText \n\n" +
             getString(R.string.lets_see_it) +
-            "\n\n ${firstParag.toLong().toShareChannelUrl()}",
+            "\n\n ${channel.id.toLong().toShareChannelUrl()}",
         null
     )
 }

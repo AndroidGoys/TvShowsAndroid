@@ -27,7 +27,6 @@ class TVChannelsRecyclerView(
         currentIndex: Int
     ) {
         App.IO.launch {
-            val currentIndex = currentIndex
             val from = currentIndex + 1
             val updateCount = mStreamScrollListener.updateCount
 

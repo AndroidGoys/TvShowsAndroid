@@ -7,9 +7,11 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.view.View
+import android.view.ViewGroup
 import good.damn.tvlist.App
 import good.damn.tvlist.R
 import good.damn.tvlist.network.api.models.TVSearchResult
+import good.damn.tvlist.views.canvas.CVDownloadAnimation
 
 class TVIconNameView(
     context: Context
@@ -35,6 +37,10 @@ class TVIconNameView(
 
     private val mPath = Path()
 
+    private val mDownloadAnimation = CVDownloadAnimation(
+        this
+    )
+
     init {
         mPaintText.typeface = App.font(
             R.font.open_sans_regular,
@@ -50,22 +56,19 @@ class TVIconNameView(
         )
     }
 
-    override fun onLayout(
-        changed: Boolean,
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int
+    override fun setLayoutParams(
+        params: ViewGroup.LayoutParams?
     ) {
-        super.onLayout(
-            changed,
-            left,
-            top,
-            right,
-            bottom
+        super.setLayoutParams(
+            params
         )
 
-        val height = height.toFloat()
+        if (params == null) {
+            return
+        }
+
+        val height = params.height.toFloat()
+        val width = params.width.toFloat()
 
         mPaintText.textSize = height * 0.31034f
         mTextX = width * 0.20108f
@@ -77,6 +80,12 @@ class TVIconNameView(
         mRectBitmap.right = height
 
         cornerRadius = height * 0.24137f
+
+        mDownloadAnimation.layout(
+            width * 0.3f,
+            width,
+            height
+        )
     }
 
     override fun onDraw(
@@ -95,27 +104,24 @@ class TVIconNameView(
             )
         }
 
-        if (bitmap == null) {
-            canvas.drawRoundRect(
-                mRectBitmap,
-                cornerRadius,
-                cornerRadius,
-                mPaintText
-            )
-            return
-        }
-
-        mPath.reset()
-        mPath.addRoundRect(
+        canvas.drawRoundRect(
             mRectBitmap,
             cornerRadius,
             cornerRadius,
-            Path.Direction.CW
+            mPaintText
         )
-        mPath.close()
 
-        canvas.clipPath(
-            mPath
+        if (mDownloadAnimation.isRunning()) {
+            mDownloadAnimation.draw(canvas)
+            return
+        }
+
+        if (bitmap == null) {
+            return
+        }
+
+        clipToImageBounds(
+            canvas
         )
 
         canvas.drawBitmap(
@@ -142,6 +148,31 @@ class TVIconNameView(
         }
         onClickDataListener?.invoke(
             model!!
+        )
+    }
+
+    fun startDownloadAnimation() {
+        mDownloadAnimation.start()
+    }
+
+    fun stopDownloadAnimation() {
+        mDownloadAnimation.stop()
+    }
+
+    private fun clipToImageBounds(
+        canvas: Canvas
+    ) {
+        mPath.reset()
+        mPath.addRoundRect(
+            mRectBitmap,
+            cornerRadius,
+            cornerRadius,
+            Path.Direction.CW
+        )
+        mPath.close()
+
+        canvas.clipPath(
+            mPath
         )
     }
 }

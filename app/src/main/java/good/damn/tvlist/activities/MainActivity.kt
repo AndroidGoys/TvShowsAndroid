@@ -230,6 +230,7 @@ ActivityResultCallback<Boolean> {
         )
 
         if (withAnimation == null) {
+            fragment.onAnimationEnd()
             return
         }
 
@@ -237,10 +238,16 @@ ActivityResultCallback<Boolean> {
             withAnimation.duration.toLong()
         )
 
-        mAnimator.startTransition(
-            inAnimation = withAnimation,
-            inFragment = fragment
-        )
+        mAnimator.onAnimationEnd = {
+            fragment.onAnimationEnd()
+        }
+
+        fragment.onViewCreated = {
+            mAnimator.startTransition(
+                inAnimation = withAnimation,
+                inFragment = fragment
+            )
+        }
     }
 
     fun popFragment(
@@ -274,23 +281,26 @@ ActivityResultCallback<Boolean> {
             pushFragment(
                 on
             )
+            on.onAnimationEnd()
             return
         }
         val topFragment = mNavigator.topFragment
-        pushFragment(
-            on
-        )
+        pushFragment(on)
         mAnimator.onAnimationEnd = {
+            on.onAnimationEnd()
             mNavigator.removeFragment(
                 mNavigator.size - 2
             )
         }
-        mAnimator.startTransition(
-            baseAnimation,
-            topFragment,
-            onAnimation,
-            on
-        )
+
+        on.onViewCreated = {
+            mAnimator.startTransition(
+                baseAnimation,
+                topFragment,
+                onAnimation,
+                on
+            )
+        }
     }
 
 
